@@ -1,12 +1,12 @@
 # Utilisation d'une image de base Python
-FROM python:3.8
+FROM python:3.10.12
 
 # Définition du répertoire de travail dans le conteneur
-WORKDIR /app
+WORKDIR /App
 
 # Copie du fichier de dépendances et installation des dépendances
 COPY requirements.txt .
-RUN pip install -r requirements.txt
+RUN pip3 install -r requirements.txt
 
 # Copie du dossier App dans le conteneur
 COPY App/ ./App
