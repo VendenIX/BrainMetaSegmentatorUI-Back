@@ -2,7 +2,7 @@
 FROM python:3.10.12
 
 # Définition du répertoire de travail dans le conteneur
-WORKDIR /app
+WORKDIR /App
 
 # Copie du fichier de dépendances et installation des dépendances
 COPY requirements.txt .
