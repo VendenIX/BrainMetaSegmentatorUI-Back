@@ -1,15 +1,19 @@
 """Module that contains a Lightning module to easily perform
 any operation with the Pytorch Lightning."""
 
-from functools import partial
 import os
 import sys
+from functools import partial
 from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(SCRIPT_DIR))
 
-from monai.data import decollate_batch, DataLoader
+import numpy
+import numpy as np
+import pytorch_lightning as pl
+import torch
+from monai.data import DataLoader, decollate_batch
 from monai.handlers.utils import from_engine
 from monai.inferers import sliding_window_inference
 from monai.losses import DiceCELoss, DiceLoss
@@ -17,26 +21,18 @@ from monai.metrics import DiceMetric, HausdorffDistanceMetric
 from monai.metrics.metric import CumulativeIterationMetric
 from monai.transforms import AsDiscrete, AsDiscreted, Compose, Transform
 from monai.utils.enums import MetricReduction
-import pytorch_lightning as pl
 from pytorch_lightning.callbacks import TQDMProgressBar
 from pytorch_lightning.cli import instantiate_class
-import torch
-
-from meta.data.dataset import MetaSubset #provient dez App/unetr/data/dataset.py
-#from unetr.data.dataset import MetaSubset
-from .dice_bce_loss import DiceBCELoss ###
-from .networks.unetr import UNETR ###
+#from meta.data.dataset import MetaSubset #provient dez App/unetr/data/dataset.py
+from unetr.data.dataset import MetaSubset
 from unetr.utilsUnetr.saver_logger_utils import ImageSaver, WandbLoggerUtils
-from unetr.utilsUnetr.types import (
-    ActionType,
-    LabelColors,
-    LabelNames,
-    Metrics,
-    PredictionSavingType,
-    WandbResultLogging,
-)
-import numpy as np
-import numpy
+from unetr.utilsUnetr.types import (ActionType, LabelColors, LabelNames,
+                                    Metrics, PredictionSavingType,
+                                    WandbResultLogging)
+
+from .dice_bce_loss import DiceBCELoss  # ##
+from .networks.unetr import UNETR  # ##
+
 
 class SegmentationTask(pl.LightningModule):
     """Class that wraps the medical segmentation task as a PyTorch Lightning module.
