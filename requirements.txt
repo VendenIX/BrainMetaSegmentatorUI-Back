@@ -98,10 +98,10 @@ tensorboardX==2.5
 termcolor==2.1.1
 threadpoolctl==3.1.0
 tifffile==2022.10.10
-torch==1.9.1+cu111
-torchaudio==0.9.1
+torch
+torchaudio
 torchmetrics==0.10.3
-torchvision==0.10.1+cu111
+torchvision
 tornado==6.2
 tqdm==4.64.1
 traitlets==5.5.0

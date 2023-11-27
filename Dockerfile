@@ -1,5 +1,5 @@
 # Utilisation d'une image de base Python
-FROM python:3.10.12
+FROM python:3.9.16
 
 # Définition du répertoire de travail dans le conteneur
 WORKDIR /App
@@ -7,8 +7,9 @@ WORKDIR /App
 # Copie du fichier de dépendances et installation des dépendances
 COPY requirements.txt .
 RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
-
+RUN pip install -r requirements.txt -vv
+RUN pip install Flask
+RUN pip cache purge
 # Copie du dossier App dans le conteneur
 COPY App/ ./App
 
