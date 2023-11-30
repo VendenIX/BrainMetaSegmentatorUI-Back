@@ -22,8 +22,7 @@ from pytorch_lightning.callbacks import TQDMProgressBar
 from pytorch_lightning.cli import instantiate_class
 import torch
 
-from meta.data.dataset import MetaSubset #provient dez App/unetr/data/dataset.py
-#from unetr.data.dataset import MetaSubset
+from meta.data.dataset import MetaSubset
 from .dice_bce_loss import DiceBCELoss ###
 from .networks.unetr import UNETR ###
 from unetr.utilsUnetr.saver_logger_utils import ImageSaver, WandbLoggerUtils
