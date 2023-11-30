@@ -11,7 +11,7 @@ import torch
 import numpy as np
 import pandas as pd
 from rt_utils import RTStructBuilder
-import pydicom
+import pydicom 
 
 class Bouton():
 	"""docstring for Bouton"""
@@ -21,13 +21,13 @@ class Bouton():
 		self.path_dir = ""
 
 	def selectIRM(self, SelectDirButtonTxt, fonctionClass):
-	    SelectDirButtonTxt.set("calculs en cours ...")
-	    self.path_dir = filedialog.askdirectory(title="Choisissez un dossier")
-	    self.excel, self.masks = fonctionClass.foundMetastases(self.path_dir, SelectDirButtonTxt)
-	    self.masks=self.masks
-	    #self.masks=np.rot90(self.masks,3)
-	    SelectDirButtonTxt.set("Selection du dossier patient")
-	 
+		SelectDirButtonTxt.set("calculs en cours ...")
+		self.path_dir = filedialog.askdirectory(title="Choisissez un dossier")
+		self.excel, self.masks = fonctionClass.foundMetastases(self.path_dir, SelectDirButtonTxt)
+		self.masks=self.masks
+		#self.masks=np.rot90(self.masks,3)
+		SelectDirButtonTxt.set("Selection du dossier patient")
+		
 	def parcoursValue(self,valeur, listeValeurInterdite):
 		print(str(valeur not in listeValeurInterdite), valeur, listeValeurInterdite)
 		while str(valeur not in listeValeurInterdite)!=str(True):
@@ -35,6 +35,7 @@ class Bouton():
 			valeur+=1
 		listeValeurInterdite.append(valeur)
 		return valeur, listeValeurInterdite
+	
 	def changeValueDicom(self,ds, un, deux, trois, quatre):
 		listeValeurInterdite=[]
 		valeur=0
