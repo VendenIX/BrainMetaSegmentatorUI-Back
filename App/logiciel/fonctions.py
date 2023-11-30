@@ -46,13 +46,13 @@ class Fonctions():
 		self.IRM3DMiddle.image = IRM3D
 
 	def createDir(self, path_dir, name_dir, name):
-	    path = os.path.join(path_dir, name_dir)
-	    if not os.path.exists(path):
-	        os.mkdir(path)
-	    for mr in glob.glob(os.path.join(path_dir, name)):
-	        path_file, name_file = os.path.split(mr)
-	        os.rename(mr, str(path)+str(name_file))
-	    return path
+		path = os.path.join(path_dir, name_dir)
+		if not os.path.exists(path):
+			os.mkdir(path)
+		for mr in glob.glob(os.path.join(path_dir, name)):
+			path_file, name_file = os.path.split(mr)
+			os.rename(mr, str(path)+str(name_file))
+		return path
 
 	def foundMetastases(self,path_dir, SelectDirButtonTxt):
 		path_MR = self.createDir(path_dir,"IRM/", "MR*")

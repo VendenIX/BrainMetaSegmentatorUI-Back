@@ -5,30 +5,36 @@ The large majority of code came from this file https://github.com/Project-MONAI/
 et from this one https://github.com/Project-MONAI/MONAI/blob/0.8.0/monai/transforms/utils.py.
 """
 
-import math
-import warnings
 from copy import deepcopy
 from itertools import chain
-from typing import (Dict, Hashable, List, Mapping, Optional, Sequence, Tuple,
-                    Union)
+import math
+from typing import Dict, Hashable, List, Mapping, Optional, Sequence, Tuple, Union
+import warnings
 
-import numpy as np
-import torch
 from monai import transforms
 from monai.config import KeysCollection
 from monai.config.type_definitions import NdarrayOrTensor
-from monai.transforms.croppad.array import (BorderPad, RandCropByPosNegLabel,
-                                            SpatialCrop)
+from monai.transforms.croppad.array import (
+    BorderPad,
+    RandCropByPosNegLabel,
+    SpatialCrop,
+)
 from monai.transforms.inverse import InvertibleTransform
 #from monai.transforms.spatial.dictionary import InterpolateModeSequence
 from monai.transforms.transform import MapTransform, Randomizable
 from monai.transforms.utils import map_binary_to_indices
 from monai.transforms.utils_pytorch_numpy_unification import unravel_index
-from monai.utils import ImageMetaKey as Key
-from monai.utils import (InterpolateMode, ensure_tuple, ensure_tuple_rep,
-                         fall_back_tuple)
-from monai.utils.enums import InverseKeys
+from monai.utils import (
+    ImageMetaKey as Key,
+    InterpolateMode,
+    ensure_tuple,
+    ensure_tuple_rep,
+    fall_back_tuple,
+)
+# from monai.utils.enums import InverseKeys
 from monai.utils.type_conversion import convert_data_type
+import numpy as np
+import torch
 
 
 class SampleNormalizer():
@@ -389,7 +395,6 @@ class RandCropByPosNegLabeld(Randomizable, MapTransform, InvertibleTransform):
             center = transform[InverseKeys.EXTRA_INFO]["center"]
             cropper = SpatialCrop(roi_center=tuple(center), roi_size=self.spatial_size)  # type: ignore
             # get required pad to start and end
-            print(transform)
             pad_to_start = np.array([s.indices(o)[0] for s, o in zip(cropper.slices, orig_size)])
             pad_to_end = orig_size - current_size - pad_to_start
             # interleave mins and maxes
@@ -416,6 +421,7 @@ class ResizeOrDoNothingd(transforms.MapTransform):
         keys: KeysCollection,
         max_spatial_size: Union[Sequence[int], int],
         size_mode: str = "all",
+        # mode: InterpolateModeSequence = InterpolateMode.AREA,
         mode = InterpolateMode.AREA,
         align_corners: Union[Sequence[Optional[bool]], Optional[bool]] = None,
         cut_slices: bool = False,
