@@ -61,7 +61,7 @@ parso==0.8.3
 pastel==0.2.1
 pathtools==0.1.2
 pickleshare==0.7.5
-Pillow==9.3.0
+Pillow
 proglog==0.1.10
 promise==2.3
 prompt-toolkit==3.0.32
@@ -98,10 +98,10 @@ tensorboardX==2.5
 termcolor==2.1.1
 threadpoolctl==3.1.0
 tifffile==2022.10.10
-# torch==2.1.0+cpu
-torchaudio==0.9.1
+torch
+torchaudio
 torchmetrics==0.10.3
-# torchvision==0.10.1+cpu
+torchvision
 tornado==6.2
 tqdm==4.64.1
 traitlets==5.5.0
@@ -112,3 +112,4 @@ wcwidth==0.2.5
 widgetsnbextension==4.0.3
 wrapt==1.14.1
 yarl==1.8.1
+flask
