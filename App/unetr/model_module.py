@@ -13,6 +13,7 @@ import numpy
 import numpy as np
 import pytorch_lightning as pl
 import torch
+from meta.data.dataset import MetaSubset
 from monai.data import DataLoader, decollate_batch
 from monai.handlers.utils import from_engine
 from monai.inferers import sliding_window_inference
@@ -23,11 +24,6 @@ from monai.transforms import AsDiscrete, AsDiscreted, Compose, Transform
 from monai.utils.enums import MetricReduction
 from pytorch_lightning.callbacks import TQDMProgressBar
 from pytorch_lightning.cli import instantiate_class
-import torch
-
-from meta.data.dataset import MetaSubset
-from .dice_bce_loss import DiceBCELoss ###
-from .networks.unetr import UNETR ###
 from unetr.utilsUnetr.saver_logger_utils import ImageSaver, WandbLoggerUtils
 from unetr.utilsUnetr.types import (ActionType, LabelColors, LabelNames,
                                     Metrics, PredictionSavingType,
@@ -131,7 +127,7 @@ class SegmentationTask(pl.LightningModule):
         super(SegmentationTask, self).__init__()
         
         self.model = UNETR.from_pretrained(
-            torch.load(os.path.normpath(pretrained_file_path)), in_channels, 
+                        torch.load(os.path.normpath(pretrained_file_path),map_location=torch.device('cpu')), in_channels, 
             out_channels, roi_size, new_out_channels=new_out_channels,
             number_of_blocks_to_tune=number_of_blocks_to_tune,
             feature_size=feature_size, hidden_size=hidden_size,
