@@ -1,0 +1,2117 @@
+Dataset.file_meta -------------------------------
+(0002, 0000) File Meta Information Group Length  UL: 208
+(0002, 0001) File Meta Information Version       OB: b'\x00\x01'
+(0002, 0002) Media Storage SOP Class UID         UI: RT Structure Set Storage
+(0002, 0003) Media Storage SOP Instance UID      UI: 1.3.6.1.4.1.14519.5.2.1.130794323925552424280337677381657579550
+(0002, 0010) Transfer Syntax UID                 UI: Implicit VR Little Endian
+(0002, 0012) Implementation Class UID            UI: 1.3.6.1.4.1.22213.1.143
+(0002, 0013) Implementation Version Name         SH: '0.5'
+(0002, 0016) Source Application Entity Title     AE: 'POSDA'
+-------------------------------------------------
+(0008, 0005) Specific Character Set              CS: 'ISO_IR 192'
+(0008, 0012) Instance Creation Date              DA: '20041028'
+(0008, 0013) Instance Creation Time              TM: '184948'
+(0008, 0016) SOP Class UID                       UI: RT Structure Set Storage
+(0008, 0018) SOP Instance UID                    UI: 1.3.6.1.4.1.14519.5.2.1.130794323925552424280337677381657579550
+(0008, 0020) Study Date                          DA: '19921117'
+(0008, 0030) Study Time                          TM: '094110'
+(0008, 0050) Accession Number                    SH: ''
+(0008, 0060) Modality                            CS: 'RTSTRUCT'
+(0008, 0070) Manufacturer                        LO: 'Varian Medical Systems'
+(0008, 0090) Referring Physician's Name          PN: ''
+(0008, 1030) Study Description                   LO: 'RX SIMULATION'
+(0008, 103e) Series Description                  LO: 'Contouring'
+(0008, 1070) Operators' Name                     PN: ''
+(0008, 1090) Manufacturer's Model Name           LO: 'ARIA RTM'
+(0010, 0010) Patient's Name                      PN: 'Prostate-AEC-001'
+(0010, 0020) Patient ID                          LO: 'Prostate-AEC-001'
+(0010, 0030) Patient's Birth Date                DA: ''
+(0010, 0040) Patient's Sex                       CS: 'M'
+(0012, 0062) Patient Identity Removed            CS: 'YES'
+(0012, 0063) De-identification Method            LO: 'Per DICOM PS 3.15 AnnexE. Details in 0012,0064'
+(0012, 0064)  De-identification Method Code Sequence  8 item(s) ---- 
+   (0008, 0100) Code Value                          SH: '113100'
+   (0008, 0102) Coding Scheme Designator            SH: 'DCM'
+   (0008, 0104) Code Meaning                        LO: 'Basic Application Confidentiality Profile'
+   ---------
+   (0008, 0100) Code Value                          SH: '113101'
+   (0008, 0102) Coding Scheme Designator            SH: 'DCM'
+   (0008, 0104) Code Meaning                        LO: 'Clean Pixel Data Option'
+   ---------
+   (0008, 0100) Code Value                          SH: '113104'
+   (0008, 0102) Coding Scheme Designator            SH: 'DCM'
+   (0008, 0104) Code Meaning                        LO: 'Clean Structured Content Option'
+   ---------
+   (0008, 0100) Code Value                          SH: '113105'
+   (0008, 0102) Coding Scheme Designator            SH: 'DCM'
+   (0008, 0104) Code Meaning                        LO: 'Clean Descriptors Option'
+   ---------
+   (0008, 0100) Code Value                          SH: '113107'
+   (0008, 0102) Coding Scheme Designator            SH: 'DCM'
+   (0008, 0104) Code Meaning                        LO: 'Retain Longitudinal Temporal Information Modified Dates Option'
+   ---------
+   (0008, 0100) Code Value                          SH: '113108'
+   (0008, 0102) Coding Scheme Designator            SH: 'DCM'
+   (0008, 0104) Code Meaning                        LO: 'Retain Patient Characteristics Option'
+   ---------
+   (0008, 0100) Code Value                          SH: '113109'
+   (0008, 0102) Coding Scheme Designator            SH: 'DCM'
+   (0008, 0104) Code Meaning                        LO: 'Retain Device Identity Option'
+   ---------
+   (0008, 0100) Code Value                          SH: '113111'
+   (0008, 0102) Coding Scheme Designator            SH: 'DCM'
+   (0008, 0104) Code Meaning                        LO: 'Retain Safe Private Option'
+   ---------
+(0013, 0010) Private Creator                     VR.LO: 'CTP'
+(0013, 1010) Private tag data                    VR.UN: Array of 30 elements
+(0013, 1013) Private tag data                    VR.UN: b'21032110'
+(0018, 1000) Device Serial Number                LO: ''
+(0018, 1020) Software Versions                   LO: '4.2.7.0'
+(0020, 000d) Study Instance UID                  UI: 1.3.6.1.4.1.14519.5.2.1.112097389980793747866904250693229482988
+(0020, 000e) Series Instance UID                 UI: 1.3.6.1.4.1.14519.5.2.1.145604855576133072144485190249196760430
+(0020, 0010) Study ID                            SH: ''
+(0020, 0011) Series Number                       IS: '0'
+(0020, 1040) Position Reference Indicator        LO: ''
+(0028, 0303) Longitudinal Temporal Information M CS: 'MODIFIED'
+(3006, 0002) Structure Set Label                 SH: 'Unapproved'
+(3006, 0008) Structure Set Date                  DA: '20041019'
+(3006, 0009) Structure Set Time                  TM: '141116.133'
+(3006, 0010)  Referenced Frame of Reference Sequence  1 item(s) ---- 
+   (0020, 0052) Frame of Reference UID              UI: 1.3.6.1.4.1.14519.5.2.1.81302279717081208873200283990966046978
+   (3006, 0012)  RT Referenced Study Sequence  1 item(s) ---- 
+      (0008, 1150) Referenced SOP Class UID            UI: RT Structure Set Storage
+      (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.112097389980793747866904250693229482988
+      (3006, 0014)  RT Referenced Series Sequence  1 item(s) ---- 
+         (0020, 000e) Series Instance UID                 UI: 1.3.6.1.4.1.14519.5.2.1.90648498715999918797883179860499513578
+         (3006, 0016)  Contour Image Sequence  179 item(s) ---- 
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.230213017245275591928271397918841626948
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.246440042699107847391389230370228550166
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.209810318687887374772743994863294786318
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.102090774845604983861755913932981542712
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.147260559316198825867041807366578893331
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.155308559019620632791600849707089226282
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.290175401347802030999109705988803040757
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.186529310632017557743291536815416352885
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.10789759145841016568761461610675244871
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.23344028754065459068891878123258975945
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.153511608371758644257958752852450834378
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.102828745380933663401715961137356094904
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.81824095647099158680158007846782263608
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.266530713279330744209200855507792841155
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.4945116885278834125753775162894021869
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.40850620962662454819638426031159718229
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.223827379952181447679663414216428716187
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.12821377299627226660754388344547415966
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.316425048266043534183030382581386317169
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.46025259731312693033218671845428313512
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.101105035459718101840214558496118861018
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.243566579024619126900746131537663581605
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.157378055818903324582657701851756744657
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.10966455538227486998697859339279289240
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.296951066791791121362343175042703051966
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.53918266535604050316061589539407503705
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.277508264026039372846845000050129224466
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.3683953245858088533318486004086097697
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.279609287462611457169987895791300338810
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.141903935870549240431269407138540821874
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.92011226656741794495945060804107492675
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.322119167262927876089479479962894616556
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.98152064578635030227598567705472312385
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.19478049518901126631301068306847160138
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.84832364434476715282876639086283044131
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.272061066187053147920843715540057210578
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.301507212915176456059230275124985950849
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.330137960430726139373666613028996841995
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.49682650725469133919447599091067893596
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.69233397166017964268508034198178258819
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.310846757376334120627670703222772790648
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.131760538906549030510433997873437586489
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.46179983053868836142294447642565189367
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.172481849522640817722814424426002359983
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.13320699198330551546949470883600787677
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.159927401886569508638840049170684193544
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.155336449360331082477007915396805636928
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.65634052076525272086489292847157192909
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.309400626463699972043083510314527188837
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.255302310448499062222447545471993605222
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.76089540615456799018279385207553071231
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.233727100260764569106191989439452234882
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.250799420422164438030277823522411704542
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.220791113326891271214571550229478385731
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.38796578228705458257187300877546210316
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.340009184260980879559326292851889450832
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.237309988757368670804287786549766984982
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.14020319575289956658818257109210345895
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.218611182967980680544441201736916151852
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.300631945013605755833557418399975505425
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.291088008614647215751518742265389833434
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.123281015112590511184797438084756047714
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.340010711548970446943759608999753967079
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.172464477147069189813091978542295328764
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.158141748869857625686807214870524177190
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.293903941691091812398742654209530257917
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.184522705358421915792953144459528956425
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.231194723296464583633582644161889357365
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.16910129219080830921890337715265224891
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.327353838275347787504786028652530996793
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.295771388106223860291304601590188554910
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.38476247406646600802591024215694025249
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.101819624564293655175903480809816132899
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.61150380502979527529559755853755280782
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.260837392785075548976603423081550392844
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.179814698347197912483774581779199873551
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.7591454478192116520369449684486347882
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.122750028922991024364424851663206471985
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.34484908197658625700437675849777429512
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.204403162873845879117986497130822893735
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.182331285254785737792722711352603332447
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.335128200612041571960793037480408479322
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.199588341243171537589516962395646551933
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.215772475345689077929621194708072627691
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.217989865763773266222828785830477483624
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.20183944530491961840702993629630267972
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.126081740167012768220232977150751646801
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.17446590241218303990677182484853369425
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.249275274075405998147729700638710815580
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.29249325244660361626680781569569168674
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.329173105892425122351872851638172052112
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.165490228977927832824573694104322808278
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.121998624672326300255011964498691606655
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.166198896276928270079424028521522839742
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.97382989528443289455795755495206024654
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.283186528804244227653467955877744670492
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.127341110301125646983633883357223556886
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.134551093327847054234423218775116242136
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.259640437818008233561069778946439050133
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.29347413049733558304658037848844431612
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.235065078989797912030340787990252320141
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.31352932976928884726595025922841030247
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.209113240131923136152409901420318505249
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.168809620755672545191767520905510986250
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.331128844784708087432659356704480603096
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.200468448814994273450738913656144214784
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.104286398242435713814503046873521059214
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.186218414805118218970812971221837195261
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.236060387883283955023791450227506815332
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.171961168739615194459373183940708097021
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.306522561670192896563297061923249663978
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.293284643404947253738138699794230578020
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.311320550072024009143396122318802313481
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.145625761281263235190707687768166600163
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.296698436720117181009960607803569830756
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.245345490866900640130283877686051270886
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.249727103402699739727291143737791905894
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.35671182515889530883400963941144150728
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.177887963543340300690027943178880841894
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.240264639770447740397042150046611110197
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.81940593442391656952466914926949114552
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.279139595605938986052498597365744480100
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.198342899740988965604938299595081426016
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.160458486108027660966622355795897067252
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.284510389166420317311138180621453608460
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.251321246527296516302187463557508599893
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.290455254750724797684107797669868523998
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.12086778275176226740752811514850290741
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.330190622207262277949015557284944049761
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.23124102305033862911370681544837512068
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.60673873780838066600069031831647928298
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.157222213299341300599513471030411509567
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.21519776629355074861321550742947336395
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.98935662346619274189957424081633671420
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.303486261356274011529012685580737899245
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.231540917500393302060998896364424498049
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.270202950549922063662487927636179211177
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.301402007620871463472676232731658003650
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.212136603875204837495925264196577557882
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.254258502109575250652835345875959789881
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.26945146360206111129894098285152202731
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.160370960167666970977055838207436409478
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.296794800712979628521538574780014902333
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.229020846472857203742594821043710399982
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.297162378432555176295840055878563199196
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.272094707627979416959415895615011888435
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.140746696296821688003816796442905329720
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.107430889484379981305842917871957386043
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.5171473847445199872923328163065108859
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.275393211340906333571683342495883307051
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.213836359584825745084392753826054935602
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.300945651119201953494635769904433676977
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.35705624907238170137431722921851875335
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.85742381501368010243976251712810965105
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.174760817532787851133684489791099172736
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.186127328497137533579865115524619266768
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.182250627717831833750146689122675234136
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.59665620520037991200567530869039260362
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.289120454710080957311089856630598024923
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.21067703701450462868012242191856932669
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.269460502365847551645231077743968649665
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.288942916560528076755669218130956170005
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.329226436939056841666497557277922712650
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.90039003136615071608956432301630574361
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.115384397177329302962061746362477934038
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.278247619417160649255117870981365198913
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.293986290791727007807393220523140091071
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.67525568791030035108871683465283702070
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.226669002829405679514265872641816694583
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.73902822501770449968835548676470199647
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.279261531688599319351650789522927331096
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.106020696664704246749231108458793160881
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.197014845083313310259981494366832731673
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.85961369590222126914500824413124340514
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.224374499026231684431032962521249705450
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.79203247205498447764347771444094811997
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.45703914808343116833225123682869700371
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.327611099780721740638455489327574833182
+            ---------
+            (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+            (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.114758301204593302902137757890522307865
+            ---------
+         ---------
+      ---------
+   ---------
+(3006, 0020)  Structure Set ROI Sequence  5 item(s) ---- 
+   (3006, 0022) ROI Number                          IS: '2'
+   (3006, 0024) Referenced Frame of Reference UID   UI: 1.3.6.1.4.1.14519.5.2.1.81302279717081208873200283990966046978
+   (3006, 0026) ROI Name                            LO: 'Bladder'
+   (3006, 0036) ROI Generation Algorithm            CS: 'MANUAL'
+   ---------
+   (3006, 0022) ROI Number                          IS: '11'
+   (3006, 0024) Referenced Frame of Reference UID   UI: 1.3.6.1.4.1.14519.5.2.1.81302279717081208873200283990966046978
+   (3006, 0026) ROI Name                            LO: 'Prostate'
+   (3006, 0036) ROI Generation Algorithm            CS: 'MANUAL'
+   ---------
+   (3006, 0022) ROI Number                          IS: '22'
+   (3006, 0024) Referenced Frame of Reference UID   UI: 1.3.6.1.4.1.14519.5.2.1.81302279717081208873200283990966046978
+   (3006, 0026) ROI Name                            LO: 'Femur_Head_L'
+   (3006, 0036) ROI Generation Algorithm            CS: 'MANUAL'
+   ---------
+   (3006, 0022) ROI Number                          IS: '23'
+   (3006, 0024) Referenced Frame of Reference UID   UI: 1.3.6.1.4.1.14519.5.2.1.81302279717081208873200283990966046978
+   (3006, 0026) ROI Name                            LO: 'Femur_Head_R'
+   (3006, 0036) ROI Generation Algorithm            CS: 'MANUAL'
+   ---------
+   (3006, 0022) ROI Number                          IS: '26'
+   (3006, 0024) Referenced Frame of Reference UID   UI: 1.3.6.1.4.1.14519.5.2.1.81302279717081208873200283990966046978
+   (3006, 0026) ROI Name                            LO: 'Rectum'
+   (3006, 0036) ROI Generation Algorithm            CS: 'MANUAL'
+   ---------
+(3006, 0039)  ROI Contour Sequence  5 item(s) ---- 
+   (3006, 002a) ROI Display Color                   IS: [255, 255, 128]
+   (3006, 0040)  Contour Sequence  25 item(s) ---- 
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.217989865763773266222828785830477483624
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '156'
+      (3006, 0050) Contour Data                        DS: Array of 468 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.215772475345689077929621194708072627691
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '222'
+      (3006, 0050) Contour Data                        DS: Array of 666 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.199588341243171537589516962395646551933
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '234'
+      (3006, 0050) Contour Data                        DS: Array of 702 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.335128200612041571960793037480408479322
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '262'
+      (3006, 0050) Contour Data                        DS: Array of 786 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.182331285254785737792722711352603332447
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '270'
+      (3006, 0050) Contour Data                        DS: Array of 810 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.204403162873845879117986497130822893735
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '282'
+      (3006, 0050) Contour Data                        DS: Array of 846 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.34484908197658625700437675849777429512
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '290'
+      (3006, 0050) Contour Data                        DS: Array of 870 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.122750028922991024364424851663206471985
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '302'
+      (3006, 0050) Contour Data                        DS: Array of 906 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.7591454478192116520369449684486347882
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '304'
+      (3006, 0050) Contour Data                        DS: Array of 912 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.179814698347197912483774581779199873551
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '308'
+      (3006, 0050) Contour Data                        DS: Array of 924 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.260837392785075548976603423081550392844
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '312'
+      (3006, 0050) Contour Data                        DS: Array of 936 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.61150380502979527529559755853755280782
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '312'
+      (3006, 0050) Contour Data                        DS: Array of 936 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.101819624564293655175903480809816132899
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '314'
+      (3006, 0050) Contour Data                        DS: Array of 942 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.38476247406646600802591024215694025249
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '318'
+      (3006, 0050) Contour Data                        DS: Array of 954 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.295771388106223860291304601590188554910
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '314'
+      (3006, 0050) Contour Data                        DS: Array of 942 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.327353838275347787504786028652530996793
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '308'
+      (3006, 0050) Contour Data                        DS: Array of 924 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.16910129219080830921890337715265224891
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '300'
+      (3006, 0050) Contour Data                        DS: Array of 900 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.231194723296464583633582644161889357365
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '292'
+      (3006, 0050) Contour Data                        DS: Array of 876 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.184522705358421915792953144459528956425
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '276'
+      (3006, 0050) Contour Data                        DS: Array of 828 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.293903941691091812398742654209530257917
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '262'
+      (3006, 0050) Contour Data                        DS: Array of 786 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.158141748869857625686807214870524177190
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '246'
+      (3006, 0050) Contour Data                        DS: Array of 738 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.172464477147069189813091978542295328764
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '230'
+      (3006, 0050) Contour Data                        DS: Array of 690 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.340010711548970446943759608999753967079
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '206'
+      (3006, 0050) Contour Data                        DS: Array of 618 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.123281015112590511184797438084756047714
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '152'
+      (3006, 0050) Contour Data                        DS: Array of 456 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.291088008614647215751518742265389833434
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '114'
+      (3006, 0050) Contour Data                        DS: Array of 342 elements
+      ---------
+   (3006, 0084) Referenced ROI Number               IS: '2'
+   ---------
+   (3006, 002a) ROI Display Color                   IS: [255, 0, 0]
+   (3006, 0040)  Contour Sequence  24 item(s) ---- 
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.168809620755672545191767520905510986250
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '98'
+      (3006, 0050) Contour Data                        DS: Array of 294 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.209113240131923136152409901420318505249
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '100'
+      (3006, 0050) Contour Data                        DS: Array of 300 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.31352932976928884726595025922841030247
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '142'
+      (3006, 0050) Contour Data                        DS: Array of 426 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.235065078989797912030340787990252320141
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '150'
+      (3006, 0050) Contour Data                        DS: Array of 450 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.29347413049733558304658037848844431612
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '164'
+      (3006, 0050) Contour Data                        DS: Array of 492 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.259640437818008233561069778946439050133
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '168'
+      (3006, 0050) Contour Data                        DS: Array of 504 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.134551093327847054234423218775116242136
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '172'
+      (3006, 0050) Contour Data                        DS: Array of 516 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.127341110301125646983633883357223556886
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '186'
+      (3006, 0050) Contour Data                        DS: Array of 558 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.283186528804244227653467955877744670492
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '190'
+      (3006, 0050) Contour Data                        DS: Array of 570 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.97382989528443289455795755495206024654
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '206'
+      (3006, 0050) Contour Data                        DS: Array of 618 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.166198896276928270079424028521522839742
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '212'
+      (3006, 0050) Contour Data                        DS: Array of 636 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.121998624672326300255011964498691606655
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '212'
+      (3006, 0050) Contour Data                        DS: Array of 636 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.165490228977927832824573694104322808278
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '216'
+      (3006, 0050) Contour Data                        DS: Array of 648 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.329173105892425122351872851638172052112
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '212'
+      (3006, 0050) Contour Data                        DS: Array of 636 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.29249325244660361626680781569569168674
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '214'
+      (3006, 0050) Contour Data                        DS: Array of 642 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.249275274075405998147729700638710815580
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '214'
+      (3006, 0050) Contour Data                        DS: Array of 642 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.17446590241218303990677182484853369425
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '220'
+      (3006, 0050) Contour Data                        DS: Array of 660 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.126081740167012768220232977150751646801
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '240'
+      (3006, 0050) Contour Data                        DS: Array of 720 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.20183944530491961840702993629630267972
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '204'
+      (3006, 0050) Contour Data                        DS: Array of 612 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.217989865763773266222828785830477483624
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '192'
+      (3006, 0050) Contour Data                        DS: Array of 576 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.215772475345689077929621194708072627691
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '200'
+      (3006, 0050) Contour Data                        DS: Array of 600 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.199588341243171537589516962395646551933
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '198'
+      (3006, 0050) Contour Data                        DS: Array of 594 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.335128200612041571960793037480408479322
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '96'
+      (3006, 0050) Contour Data                        DS: Array of 288 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.182331285254785737792722711352603332447
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '82'
+      (3006, 0050) Contour Data                        DS: Array of 246 elements
+      ---------
+   (3006, 0084) Referenced ROI Number               IS: '11'
+   ---------
+   (3006, 002a) ROI Display Color                   IS: [10, 10, 250]
+   (3006, 0040)  Contour Sequence  51 item(s) ---- 
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.245345490866900640130283877686051270886
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '176'
+      (3006, 0050) Contour Data                        DS: Array of 528 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.296698436720117181009960607803569830756
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '182'
+      (3006, 0050) Contour Data                        DS: Array of 546 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.145625761281263235190707687768166600163
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '194'
+      (3006, 0050) Contour Data                        DS: Array of 582 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.311320550072024009143396122318802313481
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '196'
+      (3006, 0050) Contour Data                        DS: Array of 588 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.293284643404947253738138699794230578020
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '202'
+      (3006, 0050) Contour Data                        DS: Array of 606 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.306522561670192896563297061923249663978
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '202'
+      (3006, 0050) Contour Data                        DS: Array of 606 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.171961168739615194459373183940708097021
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '204'
+      (3006, 0050) Contour Data                        DS: Array of 612 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.236060387883283955023791450227506815332
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '208'
+      (3006, 0050) Contour Data                        DS: Array of 624 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.186218414805118218970812971221837195261
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '210'
+      (3006, 0050) Contour Data                        DS: Array of 630 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.104286398242435713814503046873521059214
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '216'
+      (3006, 0050) Contour Data                        DS: Array of 648 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.200468448814994273450738913656144214784
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '210'
+      (3006, 0050) Contour Data                        DS: Array of 630 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.331128844784708087432659356704480603096
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '212'
+      (3006, 0050) Contour Data                        DS: Array of 636 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.168809620755672545191767520905510986250
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '214'
+      (3006, 0050) Contour Data                        DS: Array of 642 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.209113240131923136152409901420318505249
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '214'
+      (3006, 0050) Contour Data                        DS: Array of 642 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.31352932976928884726595025922841030247
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '216'
+      (3006, 0050) Contour Data                        DS: Array of 648 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.235065078989797912030340787990252320141
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '220'
+      (3006, 0050) Contour Data                        DS: Array of 660 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.29347413049733558304658037848844431612
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '228'
+      (3006, 0050) Contour Data                        DS: Array of 684 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.259640437818008233561069778946439050133
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '230'
+      (3006, 0050) Contour Data                        DS: Array of 690 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.134551093327847054234423218775116242136
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '234'
+      (3006, 0050) Contour Data                        DS: Array of 702 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.127341110301125646983633883357223556886
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '238'
+      (3006, 0050) Contour Data                        DS: Array of 714 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.283186528804244227653467955877744670492
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '242'
+      (3006, 0050) Contour Data                        DS: Array of 726 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.97382989528443289455795755495206024654
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '246'
+      (3006, 0050) Contour Data                        DS: Array of 738 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.166198896276928270079424028521522839742
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '252'
+      (3006, 0050) Contour Data                        DS: Array of 756 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.121998624672326300255011964498691606655
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '258'
+      (3006, 0050) Contour Data                        DS: Array of 774 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.165490228977927832824573694104322808278
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '264'
+      (3006, 0050) Contour Data                        DS: Array of 792 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.329173105892425122351872851638172052112
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '282'
+      (3006, 0050) Contour Data                        DS: Array of 846 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.29249325244660361626680781569569168674
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '300'
+      (3006, 0050) Contour Data                        DS: Array of 900 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.249275274075405998147729700638710815580
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '324'
+      (3006, 0050) Contour Data                        DS: Array of 972 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.17446590241218303990677182484853369425
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '342'
+      (3006, 0050) Contour Data                        DS: Array of 1026 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.126081740167012768220232977150751646801
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '344'
+      (3006, 0050) Contour Data                        DS: Array of 1032 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.20183944530491961840702993629630267972
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '354'
+      (3006, 0050) Contour Data                        DS: Array of 1062 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.217989865763773266222828785830477483624
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '340'
+      (3006, 0050) Contour Data                        DS: Array of 1020 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.215772475345689077929621194708072627691
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '348'
+      (3006, 0050) Contour Data                        DS: Array of 1044 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.199588341243171537589516962395646551933
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '374'
+      (3006, 0050) Contour Data                        DS: Array of 1122 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.335128200612041571960793037480408479322
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '226'
+      (3006, 0050) Contour Data                        DS: Array of 678 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.335128200612041571960793037480408479322
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '138'
+      (3006, 0050) Contour Data                        DS: Array of 414 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.182331285254785737792722711352603332447
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '216'
+      (3006, 0050) Contour Data                        DS: Array of 648 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.182331285254785737792722711352603332447
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '94'
+      (3006, 0050) Contour Data                        DS: Array of 282 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.204403162873845879117986497130822893735
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '220'
+      (3006, 0050) Contour Data                        DS: Array of 660 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.204403162873845879117986497130822893735
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '78'
+      (3006, 0050) Contour Data                        DS: Array of 234 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.34484908197658625700437675849777429512
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '218'
+      (3006, 0050) Contour Data                        DS: Array of 654 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.122750028922991024364424851663206471985
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '214'
+      (3006, 0050) Contour Data                        DS: Array of 642 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.7591454478192116520369449684486347882
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '212'
+      (3006, 0050) Contour Data                        DS: Array of 636 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.179814698347197912483774581779199873551
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '204'
+      (3006, 0050) Contour Data                        DS: Array of 612 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.260837392785075548976603423081550392844
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '192'
+      (3006, 0050) Contour Data                        DS: Array of 576 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.61150380502979527529559755853755280782
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '186'
+      (3006, 0050) Contour Data                        DS: Array of 558 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.101819624564293655175903480809816132899
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '164'
+      (3006, 0050) Contour Data                        DS: Array of 492 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.38476247406646600802591024215694025249
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '148'
+      (3006, 0050) Contour Data                        DS: Array of 444 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.295771388106223860291304601590188554910
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '130'
+      (3006, 0050) Contour Data                        DS: Array of 390 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.327353838275347787504786028652530996793
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '96'
+      (3006, 0050) Contour Data                        DS: Array of 288 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.16910129219080830921890337715265224891
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '62'
+      (3006, 0050) Contour Data                        DS: Array of 186 elements
+      ---------
+   (3006, 0084) Referenced ROI Number               IS: '22'
+   ---------
+   (3006, 002a) ROI Display Color                   IS: [255, 128, 128]
+   (3006, 0040)  Contour Sequence  49 item(s) ---- 
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.35671182515889530883400963941144150728
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '178'
+      (3006, 0050) Contour Data                        DS: Array of 534 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.249727103402699739727291143737791905894
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '186'
+      (3006, 0050) Contour Data                        DS: Array of 558 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.245345490866900640130283877686051270886
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '192'
+      (3006, 0050) Contour Data                        DS: Array of 576 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.296698436720117181009960607803569830756
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '194'
+      (3006, 0050) Contour Data                        DS: Array of 582 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.145625761281263235190707687768166600163
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '204'
+      (3006, 0050) Contour Data                        DS: Array of 612 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.311320550072024009143396122318802313481
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '202'
+      (3006, 0050) Contour Data                        DS: Array of 606 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.293284643404947253738138699794230578020
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '208'
+      (3006, 0050) Contour Data                        DS: Array of 624 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.306522561670192896563297061923249663978
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '210'
+      (3006, 0050) Contour Data                        DS: Array of 630 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.171961168739615194459373183940708097021
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '210'
+      (3006, 0050) Contour Data                        DS: Array of 630 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.236060387883283955023791450227506815332
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '216'
+      (3006, 0050) Contour Data                        DS: Array of 648 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.186218414805118218970812971221837195261
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '220'
+      (3006, 0050) Contour Data                        DS: Array of 660 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.104286398242435713814503046873521059214
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '218'
+      (3006, 0050) Contour Data                        DS: Array of 654 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.200468448814994273450738913656144214784
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '216'
+      (3006, 0050) Contour Data                        DS: Array of 648 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.331128844784708087432659356704480603096
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '218'
+      (3006, 0050) Contour Data                        DS: Array of 654 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.168809620755672545191767520905510986250
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '222'
+      (3006, 0050) Contour Data                        DS: Array of 666 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.209113240131923136152409901420318505249
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '226'
+      (3006, 0050) Contour Data                        DS: Array of 678 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.31352932976928884726595025922841030247
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '234'
+      (3006, 0050) Contour Data                        DS: Array of 702 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.235065078989797912030340787990252320141
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '234'
+      (3006, 0050) Contour Data                        DS: Array of 702 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.29347413049733558304658037848844431612
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '242'
+      (3006, 0050) Contour Data                        DS: Array of 726 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.259640437818008233561069778946439050133
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '246'
+      (3006, 0050) Contour Data                        DS: Array of 738 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.134551093327847054234423218775116242136
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '248'
+      (3006, 0050) Contour Data                        DS: Array of 744 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.127341110301125646983633883357223556886
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '254'
+      (3006, 0050) Contour Data                        DS: Array of 762 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.283186528804244227653467955877744670492
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '268'
+      (3006, 0050) Contour Data                        DS: Array of 804 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.97382989528443289455795755495206024654
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '278'
+      (3006, 0050) Contour Data                        DS: Array of 834 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.166198896276928270079424028521522839742
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '318'
+      (3006, 0050) Contour Data                        DS: Array of 954 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.121998624672326300255011964498691606655
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '328'
+      (3006, 0050) Contour Data                        DS: Array of 984 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.165490228977927832824573694104322808278
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '362'
+      (3006, 0050) Contour Data                        DS: Array of 1086 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.329173105892425122351872851638172052112
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '358'
+      (3006, 0050) Contour Data                        DS: Array of 1074 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.29249325244660361626680781569569168674
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '366'
+      (3006, 0050) Contour Data                        DS: Array of 1098 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.249275274075405998147729700638710815580
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '364'
+      (3006, 0050) Contour Data                        DS: Array of 1092 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.17446590241218303990677182484853369425
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '370'
+      (3006, 0050) Contour Data                        DS: Array of 1110 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.126081740167012768220232977150751646801
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '230'
+      (3006, 0050) Contour Data                        DS: Array of 690 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.126081740167012768220232977150751646801
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '146'
+      (3006, 0050) Contour Data                        DS: Array of 438 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.20183944530491961840702993629630267972
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '220'
+      (3006, 0050) Contour Data                        DS: Array of 660 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.20183944530491961840702993629630267972
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '124'
+      (3006, 0050) Contour Data                        DS: Array of 372 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.217989865763773266222828785830477483624
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '220'
+      (3006, 0050) Contour Data                        DS: Array of 660 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.217989865763773266222828785830477483624
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '106'
+      (3006, 0050) Contour Data                        DS: Array of 318 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.215772475345689077929621194708072627691
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '218'
+      (3006, 0050) Contour Data                        DS: Array of 654 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.215772475345689077929621194708072627691
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '52'
+      (3006, 0050) Contour Data                        DS: Array of 156 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.199588341243171537589516962395646551933
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '216'
+      (3006, 0050) Contour Data                        DS: Array of 648 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.335128200612041571960793037480408479322
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '214'
+      (3006, 0050) Contour Data                        DS: Array of 642 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.182331285254785737792722711352603332447
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '208'
+      (3006, 0050) Contour Data                        DS: Array of 624 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.204403162873845879117986497130822893735
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '198'
+      (3006, 0050) Contour Data                        DS: Array of 594 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.34484908197658625700437675849777429512
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '188'
+      (3006, 0050) Contour Data                        DS: Array of 564 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.122750028922991024364424851663206471985
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '174'
+      (3006, 0050) Contour Data                        DS: Array of 522 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.7591454478192116520369449684486347882
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '158'
+      (3006, 0050) Contour Data                        DS: Array of 474 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.179814698347197912483774581779199873551
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '138'
+      (3006, 0050) Contour Data                        DS: Array of 414 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.260837392785075548976603423081550392844
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '108'
+      (3006, 0050) Contour Data                        DS: Array of 324 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.61150380502979527529559755853755280782
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '80'
+      (3006, 0050) Contour Data                        DS: Array of 240 elements
+      ---------
+   (3006, 0084) Referenced ROI Number               IS: '23'
+   ---------
+   (3006, 002a) ROI Display Color                   IS: [128, 64, 64]
+   (3006, 0040)  Contour Sequence  26 item(s) ---- 
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.331128844784708087432659356704480603096
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '74'
+      (3006, 0050) Contour Data                        DS: Array of 222 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.168809620755672545191767520905510986250
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '78'
+      (3006, 0050) Contour Data                        DS: Array of 234 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.209113240131923136152409901420318505249
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '76'
+      (3006, 0050) Contour Data                        DS: Array of 228 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.31352932976928884726595025922841030247
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '100'
+      (3006, 0050) Contour Data                        DS: Array of 300 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.235065078989797912030340787990252320141
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '102'
+      (3006, 0050) Contour Data                        DS: Array of 306 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.29347413049733558304658037848844431612
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '96'
+      (3006, 0050) Contour Data                        DS: Array of 288 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.259640437818008233561069778946439050133
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '108'
+      (3006, 0050) Contour Data                        DS: Array of 324 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.134551093327847054234423218775116242136
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '110'
+      (3006, 0050) Contour Data                        DS: Array of 330 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.127341110301125646983633883357223556886
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '120'
+      (3006, 0050) Contour Data                        DS: Array of 360 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.283186528804244227653467955877744670492
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '108'
+      (3006, 0050) Contour Data                        DS: Array of 324 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.97382989528443289455795755495206024654
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '122'
+      (3006, 0050) Contour Data                        DS: Array of 366 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.166198896276928270079424028521522839742
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '138'
+      (3006, 0050) Contour Data                        DS: Array of 414 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.121998624672326300255011964498691606655
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '146'
+      (3006, 0050) Contour Data                        DS: Array of 438 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.165490228977927832824573694104322808278
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '156'
+      (3006, 0050) Contour Data                        DS: Array of 468 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.329173105892425122351872851638172052112
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '156'
+      (3006, 0050) Contour Data                        DS: Array of 468 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.29249325244660361626680781569569168674
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '154'
+      (3006, 0050) Contour Data                        DS: Array of 462 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.249275274075405998147729700638710815580
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '158'
+      (3006, 0050) Contour Data                        DS: Array of 474 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.17446590241218303990677182484853369425
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '158'
+      (3006, 0050) Contour Data                        DS: Array of 474 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.126081740167012768220232977150751646801
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '160'
+      (3006, 0050) Contour Data                        DS: Array of 480 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.20183944530491961840702993629630267972
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '164'
+      (3006, 0050) Contour Data                        DS: Array of 492 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.217989865763773266222828785830477483624
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '164'
+      (3006, 0050) Contour Data                        DS: Array of 492 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.215772475345689077929621194708072627691
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '174'
+      (3006, 0050) Contour Data                        DS: Array of 522 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.199588341243171537589516962395646551933
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '174'
+      (3006, 0050) Contour Data                        DS: Array of 522 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.335128200612041571960793037480408479322
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '176'
+      (3006, 0050) Contour Data                        DS: Array of 528 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.182331285254785737792722711352603332447
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '176'
+      (3006, 0050) Contour Data                        DS: Array of 528 elements
+      ---------
+      (3006, 0016)  Contour Image Sequence  1 item(s) ---- 
+         (0008, 1150) Referenced SOP Class UID            UI: CT Image Storage
+         (0008, 1155) Referenced SOP Instance UID         UI: 1.3.6.1.4.1.14519.5.2.1.204403162873845879117986497130822893735
+         ---------
+      (3006, 0042) Contour Geometric Type              CS: 'CLOSED_PLANAR'
+      (3006, 0046) Number of Contour Points            IS: '176'
+      (3006, 0050) Contour Data                        DS: Array of 528 elements
+      ---------
+   (3006, 0084) Referenced ROI Number               IS: '26'
+   ---------
+(3006, 0080)  RT ROI Observations Sequence  5 item(s) ---- 
+   (3006, 0082) Observation Number                  IS: '2'
+   (3006, 0084) Referenced ROI Number               IS: '2'
+   (3006, 0085) ROI Observation Label               SH: 'Bladder'
+   (3006, 00a4) RT ROI Interpreted Type             CS: 'ORGAN'
+   (3006, 00a6) ROI Interpreter                     PN: ''
+   ---------
+   (3006, 0082) Observation Number                  IS: '11'
+   (3006, 0084) Referenced ROI Number               IS: '11'
+   (3006, 0085) ROI Observation Label               SH: 'Prostate'
+   (3006, 00a4) RT ROI Interpreted Type             CS: 'ORGAN'
+   (3006, 00a6) ROI Interpreter                     PN: ''
+   ---------
+   (3006, 0082) Observation Number                  IS: '3'
+   (3006, 0084) Referenced ROI Number               IS: '22'
+   (3006, 0085) ROI Observation Label               SH: 'Femur_Head_L'
+   (3006, 00a4) RT ROI Interpreted Type             CS: 'ORGAN'
+   (3006, 00a6) ROI Interpreter                     PN: ''
+   ---------
+   (3006, 0082) Observation Number                  IS: '8'
+   (3006, 0084) Referenced ROI Number               IS: '23'
+   (3006, 0085) ROI Observation Label               SH: 'Femur_Head_R'
+   (3006, 00a4) RT ROI Interpreted Type             CS: 'ORGAN'
+   (3006, 00a6) ROI Interpreter                     PN: ''
+   ---------
+   (3006, 0082) Observation Number                  IS: '0'
+   (3006, 0084) Referenced ROI Number               IS: '26'
+   (3006, 0085) ROI Observation Label               SH: 'Rectum'
+   (3006, 0086)  RT ROI Identification Code Sequence  1 item(s) ---- 
+      (0008, 0100) Code Value                          SH: '14544'
+      (0008, 0102) Coding Scheme Designator            SH: 'FMA'
+      (0008, 0103) Coding Scheme Version               SH: '3.2'
+      (0008, 0104) Code Meaning                        LO: 'Rectum'
+      (0008, 0105) Mapping Resource                    CS: '99VMS'
+      (0008, 0106) Context Group Version               DT: '20161209'
+      (0008, 010f) Context Identifier                  CS: 'VMS011'
+      (0008, 0117) Context UID                         UI: ''
+      (0008, 0118) Mapping Resource UID                UI: ''
+      (0008, 0122) Mapping Resource Name               LO: 'Varian Medical Systems'
+      ---------
+   (3006, 00a4) RT ROI Interpreted Type             CS: 'ORGAN'
+   (3006, 00a6) ROI Interpreter                     PN: ''
+   ---------
+(300e, 0002) Approval Status                     CS: 'UNAPPROVED'
