@@ -1,3 +1,4 @@
 /projetIRMStack   
 /App/logiciel/trainedModel/*
 /App/unetr/pretrained_models/*
+.env
