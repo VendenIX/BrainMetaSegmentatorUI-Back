@@ -64,6 +64,34 @@ function getStudyDicoms() {
         console.error('Please enter a study ID to get DICOMs.');
     }
 }
+
+function uploadRTStruct() {
+    // Modifier l'URL en fonction de l'adresse de votre API Flask
+    fetch(`http://localhost:5000/uploadRTStruct`, {
+        method: 'POST',
+        // Assurez-vous d'ajuster les headers et le corps de la requête selon ce que votre API Flask attend
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            // Vous pouvez ajouter ici des données si votre endpoint attend un corps de requête
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log(data);
+        alert("RTStruct uploaded successfully");
+    })
+    .catch(error => {
+        console.error('There was an error uploading the RTStruct:', error);
+        alert("Failed to upload RTStruct");
+    });
+}
 </script>
 </head>
 <body>
@@ -72,5 +100,6 @@ function getStudyDicoms() {
 <input type="text" id="studyId" placeholder="Enter Study ID">
 <button onclick="getStudyInfo()">Get Info About This Study</button>
 <button onclick="getStudyDicoms()">Get DICOMs for This Study</button>
+<button onclick="uploadRTStruct()">Upload RTStruct for This Study</button>
 </body>
 </html>

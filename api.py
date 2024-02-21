@@ -55,30 +55,29 @@ def get_study_dicoms(study_id):
         print(e)
         return jsonify({"error": "Server error"}), 500
 
-"""
-@app.route('/uploadRTStruct/<study_id>', methods=['POST'])
-def upload_rtstruct(study_id):
+@app.route('/uploadRTStruct', methods=['POST'])
+def upload_rtstruct():
     try:
-        # Simuler la vérification de l'existence d'un RTStruct pour l'étude
-        # Cette partie devra être implémentée en fonction de votre logique avec Orthanc
-        # Pour l'exemple, on suppose qu'aucun RTStruct n'existe (simulation)
-        rtstruct_exists = False  # Changez cette logique selon vos besoins
+        rtstruct_path = simulate_rtstruct_generation()
+        print(f"Uploading RTStruct from {rtstruct_path}")
         
-        if rtstruct_exists:
-            return jsonify({"error": "RTStruct already exists for this study"}), 409
+        with open(rtstruct_path, 'rb') as f:
+            files = {'file': (os.path.basename(rtstruct_path), f, 'application/dicom')}
+            response = requests.post(f"{ORTHANC_URL}/instances", files=files)
         
-        # Simuler l'upload d'un RTStruct mocké
-        rtstruct_path = "/path/to/mock/rtstruct/file.dcm"  # Chemin fictif pour l'exemple
-        print(f"Uploading RTStruct for study {study_id} from {rtstruct_path}")
-        
-        # Logique d'upload à implémenter ici
-        
-        return jsonify({"success": "RTStruct uploaded successfully"}), 200
+        # Vérifiez si la réponse contient un contenu avant de tenter de décoder le JSON
+        if response.status_code in [200, 202]:
+            try:
+                orthanc_response = response.json()  # Tentez de décoder le JSON uniquement si le contenu est présent
+            except ValueError:  # Gère l'absence de contenu JSON
+                orthanc_response = "No JSON content in response"
+            return jsonify({"success": "RTStruct uploaded successfully", "OrthancResponse": orthanc_response}), response.status_code
+        else:
+            return jsonify({"error": "Failed to upload RTStruct to Orthanc", "OrthancResponse": response.text}), response.status_code
     except Exception as e:
         print(e)
         return jsonify({"error": "Server error"}), 500
-"""
-
+    
 """
 @app.route('/segmentation', methods=['POST'])
 def segmentation():
