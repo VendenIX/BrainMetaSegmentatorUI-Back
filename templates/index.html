@@ -21,11 +21,34 @@ function getAllStudies() {
         console.error('There was an error fetching the studies:', error);
     });
 }
+
+function getStudyInfo() {
+    var studyId = document.getElementById('studyId').value;
+    if (studyId) {
+        // Modifier l'URL en fonction de l'adresse de votre API Flask
+        fetch(`http://localhost:5000/getStudy/${studyId}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log(data);
+        })
+        .catch(error => {
+            console.error('There was an error fetching the study info:', error);
+        });
+    } else {
+        console.error('Please enter a study ID.');
+    }
+}
 </script>
 </head>
 <body>
 
 <button onclick="getAllStudies()">Get All Studies</button>
-
+<input type="text" id="studyId" placeholder="Enter Study ID">
+<button onclick="getStudyInfo()">Get Info About This Study</button>
 </body>
 </html>
