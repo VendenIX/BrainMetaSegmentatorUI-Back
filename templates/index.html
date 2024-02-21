@@ -43,6 +43,27 @@ function getStudyInfo() {
         console.error('Please enter a study ID.');
     }
 }
+
+function getStudyDicoms() {
+    var studyId = document.getElementById('studyId').value;
+    if (studyId) {
+        fetch(`http://localhost:5000/getStudyDicoms/${studyId}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log(data);
+        })
+        .catch(error => {
+            console.error('There was an error fetching the DICOMs:', error);
+        });
+    } else {
+        console.error('Please enter a study ID to get DICOMs.');
+    }
+}
 </script>
 </head>
 <body>
@@ -50,5 +71,6 @@ function getStudyInfo() {
 <button onclick="getAllStudies()">Get All Studies</button>
 <input type="text" id="studyId" placeholder="Enter Study ID">
 <button onclick="getStudyInfo()">Get Info About This Study</button>
+<button onclick="getStudyDicoms()">Get DICOMs for This Study</button>
 </body>
 </html>
