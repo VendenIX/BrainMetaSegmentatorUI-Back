@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homepage</title>
+</head>
+<body>
+
+    <button onclick="redirectOHIF()">Ouvrir OHIF Viewer</button>
+
+    <form action="/upload" method="post">
+        <button type="submit">Envoyer le RTStruct au serveur</button>
+    </form>
+
+    <form action="/upload" method="get">
+        <button type="submit">Afficher les instances</button>
+    </form>
+
+    <form action="/upload" method="delete">
+        <button type="submit">Effacer l'instance</button>
+    </form>
+
+    <form action="/createRANDOM" method="post">
+        <button type="submit">Créer un patient random</button>
+    </form>
+
+    <form action="/etudes" method="get">
+        <button type="submit">Afficher les études</button>
+    </form>
+
+    <form action="/sessions" method="get">
+        <button type="submit">Afficher les sessions</button>
+    </form>
+
+    <form action="/metastases" method="get">
+        <button type="submit">Afficher les métastases</button>
+    </form>
+
+    <script>
+        function redirectOHIF() {
+            window.location.href = "ohif";
+        }
+    </script>
+
+</body>
+</html>

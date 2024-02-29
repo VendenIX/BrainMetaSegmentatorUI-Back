@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liste des Sessions</title>
+</head>
+<body>
+    <h1>Liste des Sessions</h1>
+    <table border="1">
+        <tr>
+            <th>ID de la Session</th>
+            <th>ID du Patient</th>
+            <th>Date d'Observation</th>
+        </tr>
+        {% for session in sessions %}
+        <tr>
+            <td>{{ session[0] }}</td>
+            <td>{{ session[1] }}</td>
+            <td>{{ session[2] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
+
