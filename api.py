@@ -1,8 +1,9 @@
 import os
 
+from BDD.MesuresSQLite import MesuresDB
 import requests
 from dotenv import load_dotenv
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, jsonify, g, render_template
 from flask_cors import CORS
 
 from mock import simulate_rtstruct_generation
@@ -12,7 +13,6 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app)
 ORTHANC_URL = os.getenv("ORTHANC_URL")
-RTSTRUCT_FILE_PATH = os.getenv("RTSTRUCT_FILE_PATH")
 
 @app.route('/getAllStudies', methods=['GET'])
 def get_all_studies():
@@ -60,23 +60,24 @@ def upload_rtstruct():
     try:
         rtstruct_path = simulate_rtstruct_generation()
         print(f"Uploading RTStruct from {rtstruct_path}")
-        
         with open(rtstruct_path, 'rb') as f:
             files = {'file': (os.path.basename(rtstruct_path), f, 'application/dicom')}
             response = requests.post(f"{ORTHANC_URL}/instances", files=files)
-        
-        # verifif si la réponse contient un contenu avant de tenter de décoder le JSON
         if response.status_code in [200, 202]:
-            try:
-                orthanc_response = response.json()  # décoder le JSON uniquement si le contenu est présent
-            except ValueError:  #si absence de contenu JSON
-                orthanc_response = "No JSON content in response"
-            return jsonify({"success": "RTStruct uploaded successfully", "OrthancResponse": orthanc_response}), response.status_code
+            # Après un envoi réussi, mettre à jour la base de données
+            db = get_db()
+            # Mock des données reçues par le modèle d'IA
+            # Ici faudra faire une bloucle for et ajouter toutes les métastases
+            data_from_ai = {"volume": 10.5, "diametre": 5.2, "slideDebut": 1, "slideFin": 10}
+            db.ajouter_metastase(**data_from_ai)
+            
+            return jsonify({"success": "RTStruct uploaded successfully"}), response.status_code
         else:
-            return jsonify({"error": "Failed to upload RTStruct to Orthanc", "OrthancResponse": response.text}), response.status_code
+            return jsonify({"error": "Failed to upload RTStruct to Orthanc"}), response.status_code
     except Exception as e:
         print(e)
         return jsonify({"error": "Server error"}), 500
+
     
 @app.route('/segmentation/<study_id>', methods=['POST'])
 def segmentation(study_id):
@@ -115,6 +116,20 @@ def upload_rtstruct_mocked(rtstruct_path):
     except Exception as e:
         print(e)
         return jsonify({"error": "Server error"}), 500
+    
+def get_db():
+    db = getattr(g, '_database', None)
+    if db is None:
+        db = g._database = MesuresDB("./BDD/mesures.db")
+    print('DB:', db.connexion)
+    return db
+
+@app.teardown_appcontext
+def close_db(error):
+    db = getattr(g, '_database', None)
+    if db is not None:
+        db.connexion.close()
+
 
 if __name__ == '__main__':
     app.run(debug=True)
