@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
     <title>Liste des Sessions</title>
 </head>
 <body>
@@ -12,15 +13,28 @@
             <th>ID de la Session</th>
             <th>ID du Patient</th>
             <th>Date d'Observation</th>
+            <th>Actions</th>
         </tr>
-        {% for session in sessions %}
+        {% for session_id, session in sessions.items() %}
         <tr>
-            <td>{{ session[0] }}</td>
-            <td>{{ session[1] }}</td>
-            <td>{{ session[2] }}</td>
+            <td>{{ session_id }}</td>
+            <td>{{ session['idPatient'] }}</td>
+            <td>{{ session['dateObservation'] }}</td>
+            <td><a href="/metastases/{{ session_id }}">Afficher les métastases</a></td>
         </tr>
         {% endfor %}
     </table>
+
+    <button onclick="goBack()">Retour</button>
+
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+
+    <form action="/" method="get">
+        <button type="submit">Accueil</button>
+    </form>
 </body>
 </html>
-

@@ -3,6 +3,7 @@ from BDD.MesuresSQLite import MesuresDB
 import requests
 
 app = Flask(__name__)
+app.static_folder = 'static'
 
 # URL de la base de données Orthanc qui contient les .dcm
 orthanc_url = 'http://localhost:8042'
@@ -97,6 +98,61 @@ def afficher_metastase():
         db = get_db()
         metastases = db.afficher_metastases()
     return render_template('metastases.html', metastases=metastases)
+
+# AFFICHER LES SESSIONS D'UN PATIENT
+@app.route('/sessions/<int:id_patient>', methods=['GET'])
+def afficher_sessions_patient(id_patient):
+    with app.app_context():
+        db = get_db()
+        sessions_dict = db.afficher_sessions_patient(id_patient)
+    return render_template('sessions.html', sessions=sessions_dict)
+
+# AFFICHER LES MÉTASTASES PAR SESSION
+@app.route('/metastases/<int:id_session>', methods=['GET'])
+def afficher_metastases_session(id_session):
+    with app.app_context():
+        db = get_db()
+        metastases = db.afficher_metastases_session(id_session)
+    return render_template('metastases.html', metastases=metastases)
+
+# AFFICHER LA PAGE D'ARBORESCENCE
+@app.route('/arborescence')
+def arborescence():
+    with app.app_context():
+        mesures_db = get_db()
+
+        # Récupérer tous les patients de la base de données
+        patients = {}
+
+        # Récupérer toutes les études de la base de données
+        etudes = mesures_db.afficher_etudes()
+
+        # Récupérer toutes les sessions de la base de données
+        sessions = mesures_db.afficher_sessions()
+
+        # Récupérer toutes les métastases de la base de données
+        metastases = mesures_db.afficher_metastases()
+
+        # Organiser les études, sessions et métastases par patient
+        for etude in etudes:
+            patient_id = etude[1]
+            if patient_id not in patients:
+                patients[patient_id] = {'etudes': [], 'sessions': {}}
+            patients[patient_id]['etudes'].append(etude)
+
+        for session_id, session_info in sessions.items():
+            patient_id = session_info['idPatient']
+            if patient_id in patients:
+                if session_id not in patients[patient_id]['sessions']:
+                    patients[patient_id]['sessions'][session_id] = {'session': session_info, 'metastases': []}
+
+        for metastase in metastases:
+            session_id = metastase[1]
+            for patient_id, patient_data in patients.items():
+                if session_id in patient_data['sessions']:
+                    patient_data['sessions'][session_id]['metastases'].append(metastase)
+
+        return render_template('arborescence.html', patients=patients)
 
 
 @app.route('/upload', methods=['GET', 'POST', 'DELETE'])

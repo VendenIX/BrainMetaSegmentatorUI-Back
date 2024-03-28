@@ -1,9 +1,32 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Liste des Études</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        h1 {
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+    </style>
 </head>
 <body>
     <h1>Liste des Études</h1>
@@ -14,6 +37,7 @@
             <th>ID de la Série</th>
             <th>ID du SOP</th>
             <th>Date de Traitement</th>
+            <th>Actions</th>
         </tr>
         {% for etude in etudes %}
         <tr>
@@ -22,8 +46,21 @@
             <td>{{ etude[2] }}</td>
             <td>{{ etude[3] }}</td>
             <td>{{ etude[4] }}</td>
+            <td><a href="/sessions/{{ etude[1] }}">Afficher les sessions</a></td>
         </tr>
         {% endfor %}
     </table>
+
+    <button onclick="goBack()">Retour</button>
+
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+
+    <form action="/" method="get">
+        <button type="submit">Accueil</button>
+    </form>
 </body>
 </html>
