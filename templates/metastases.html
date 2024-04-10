@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liste des Métastases</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        h1 {
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Liste des Métastases</h1>
+    <table border="1">
+        <tr>
+            <th>ID de la Métastase</th>
+            <th>ID de la Session</th>
+            <th>Volume</th>
+            <th>Diamètre</th>
+            <th>Slide Début</th>
+            <th>Slide Fin</th>
+        </tr>
+        {% for metastase in metastases %}
+        <tr>
+            <td>{{ metastase[0] }}</td>
+            <td>{{ metastase[1] }}</td>
+            <td>{{ metastase[2] }}</td>
+            <td>{{ metastase[3] }}</td>
+            <td>{{ metastase[4] }}</td>
+            <td>{{ metastase[5] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <button onclick="goBack()">Retour</button>
+
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+    
+    <form action="/" method="get">
+        <button type="submit">Accueil</button>
+    </form>
+    
+</body>
+</html>

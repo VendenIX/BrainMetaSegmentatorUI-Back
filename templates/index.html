@@ -1,107 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Get All Studies</title>
-<script>
-function getAllStudies() {
-    // Modifier l'URL en fonction de l'adresse de votre API Flask
-    fetch('http://localhost:5000/getAllStudies')
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-    })
-    .then(data => {
-        console.log(data);
-    })
-    .catch(error => {
-        console.error('There was an error fetching the studies:', error);
-    });
-}
-
-function getStudyInfo() {
-    var studyId = document.getElementById('studyId').value;
-    if (studyId) {
-        // Modifier l'URL en fonction de l'adresse de votre API Flask
-        fetch(`http://localhost:5000/getStudy/${studyId}`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log(data);
-        })
-        .catch(error => {
-            console.error('There was an error fetching the study info:', error);
-        });
-    } else {
-        console.error('Please enter a study ID.');
-    }
-}
-
-function getStudyDicoms() {
-    var studyId = document.getElementById('studyId').value;
-    if (studyId) {
-        fetch(`http://localhost:5000/getStudyDicoms/${studyId}`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log(data);
-        })
-        .catch(error => {
-            console.error('There was an error fetching the DICOMs:', error);
-        });
-    } else {
-        console.error('Please enter a study ID to get DICOMs.');
-    }
-}
-
-function performSegmentation() {
-    var studyId = document.getElementById('studyId').value;
-    if (studyId) {
-        fetch(`http://localhost:5000/segmentation/${studyId}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            // Pas besoin de corps de requête ici, car l'ID de l'étude est dans l'URL
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log(data);
-            alert("Segmentation and RTStruct upload completed successfully");
-        })
-        .catch(error => {
-            console.error('There was an error during segmentation or RTStruct upload:', error);
-            alert("Failed to complete segmentation or RTStruct upload");
-        });
-    } else {
-        console.error('Please enter a study ID.');
-        alert("Please enter a study ID.");
-    }
-}
-</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>Homepage</title>
 </head>
 <body>
 
-<button onclick="getAllStudies()">Get All Studies</button>
-<input type="text" id="studyId" placeholder="Enter Study ID">
-<button onclick="getStudyInfo()">Get Info About This Study</button>
-<button onclick="getStudyDicoms()">Get DICOMs for This Study</button>
-<button onclick="performSegmentation()">Perform Segmentation and Upload RTStruct</button>
+    <button onclick="redirectOHIF()">Ouvrir OHIF Viewer</button>
+
+    <form action="/upload" method="post">
+        <button type="submit">Envoyer le RTStruct au serveur</button>
+    </form>
+
+    <form action="/upload" method="get">
+        <button type="submit">Afficher les instances</button>
+    </form>
+
+    <form action="/upload" method="delete">
+        <button type="submit">Effacer l'instance</button>
+    </form>
+
+    <form action="/createRANDOM" method="post">
+        <button type="submit">Créer un patient random</button>
+    </form>
+
+    <form action="/etudes" method="get">
+        <button type="submit">Afficher les études</button>
+    </form>
+
+    <form action="/sessions" method="get">
+        <button type="submit">Afficher les sessions</button>
+    </form>
+
+    <form action="/metastases" method="get">
+        <button type="submit">Afficher les métastases</button>
+    </form>
+
+    <form action="/arborescence" method="get">
+        <button type="submit">Afficher l'arborescence</button>
+    </form>
+
+    <script>
+        function redirectOHIF() {
+            window.location.href = "ohif";
+        }
+    </script>
+
 </body>
 </html>
