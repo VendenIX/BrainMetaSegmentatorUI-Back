@@ -3,3 +3,4 @@
 /App/unetr/pretrained_models/*
 .env
 *.dcm
+/MetIA

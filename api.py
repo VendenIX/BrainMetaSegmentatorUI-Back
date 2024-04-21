@@ -1,4 +1,6 @@
 import os
+import shutil
+import tempfile
 
 import pydicom
 import requests
@@ -7,7 +9,7 @@ from flask import Flask, g, jsonify, render_template, request
 from flask_cors import CORS
 
 from BDD.MesuresSQLite import MesuresDB
-from mock import simulate_rtstruct_generation
+from mock import simulate_modele_transform, simulate_rtstruct_generation
 
 load_dotenv()
 
@@ -91,6 +93,35 @@ def upload_dicom():
     except Exception as e:
         print(f"Erreur lors du traitement du fichier DICOM : {e}")
         return jsonify({"error": "Erreur serveur"}), 500
+    
+@app.route('/delete-dicom-instance/<study_instance_uid>', methods=['DELETE'])
+def delete_dicom_instance(study_instance_uid):
+    orthanc_study_id = find_orthanc_study_id_by_study_instance_uid(study_instance_uid)
+    print("Je supprime l'instance DICOM avec StudyInstanceUID", study_instance_uid, "et ID Orthanc", orthanc_study_id)
+
+    try:
+        # Envoie une requête DELETE à Orthanc
+        response = requests.delete(f"{ORTHANC_URL}/instances/{orthanc_study_id}")
+        print("---------------------------------")
+        print(response)
+        print("---------------------------------")
+        # Vérifie si la suppression a réussi
+        if response.status_code == 200:
+            print("enfaite")
+            return jsonify({"success": "Instance DICOM supprimée avec succès"}), 200
+        else:
+            print("bas non")
+            print(response.text)
+            print(response.status_code)
+            return jsonify({
+                "error": "Failed to delete DICOM instance",
+                "status_code": response.status_code,
+                "response_body": response.text
+            }), response.status_code
+
+    except requests.exceptions.RequestException as e:
+        # Gestion des erreurs de connexion ou autres erreurs de réseau
+        return jsonify({"error": "Erreur lors de la connexion à Orthanc", "exception": str(e)}), 500
 
 
 @app.route('/segmentation/<study_instance_uid>', methods=['POST'])
@@ -118,12 +149,67 @@ def segmentation(study_instance_uid):
     except requests.exceptions.RequestException as e:
         print(f"Erreur lors du traitement du fichier DICOM : {e}")
         return jsonify({"error": "Server error"}), 500
+    
+
+
+@app.route('/seuillage/<study_instance_uid>', methods=['POST'])
+def apply_seuillage_to_study(study_instance_uid):
+    orthanc_study_id = find_orthanc_study_id_by_study_instance_uid(study_instance_uid)
+    if not orthanc_study_id:
+        return jsonify({"error": "StudyInstanceUID not found"}), 404
+
+    try:
+        response = requests.get(f"{ORTHANC_URL}/studies/{orthanc_study_id}/instances")
+        if response.status_code != 200:
+            return jsonify({"error": "Failed to retrieve DICOM instances"}), response.status_code
+        
+        dicom_instances = response.json()
+        temp_dir = tempfile.mkdtemp()
+
+        file_paths = []
+        for instance in dicom_instances:
+            instance_id = instance['ID']
+            dicom_file = requests.get(f"{ORTHANC_URL}/instances/{instance_id}/file", stream=True)
+            temp_file_path = os.path.join(temp_dir, f"{instance_id}.dcm")
+            with open(temp_file_path, 'wb') as f:
+                for chunk in dicom_file:
+                    f.write(chunk)
+            file_paths.append(temp_file_path)
+
+        # Apply the seuillage transformation
+        modified_dicoms = simulate_modele_transform(file_paths)
+        print("test")
+        # Optionally upload modified DICOMs back to Orthanc
+
+        delete_dicom_instance(study_instance_uid)
+        
+        """
+        for modified_dicom in modified_dicoms:
+            print("Uploading")
+            temp_file_path = os.path.join(temp_dir, modified_dicom.filename)
+            modified_dicom.save_as(temp_file_path)
+            with open(temp_file_path, 'rb') as f:
+                files = {'file': (os.path.basename(temp_file_path), f, 'application/dicom')}
+                upload_response = requests.post(f"{ORTHANC_URL}/instances", files=files)
+                print("Upload response:", upload_response.status_code)
+                if upload_response.status_code not in [200, 202]:
+                    print("Failed to upload modified DICOM file to Orthanc:", upload_response.status_code)
+        """
+        shutil.rmtree(temp_dir)  # Clean up temporary files
+
+    except requests.exceptions.RequestException as e:
+        return jsonify({"error": str(e)}), 500
+
+    return jsonify({"success": "Seuillage applied and DICOMs uploaded."}), 200
+
+
 
     
 def find_orthanc_study_id_by_study_instance_uid(study_instance_uid):
     studies_response = requests.get(f"{ORTHANC_URL}/studies")
     
     if studies_response.status_code == 200:
+        print("okokokokokokokok")
         studies = studies_response.json()
         
         for study in studies:

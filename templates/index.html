@@ -94,6 +94,36 @@ function performSegmentation() {
         alert("Please enter a study ID.");
     }
 }
+
+function performSeuillage() {
+    var studyId = document.getElementById('studyId').value;
+    if (studyId) {
+        fetch(`http://localhost:5000/seuillage/${studyId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log(data);
+            alert("Seuillage completed successfully");
+        })
+        .catch(error => {
+            console.error('There was an error during the seuillage process:', error);
+            alert("Failed to complete seuillage");
+        });
+    } else {
+        console.error('Please enter a study ID.');
+        alert("Please enter a study ID.");
+    }
+}
+
 </script>
 </head>
 <body>
@@ -103,5 +133,7 @@ function performSegmentation() {
 <button onclick="getStudyInfo()">Get Info About This Study</button>
 <button onclick="getStudyDicoms()">Get DICOMs for This Study</button>
 <button onclick="performSegmentation()">Perform Segmentation and Upload RTStruct</button>
+<button onclick="performSeuillage()">Perform Seuillage</button>
+
 </body>
 </html>
