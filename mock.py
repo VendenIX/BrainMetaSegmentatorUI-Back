@@ -1,44 +1,20 @@
 import os
+import sys
 import time as t
+from typing import List
 
 import matplotlib.pyplot as plt
+import nibabel as nib
 import numpy as np
 import pydicom
 import torch
+from pydicom.dataset import Dataset
 from pydicom.encaps import encapsulate
-from MetIA.Modele import Net 
+from scipy.ndimage import gaussian_filter, sobel
 
-import nibabel as nib
+from rt_utils import RTStructBuilder
 
 PATH_MODEL = './MetIA/resultsult/'
-
-def simulate_modele_transform(file_paths):
-    modified_dicoms = []  # Liste pour stocker les objets DICOM modifiés
-
-    for file_path in file_paths:
-        # Chargement du fichier DICOM
-        dicom_data = pydicom.dcmread(file_path)
-
-        # Extraction de l'image des données DICOM
-        image = dicom_data.pixel_array
-        
-        # Application du seuillage simple
-        thresholded_image = np.where(image > 1000, image, 0)
-
-        # Vérifiez si les données sont compressées et encapsulez-les si nécessaire
-        if dicom_data.file_meta.TransferSyntaxUID in [pydicom.uid.JPEGBaseline, pydicom.uid.JPEGExtended, pydicom.uid.JPEG2000]:
-            # Encapsulate the modified data
-            dicom_data.PixelData = encapsulate([thresholded_image.tobytes()])
-        else:
-            dicom_data.PixelData = thresholded_image.tobytes()
-
-        dicom_data.Rows, dicom_data.Columns = thresholded_image.shape
-        
-        # Ajout de l'objet DICOM modifié à la liste
-        modified_dicoms.append(dicom_data)
-    
-    # Retourne la liste des données DICOM modifiées
-    return modified_dicoms
 
 
 def simulate_rtstruct_generation():
@@ -53,19 +29,51 @@ def simulate_rtstruct_generation():
     rtstruct_path = '/home/romain/Documents/P_R_O_J_E_C_T_S/projetIRM/BrainMetaSegmentatorUI-Back/1-1.dcm'
     return rtstruct_path
 
+# pour détecter les contours d'une image DICOM
+def detect_contours(image):
+    """
+    Si tu ne comprends rien :  
+    Un filtre de Sobel est appliqué pour trouver les gradients dans les deux directions x et y. 
+    Le gradient total (magnitude) est calculé et un seuil est appliqué pour obtenir un masque de contour.
+    """
+    
+    # lissage de l'image pour réduire le bruit avant la détection des contours
+    smoothed_image = gaussian_filter(image, sigma=2)
+    
+    # calcul du gradient de l'image lissée
+    sx = sobel(smoothed_image, axis=0, mode='constant')
+    sy = sobel(smoothed_image, axis=1, mode='constant')
+    sobel_mag = np.hypot(sx, sy)
+    
+    # seuil de détection du contour
+    threshold = np.percentile(sobel_mag, 95)
+    
+    # matrice boolenne
+    return sobel_mag > threshold
 
-def prediction(ArrayDicoms):
-    # conversion des dicoms en nifti 
-    # ArrayDicoms : liste des dicoms
-    # prediction : liste des nifti
-    prediction = []
-    for dicom in ArrayDicoms:
-        # co
+def simulate_rtstruct_generation2(dicom_datasets: List[Dataset]):
 
-    # prediction du modele, recharger le modele : 
-    model = Net()
-    model.load_state_dict(torch.load(PATH_MODEL)) 
-    model.eval()
-    # prediction : application du modele sur les images converties en nifti
+    dicom_files = dicom_datasets
+    # lire et trier les fichiers dicoms par 'InstanceNumber' #si c pas fait, les rois corespondront pas aux dicoms
+    dicom_files.sort(key=lambda x: x.InstanceNumber if 'InstanceNumber' in dir(x) else 0)
+    # creation du rtstruct vierge
+    rtstruct = RTStructBuilder.create_new_from_memory(dicom_datasets)
 
-    return prediction
+
+    # init du masque 3D basé sur le nombre de fichiers et la taille des images
+    num_slices = len(dicom_files)
+    mask_shape = (dicom_files[0].Rows, dicom_files[0].Columns, num_slices)
+    full_mask = np.zeros(mask_shape, dtype=bool)
+
+    # pour chaque fichier dicom :
+    for i, dicom_data in enumerate(dicom_files):
+        # calculer le masque correspondant et le mettre dans le masque 3D
+        image = dicom_data.pixel_array
+        contour_mask = detect_contours(image)
+        full_mask[:, :, i] = contour_mask  # remplissage du masque 3D
+
+    # ajouter le masque au fichier RTStruct
+    rtstruct.add_roi(mask=full_mask, color=[255, 0, 0], name='Brain Contours')
+
+    # sauvegarde du fichier rtstruct
+    return rtstruct

@@ -1,15 +1,18 @@
 import os
 import shutil
 import tempfile
+from io import BytesIO
+from typing import List
 
 import pydicom
 import requests
 from dotenv import load_dotenv
 from flask import Flask, g, jsonify, render_template, request
 from flask_cors import CORS
+from pydicom.dataset import Dataset
 
 from BDD.MesuresSQLite import MesuresDB
-from mock import simulate_modele_transform, simulate_rtstruct_generation
+from mock import simulate_rtstruct_generation2
 
 load_dotenv()
 
@@ -133,78 +136,39 @@ def segmentation(study_instance_uid):
         return jsonify({"error": "StudyInstanceUID not found"}), 404
 
     try:
-        # Utiliser l'ID Orthanc pour récupérer les instances DICOM pour l'étude spécifiée
-        response = requests.get(f"{ORTHANC_URL}/studies/{orthanc_study_id}/instances")
-        if response.status_code == 200:
-            dicom_instances = response.json()
-            print("DICOM Instances for StudyInstanceUID", study_instance_uid, ":", dicom_instances)
-            
-            # Ici, ajouter logique de traitement des images DICOM récupérées
-            # Pour le moment, on simule la génération du RTStruct
-            rtstruct_path = simulate_rtstruct_generation()  # mock
-            
-            return upload_rtstruct_mocked(rtstruct_path)
-        else:
-            return jsonify({"error": "Failed to retrieve DICOM instances"}), response.status_code
-    except requests.exceptions.RequestException as e:
-        print(f"Erreur lors du traitement du fichier DICOM : {e}")
-        return jsonify({"error": "Server error"}), 500
-    
-
-
-@app.route('/seuillage/<study_instance_uid>', methods=['POST'])
-def apply_seuillage_to_study(study_instance_uid):
-    orthanc_study_id = find_orthanc_study_id_by_study_instance_uid(study_instance_uid)
-    if not orthanc_study_id:
-        return jsonify({"error": "StudyInstanceUID not found"}), 404
-
-    try:
+        # Récupérer les métadonnées des instances DICOM pour l'étude spécifiée
         response = requests.get(f"{ORTHANC_URL}/studies/{orthanc_study_id}/instances")
         if response.status_code != 200:
             return jsonify({"error": "Failed to retrieve DICOM instances"}), response.status_code
-        
-        dicom_instances = response.json()
-        temp_dir = tempfile.mkdtemp()
 
-        file_paths = []
-        for instance in dicom_instances:
+        # Extraire les identifiants des instances DICOM à partir de la réponse JSON
+        instances = response.json()
+        dicom_data = []
+
+        # Télécharger chaque fichier DICOM en utilisant son identifiant
+        for instance in instances:
             instance_id = instance['ID']
-            dicom_file = requests.get(f"{ORTHANC_URL}/instances/{instance_id}/file", stream=True)
-            temp_file_path = os.path.join(temp_dir, f"{instance_id}.dcm")
-            with open(temp_file_path, 'wb') as f:
-                for chunk in dicom_file:
-                    f.write(chunk)
-            file_paths.append(temp_file_path)
+            dicom_response = requests.get(f"{ORTHANC_URL}/instances/{instance_id}/file", stream=True)
 
-        # Apply the seuillage transformation
-        modified_dicoms = simulate_modele_transform(file_paths)
-        print("test")
-        # Optionally upload modified DICOMs back to Orthanc
+            if dicom_response.status_code == 200:
+                # Vous pouvez ici charger les données DICOM directement dans pydicom si nécessaire
+                dicom_file = pydicom.dcmread(BytesIO(dicom_response.content))
+                dicom_data.append(dicom_file)
+            else:
+                print(f"Failed to download DICOM file for instance ID {instance_id}")
 
-        delete_dicom_instance(study_instance_uid)
-        
-        """
-        for modified_dicom in modified_dicoms:
-            print("Uploading")
-            temp_file_path = os.path.join(temp_dir, modified_dicom.filename)
-            modified_dicom.save_as(temp_file_path)
-            with open(temp_file_path, 'rb') as f:
-                files = {'file': (os.path.basename(temp_file_path), f, 'application/dicom')}
-                upload_response = requests.post(f"{ORTHANC_URL}/instances", files=files)
-                print("Upload response:", upload_response.status_code)
-                if upload_response.status_code not in [200, 202]:
-                    print("Failed to upload modified DICOM file to Orthanc:", upload_response.status_code)
-        """
-        shutil.rmtree(temp_dir)  # Clean up temporary files
+        print("DICOM files retrieved and processed successfully.")
+        #print(dicom_data[0])
+        rtstruct = simulate_rtstruct_generation2(dicom_data)  # mock
+        print("mon rtstruct c'est cela")
+        print(rtstruct)
+        upload_rtstruct(rtstruct)
 
+        return jsonify({"success": "DICOM files retrieved and processed successfully."}), 200
     except requests.exceptions.RequestException as e:
-        return jsonify({"error": str(e)}), 500
-
-    return jsonify({"success": "Seuillage applied and DICOMs uploaded."}), 200
+        return jsonify({"error": f"Server error: {str(e)}"}), 500
 
 
-
-    
 def find_orthanc_study_id_by_study_instance_uid(study_instance_uid):
     studies_response = requests.get(f"{ORTHANC_URL}/studies")
     
@@ -228,7 +192,8 @@ def find_orthanc_study_id_by_study_instance_uid(study_instance_uid):
     
     return None
     
-def upload_rtstruct_mocked(rtstruct_path):
+"""
+def upload_rtstruct(rtstruct_path):
     try:
         print(f"Uploading RTStruct from {rtstruct_path}")
         
@@ -244,6 +209,45 @@ def upload_rtstruct_mocked(rtstruct_path):
     except Exception as e:
         print(e)
         return jsonify({"error": "Server error"}), 500
+"""
+
+def upload_rtstruct(rtstruct):
+    buffer = rtstruct.save_to_memory()  # Récupère le buffer en mémoire contenant le RTStruct
+    print("Uploading RTStruct...")
+    print(buffer)
+    try:
+        files = {'file': ('rtstruct.dcm', buffer, 'application/dicom')}
+        response = requests.post(f"{ORTHANC_URL}/instances", files=files)
+
+        if response.status_code in [200, 202]:
+            orthanc_response = response.json() if response.content else "No JSON content in response"
+            return jsonify({"success": "RTStruct uploaded successfully", "OrthancResponse": orthanc_response}), response.status_code
+        else:
+            return jsonify({"error": "Failed to upload RTStruct to Orthanc", "OrthancResponse": response.text}), response.status_code
+    except Exception as e:
+        print(e)
+        return jsonify({"error": "Server error"}), 500
+    
+
+def load_dicom_datasets(dicom_folder_path: str) -> List[Dataset]:
+    """
+    Charge tous les fichiers DICOM d'un dossier donné en datasets pydicom.
+    """
+    dicom_datasets = []
+    for filename in os.listdir(dicom_folder_path):
+        if filename.endswith('.dcm'):
+            file_path = os.path.join(dicom_folder_path, filename)
+            try:
+                ds = pydicom.dcmread(file_path)
+                dicom_datasets.append(ds)
+            except Exception as e:
+                print(f"Erreur lors de la lecture du fichier DICOM {filename}: {e}")
+                continue  # ou lever une exception selon les besoins de votre application
+
+    if not dicom_datasets:
+        raise Exception("Aucun fichier DICOM valide trouvé dans le dossier spécifié.")
+
+    return dicom_datasets
     
 def get_db():
     db = getattr(g, '_database', None)
