@@ -1,0 +1,4 @@
+dataclasses
+numpy
+opencv-python>=4.0.0
+pydicom
