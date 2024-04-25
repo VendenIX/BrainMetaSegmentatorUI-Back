@@ -4,3 +4,5 @@
 .env
 *.dcm
 /MetIA
+./Orthanc/orthanc_db/*
+/Orthanc/orthanc_db/*
