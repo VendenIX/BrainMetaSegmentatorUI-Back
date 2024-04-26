@@ -1,8 +1,10 @@
 import os
 import shutil
 import tempfile
-
+from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
+
+import json
 
 from monai.losses import DiceCELoss
 from monai.inferers import sliding_window_inference
@@ -44,10 +46,39 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 torch.backends.cudnn.benchmark = True
 print_config()
 
+
 directory = os.environ.get("MONAI_DATA_DIRECTORY")
-root_dir = tempfile.mkdtemp() if directory is None else directory
+root_dir = './'
 print(root_dir)
 
+base_dir = "dataset/"
+img_paths = []
+mask_paths = []
+
+for patient_folder in os.listdir(base_dir):
+    patient_path = os.path.join(base_dir, patient_folder)
+    
+    img_path = os.path.join(patient_path, "image.nii.gz")
+    mask_path = os.path.join(patient_path, "mask_meta.nii.gz")
+    
+    if os.path.exists(img_path) and os.path.exists(mask_path):
+        img_paths.append(img_path)
+        mask_paths.append(mask_path)    
+    
+    
+train_img_paths, temp_img_paths, train_mask_paths, temp_mask_paths = train_test_split(img_paths, mask_paths, test_size=0.2, random_state=42)
+
+# Redivision de la validation et du test en deux parties
+
+val_img_paths, test_img_paths, val_mask_paths, test_mask_paths = train_test_split(temp_img_paths, temp_mask_paths, test_size=0.5, random_state=42)
+
+
+
+data_split = {
+    "training" : {"image" : train_img_paths, "label" : train_mask_paths},
+    "validation" : {"image" : val_img_paths, "label" : val_mask_paths},
+    "test" : {"image" : test_img_paths, "label" : test_mask_paths}
+}
 
 
 class Net(pytorch_lightning.LightningModule):
@@ -56,7 +87,7 @@ class Net(pytorch_lightning.LightningModule):
 
         self._model = UNETR(
             in_channels=1,
-            out_channels=14,
+            out_channels=6,
             img_size=(96, 96, 96),
             feature_size=16,
             hidden_size=768,
@@ -70,12 +101,15 @@ class Net(pytorch_lightning.LightningModule):
         ).to(device)
 
         self.loss_function = DiceCELoss(to_onehot_y=True, softmax=True)
-        self.post_pred = AsDiscrete(argmax=True, to_onehot=14)
-        self.post_label = AsDiscrete(to_onehot=14)
+        #self.post_pred = AsDiscrete(argmax=True, to_onehot=14)
+        #self.post_label = AsDiscrete(to_onehot=14)
+        self.post_pred = AsDiscrete(argmax=True, to_onehot=True, num_classes=6)
+        self.post_label = AsDiscrete(to_onehot=True, num_classes=6)
+
         self.dice_metric = DiceMetric(include_background=False, reduction="mean", get_not_nans=False)
         self.best_val_dice = 0
         self.best_val_epoch = 0
-        self.max_epochs = 1300
+        self.max_epochs =1
         self.check_val = 30
         self.warmup_epochs = 20
         self.metric_values = []
@@ -86,12 +120,6 @@ class Net(pytorch_lightning.LightningModule):
         return self._model(x)
 
     def prepare_data(self):
-        # prepare data
-        data_dir = "./dataset/dataset0/"
-        split_json = "dataset_0.json"
-        datasets = data_dir + split_json
-        datalist = load_decathlon_datalist(datasets, True, "training")
-        val_files = load_decathlon_datalist(datasets, True, "validation")
 
         train_transforms = Compose(
             [
@@ -169,20 +197,19 @@ class Net(pytorch_lightning.LightningModule):
                     pixdim=(1.5, 1.5, 2.0),
                     mode=("bilinear", "nearest"),
                 ),
-                # ResizeOrDoNothingd(keys=["image", "label"], max_spatial_size=(342, 342, 104)), # ramène l'image à la taille maximale acceptée par le modèle
-                ResizeOrDoNothingd(keys=["image", "label"], max_spatial_size=(114, 114, 104))
+                ResizeOrDoNothingd(keys=["image", "label"], max_spatial_size=(96, 96, 96)), # ramène l'image à la taille maximale acceptée par le modèle
             ]
         )
 
         self.train_ds = CacheDataset(
-            data=datalist,
+            data= [{'image' : img, "label": lbl} for img, lbl in zip(data_split['training']['image'], data_split['training']['label'])],
             transform=train_transforms,
             cache_num=24,
             cache_rate=1.0,
             num_workers=8,
         )
         self.val_ds = CacheDataset(
-            data=val_files,
+            data= [{'image' : img, "label": lbl} for img, lbl in zip(data_split['validation']['image'], data_split['validation']['label'])],
             transform=val_transforms,
             cache_num=6,
             cache_rate=1.0,
@@ -209,7 +236,7 @@ class Net(pytorch_lightning.LightningModule):
         return optimizer
 
     def training_step(self, batch, batch_idx):
-        images, labels = (batch["image"].cuda(), batch["label"].cuda())
+        images, labels = (batch["image"], batch["label"])
         output = self.forward(images)
         loss = self.loss_function(output, labels)
         tensorboard_logs = {"train_loss": loss.item()}
@@ -240,6 +267,10 @@ class Net(pytorch_lightning.LightningModule):
         mean_val_dice = self.dice_metric.aggregate().item()
         self.dice_metric.reset()
         mean_val_loss = torch.tensor(val_loss / num_items)
+        
+        # log val loss for modelcheckpoint to monitor
+        self.log('val_loss', mean_val_loss, on_epoch=True, prog_bar=True, logger=True)
+        
         tensorboard_logs = {
             "val_dice": mean_val_dice,
             "val_loss": mean_val_loss,
@@ -253,24 +284,29 @@ class Net(pytorch_lightning.LightningModule):
             f"\nbest mean dice: {self.best_val_dice:.4f} "
             f"at epoch: {self.best_val_epoch}"
         )
+    
         self.metric_values.append(mean_val_dice)
-        self.validation_step_outputs.clear() 
+        self.validation_step_outputs.clear()  # free memory
         return {"log": tensorboard_logs}
 
 
-
-
-if __name__=="__main__":
+if __name__ == "__main__":
     net = Net()
+
     slice_map = {
-        "img0035.nii.gz": 143,
-        "img0036.nii.gz": 103,
-        "img0037.nii.gz": 97,
-        "img0038.nii.gz": 91,
-        "img0039.nii.gz": 25,
-        "img0040.nii.gz": 101,
+            # "dataset/201709127/image.nii.gz" : 28.899,
+            # "dataset/201704321/image.nii.gz" : 31.706,
+            # "dataset/201709668/image.nii.gz" : 41.868,
+            # "dataset/201705956/image.nii.gz" : 54.147,
+            "image.nii.gz" : 20,
+            # "dataset/201708552/image.nii.gz" : 47.003,
+            # "dataset/201707259/image.nii.gz" : 56.608,
+            # "dataset/201709600/image.nii.gz" : 26.502,
+            # "dataset/201705438/image.nii.gz" : 9.831,
+            # "dataset/201709795/image.nii.gz" : 29.178,
     }
-    case_num = 4
+    case_num = 0
+    net.load_from_checkpoint(os.path.join(root_dir, "best_checkpoint.ckpt"))
     net.eval()
     net.to(device)
     net.prepare_data()
