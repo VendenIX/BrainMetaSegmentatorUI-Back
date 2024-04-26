@@ -129,6 +129,9 @@ def afficher_metastases_session(id_session):
 # AFFICHER LA PAGE D'ARBORESCENCE
 @app.route('/arborescence')
 def arborescence():
+
+    response_type = request.args.get('response_type')
+
     with app.app_context():
         mesures_db = get_db()
 
@@ -163,7 +166,11 @@ def arborescence():
                 if session_id in patient_data['sessions']:
                     patient_data['sessions'][session_id]['metastases'].append(metastase)
 
-        return render_template('arborescence.html', patients=patients)
+        if response_type == 'json':  # Si le paramètre de la requête est "json"
+            return jsonify({'patients': patients})
+        else:  # Par défaut, retourne un template HTML
+            return render_template('arborescence.html', patients=patients)
+
 
 
 ## REQUETES ORTHANC
@@ -298,7 +305,6 @@ def upload_rtstruct_mocked(rtstruct_path):
     except Exception as e:
         print(e)
         return jsonify({"error": "Server error"}), 500
-
 
 if __name__ == '__main__':
     app.run(debug=True)
