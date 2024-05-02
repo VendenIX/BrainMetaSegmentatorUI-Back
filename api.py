@@ -6,7 +6,6 @@ from typing import List
 
 import pydicom
 import requests
-from dotenv import load_dotenv
 from flask import Flask, g, jsonify, render_template, request
 from flask_cors import CORS
 from pydicom.dataset import Dataset
@@ -14,11 +13,9 @@ from pydicom.dataset import Dataset
 from BDD.MesuresSQLite import MesuresDB
 from mock import simulate_rtstruct_generation2
 
-load_dotenv()
-
 app = Flask(__name__)
 CORS(app)
-ORTHANC_URL = os.getenv("ORTHANC_URL")
+ORTHANC_URL = "http://localhost:8042"
 
 @app.route('/getAllStudies', methods=['GET'])
 def get_all_studies():
@@ -97,25 +94,18 @@ def upload_dicom():
         print(f"Erreur lors du traitement du fichier DICOM : {e}")
         return jsonify({"error": "Erreur serveur"}), 500
     
-@app.route('/delete-dicom-instance/<study_instance_uid>', methods=['DELETE'])
-def delete_dicom_instance(study_instance_uid):
+@app.route('/delete-study/<study_instance_uid>', methods=['DELETE'])
+def delete_study(study_instance_uid):
     orthanc_study_id = find_orthanc_study_id_by_study_instance_uid(study_instance_uid)
     print("Je supprime l'instance DICOM avec StudyInstanceUID", study_instance_uid, "et ID Orthanc", orthanc_study_id)
-
+    
     try:
         # Envoie une requête DELETE à Orthanc
-        response = requests.delete(f"{ORTHANC_URL}/instances/{orthanc_study_id}")
-        print("---------------------------------")
-        print(response)
-        print("---------------------------------")
+        response = requests.delete(f"{ORTHANC_URL}/studies/{orthanc_study_id}")
         # Vérifie si la suppression a réussi
         if response.status_code == 200:
-            print("enfaite")
             return jsonify({"success": "Instance DICOM supprimée avec succès"}), 200
         else:
-            print("bas non")
-            print(response.text)
-            print(response.status_code)
             return jsonify({
                 "error": "Failed to delete DICOM instance",
                 "status_code": response.status_code,
