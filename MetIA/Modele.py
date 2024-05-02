@@ -291,45 +291,85 @@ class Net(pytorch_lightning.LightningModule):
 
 
 if __name__ == "__main__":
-    net = Net()
+    #     net = Net()
 
-    slice_map = {
-            # "dataset/201709127/image.nii.gz" : 28.899,
-            # "dataset/201704321/image.nii.gz" : 31.706,
-            # "dataset/201709668/image.nii.gz" : 41.868,
-            # "dataset/201705956/image.nii.gz" : 54.147,
-            "image.nii.gz" : 20,
-            # "dataset/201708552/image.nii.gz" : 47.003,
-            # "dataset/201707259/image.nii.gz" : 56.608,
-            # "dataset/201709600/image.nii.gz" : 26.502,
-            # "dataset/201705438/image.nii.gz" : 9.831,
-            # "dataset/201709795/image.nii.gz" : 29.178,
-    }
-    case_num = 0
-    net.load_from_checkpoint(os.path.join(root_dir, "best_checkpoint.ckpt"))
-    net.eval()
-    net.to(device)
-    net.prepare_data()
 
-    with torch.no_grad():
-            img_name = os.path.split(net.val_ds[case_num]['image_meta_dict']['filename_or_obj'])[-1]
-            img = net.val_ds[case_num]["image"]
-            label = net.val_ds[case_num]["label"]
-            val_inputs = torch.unsqueeze(torch.from_numpy(img), 1).to(device)
-            print(val_inputs.shape)
-            val_labels = torch.unsqueeze(torch.from_numpy(img), 1).to(device)
-            print(val_labels.shape)
+    #     slice_map = {
+    #             # "dataset/201709127/image.nii.gz" : 28.899,
+    #             # "dataset/201704321/image.nii.gz" : 31.706,
+    #             # "dataset/201709668/image.nii.gz" : 41.868,
+    #             # "dataset/201705956/image.nii.gz" : 54.147,
+    #             "image.nii.gz" : 20,
+    #             # "dataset/201708552/image.nii.gz" : 47.003,
+    #             # "dataset/201707259/image.nii.gz" : 56.608,
+    #             # "dataset/201709600/image.nii.gz" : 26.502,
+    #             # "dataset/201705438/image.nii.gz" : 9.831,
+    #             # "dataset/201709795/image.nii.gz" : 29.178,
+    #     }
+    #     case_num = 0
+
+    #     # net.load_from_checkpoint(os.path.join(root_dir, "checkpoint-epoch=1599-val_loss=0.225.ckpt"))
+
+    #     # Load the checkpoint and adjust the state dict if necessary
+    #     checkpoint_path = os.path.join(root_dir, "checkpoint-epoch=1599-val_loss=0.225.ckpt")
+    #     # Load the checkpoint
+    #     checkpoint = torch.load(checkpoint_path, map_location=torch.device('cpu'))
+
+    #     # Retrieve state_dict from checkpoint
+    #     state_dict = checkpoint['state_dict']
+
+    #     # Ajuster le state_dict pour correspondre à la structure du modèle
+    #     new_state_dict = {}
+    #     for key, value in net.state_dict().items():
+    #         #Ajout du backbone.0. au début de chaque clé du state_dict pour correspondre à la structure du modèle
+    #         new_key = 'backbone.0.' + key
+    #         if new_key in state_dict:
+    #             new_state_dict[key] = state_dict[new_key]
+    #         else:
+    #             #Si la clé n'est pas trouvée, on utilise la clé originale
+    #             new_state_dict[key] = value
+
+    #     # Chargement du state_dict ajusté dans le modèle
+    #     try:
+    #         net.load_state_dict(new_state_dict, strict=True)
+    #     except RuntimeError as e:
+    #         print(f"Could not load model state dict due to: {e}")
+
+    #     # Set to evaluation mode
+    #     net.eval()
+    #     net.to(device)
+    #     # Print model summary to verify the structure and loaded parameters
+    #     print(net)
+
+    #     # On vérifie que les paramètres ont bien été chargés
+    #     for name, param in net.named_parameters():
+    #         print(f"{name}: {param.size()} loaded")
+
             
-            plt.figure("check", (18, 6))
-            plt.subplot(1, 3, 1)
-            plt.title("image")
-            plt.imshow(val_inputs.cpu().numpy()[0, 0, :, :, slice_map[img_name]], cmap="gray")
-            plt.subplot(1, 3, 2)
-            plt.title("label")
-            plt.imshow(val_labels.cpu().numpy()[0, 0, :, :, slice_map[img_name]])
-            plt.subplot(1, 3, 3)
-            val_outputs = sliding_window_inference(val_inputs, (96, 96, 96), 4, net, overlap=0.8)
-            print(val_outputs.shape)
-            plt.title("output")
-            plt.imshow(torch.argmax(val_outputs, dim=1).detach().cpu()[0, :, :, slice_map[img_name]])
-            plt.show()
+    #     net.prepare_data()
+
+    #     with torch.no_grad():
+    #             img_name = os.path.split(net.val_ds[case_num]['image_meta_dict']['filename_or_obj'])[-1]
+    #             img = net.val_ds[case_num]["image"]
+    #             label = net.val_ds[case_num]["label"]
+    #             val_inputs = torch.unsqueeze(torch.from_numpy(img), 1).to(device)
+    #             print(val_inputs.shape)
+    #             print(val_inputs)
+    #             val_labels = torch.unsqueeze(torch.from_numpy(img), 1).to(device)
+    #             print(val_labels.shape)
+    #             print(val_labels)
+                
+    #             plt.figure("check", (18, 6))
+    #             plt.subplot(1, 3, 1)
+    #             plt.title("image")
+    #             plt.imshow(val_inputs.cpu().numpy()[0, 0, :, :, slice_map[img_name]], cmap="gray")
+    #             plt.subplot(1, 3, 2)
+    #             plt.title("label")
+    #             plt.imshow(val_labels.cpu().numpy()[0, 0, :, :, slice_map[img_name]])
+    #             plt.subplot(1, 3, 3)
+    #             val_outputs = sliding_window_inference(val_inputs, (96, 96, 96), 4, net, overlap=0.8)
+    #             print(val_outputs.shape)
+    #             print(val_outputs)
+    #             plt.title("output")
+    #             plt.imshow(torch.argmax(val_outputs, dim=1).detach().cpu()[0, :, :, slice_map[img_name]])
+    #             plt.show()

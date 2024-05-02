@@ -14,11 +14,52 @@ from pydicom.dataset import Dataset
 from BDD.MesuresSQLite import MesuresDB
 from mock import simulate_rtstruct_generation2
 
+
+from MetIA.Model2 import Net
+
+import nibabel as nib
+import numpy as np
+from monai.transforms import Compose, LoadImage, ToTensor
+
+import torch
+
 load_dotenv()
+
+
+# def load_adjusted_checkpoint(filepath, model):
+#     # Charger le checkpoint
+#     checkpoint = torch.load(filepath, map_location=torch.device('cpu'))
+
+#     # Extraire le state_dict du checkpoint
+#     state_dict = checkpoint['state_dict']
+
+#     # Ajuster le state_dict si nécessaire
+#     new_state_dict = {}
+#     for key, value in model.state_dict().items():
+#         # Supprimer un préfixe spécifique (dans ce cas, 'backbone.0.') des clés
+#         adjusted_key = 'backbone.0.' + key
+#         if adjusted_key in state_dict:
+#             new_state_dict[key] = state_dict[adjusted_key]
+#         else:
+#             # Utiliser la valeur originale si la clé ajustée n'existe pas
+#             new_state_dict[key] = value
+
+#     # Charger le state_dict ajusté dans le modèle
+#     model.load_state_dict(new_state_dict, strict=False)
+#     model.eval()
+#     return model
+
 
 app = Flask(__name__)
 CORS(app)
-ORTHANC_URL = os.getenv("ORTHANC_URL")
+#ORTHANC_URL = os.getenv("ORTHANC_URL")
+
+ORTHANC_URL = "http://localhost:8042/"
+
+# # Modele
+# model = Net() 
+# checkpoint_path = 'checkpoint-epoch=1599-val_loss=0.225.ckpt'
+# net = load_adjusted_checkpoint(checkpoint_path, model)
 
 @app.route('/getAllStudies', methods=['GET'])
 def get_all_studies():
@@ -164,9 +205,146 @@ def segmentation(study_instance_uid):
         print(rtstruct)
         upload_rtstruct(rtstruct)
 
+        # mise en place du modèle
+
+
         return jsonify({"success": "DICOM files retrieved and processed successfully."}), 200
     except requests.exceptions.RequestException as e:
         return jsonify({"error": f"Server error: {str(e)}"}), 500
+
+
+
+
+
+# @app.route('/segmentation/<study_instance_uid>', methods=['POST'])
+# def segmentation(study_instance_uid):
+#     orthanc_study_id = find_orthanc_study_id_by_study_instance_uid(study_instance_uid)
+    
+#     if not orthanc_study_id:
+#         return jsonify({"error": "StudyInstanceUID not found"}), 404
+
+#     try:
+#         # Récupérer les instances DICOM
+#         response = requests.get(f"{ORTHANC_URL}/studies/{orthanc_study_id}/instances")
+#         if response.status_code != 200:
+#             return jsonify({"error": "Failed to retrieve DICOM instances"}), response.status_code
+
+#         # Convertir les données DICOM en format NIfTI, puis en tenseurs pour le modèle
+#         instances = response.json()
+#         input_tensor = prepare_model_input(instances)
+
+#         print("reussi")
+
+#         # Exécuter le modèle
+#         with torch.no_grad():
+#             model_output = net(input_tensor)
+
+#         # Post-traiter les résultats pour la sortie
+#         output_data = process_model_output(model_output)
+
+#         return jsonify({"success": "Segmentation completed", "data": output_data}), 200
+#     except requests.exceptions.RequestException as e:
+#         return jsonify({"error": f"Server error: {str(e)}"}), 500
+
+
+# def convert_dicom_to_nifti(dicom_instances):
+#     # Ce code suppose que vous avez déjà un moyen de convertir les DICOM en NIfTI
+#     # Exemple simplifié de la conversion
+#     dicom_data = []
+#     for instance in dicom_instances:
+#         instance_id = instance['ID']
+#         dicom_response = requests.get(f"{ORTHANC_URL}/instances/{instance_id}/file", stream=True)
+#         if dicom_response.status_code == 200:
+#             dicom_file = pydicom.dcmread(BytesIO(dicom_response.content))
+#             dicom_data.append(dicom_file.pixel_array)
+
+#     # Supposons que nous avons une pile d'images (3D)
+#     dicom_array = np.stack(dicom_data, axis=-1)
+#     affine = np.eye(4)  # Simplification: l'affine est supposé être l'identité
+
+#     nifti_image = nib.Nifti1Image(dicom_array, affine)
+#     nib.save(nifti_image, 'temp_image.nii')  # Sauvegarde temporaire pour utilisation dans le modèle
+#     return nifti_image
+
+# def prepare_model_input(dicom_instances):
+#     # Convertir les images DICOM en format NIfTI ou directement en tenseurs
+#     # (Ici, nous supposons une fonction existante qui gère cette conversion)
+#     nifti_image = convert_dicom_to_nifti(dicom_instances)
+#     # Convertir NIfTI en tenseurs
+#     transform = Compose([LoadImage(image_only=True), ToTensor()])
+#     input_tensor = transform(nifti_image.get_fdata())
+#     input_tensor = input_tensor.unsqueeze(0)  # Ajouter une dimension batch si nécessaire
+#     return input_tensor
+
+
+# def process_model_output(output):
+#     """
+#     Convertit les sorties du modèle (supposées être des masques de segmentation pour chaque métastase)
+#     en une liste de dictionnaires, chaque dictionnaire contenant les coordonnées des pixels pour une métastase.
+    
+#     Args:
+#         output (np.array): Un tenseur numpy avec des dimensions (num_metastases, height, width),
+#                            où chaque 'slice' représente le masque d'une métastase.
+    
+#     Returns:
+#         list of dicts: Une liste de dictionnaires avec des clés 'id' et 'coordinates', où 'coordinates'
+#                        est une liste de tuples (x, y) pour chaque pixel appartenant à la métastase.
+#     """
+#     metastases_info = []
+#     num_metastases, height, width = output.shape
+#     for i in range(num_metastases):
+#         mask = output[i]
+#         coordinates = np.argwhere(mask == 1)
+#         # Convertir les coordonnées en liste de tuples
+#         coordinates_list = [tuple(coord) for coord in coordinates]
+#         metastases_info.append({
+#             'id': f'GTV{i+1}',
+#             'coordinates': coordinates_list
+#         })
+    
+#     return metastases_info
+
+
+# @app.route('/segmentation/<study_id>', methods=['POST'])
+# def segmentation(study_id):
+#     # Fetch DICOM data
+#     dicom_files = fetch_dicom_files(study_id)
+#     if not dicom_files:
+#         return jsonify({"error": "No DICOM files found"}), 404
+
+#     # Convert DICOM to NIfTI
+#     nifti_image = convert_dicom_to_nifti(dicom_files)
+
+#     # Preprocess and convert NIfTI to tensor
+#     input_tensor = preprocess_nifti(nifti_image)
+
+#     # Predict using the model
+#     model_output = model(input_tensor)
+
+#     # Process and return the model output
+#     return jsonify({"result": model_output.tolist()})
+
+# def fetch_dicom_files(study_id):
+#     """Retrieve DICOM files from a PACS server given a study ID."""
+#     # Implementation depends on your PACS server API
+    
+#     return list_of_dicom_files
+
+# def convert_dicom_to_nifti(dicom_files):
+#     """Convert a list of DICOM files to a single NIfTI image."""
+#     dicom_data = [pydicom.dcmread(BytesIO(f)) for f in dicom_files]
+#     dicom_arrays = np.stack([d.pixel_array for d in dicom_data], axis=-1)
+#     affine = np.eye(4)  # Simplistic assumption
+#     nifti_image = nib.Nifti1Image(dicom_arrays, affine)
+#     return nifti_image
+
+# def preprocess_nifti(nifti_image):
+#     """Preprocess NIfTI image and convert it to a tensor suitable for the model."""
+#     transform = Compose([LoadImage(image_only=True), ToTensor()])
+#     input_tensor = transform(nifti_image.get_fdata())
+#     input_tensor = input_tensor.unsqueeze(0)  # Add batch dimension
+#     return input_tensor
+
 
 
 def find_orthanc_study_id_by_study_instance_uid(study_instance_uid):
@@ -261,6 +439,12 @@ def close_db(error):
     db = getattr(g, '_database', None)
     if db is not None:
         db.connexion.close()
+
+
+
+
+
+
 
 
 if __name__ == '__main__':
