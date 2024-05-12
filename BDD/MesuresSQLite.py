@@ -9,55 +9,57 @@ class MesuresDB:
 
     ## INITIALISATION
     def initialiser(self):
-        self.curseur.execute('''CREATE TABLE IF NOT EXISTS etude (
-                            idEtude INTEGER PRIMARY KEY AUTOINCREMENT,
-                            idPatient INTEGER,
-                            idSerie TEXT,
-                            idSOP TEXT,
-                            dateTraitement DATE
-                            )''')
+        # Création de la table patient avec les champs id, nom, date de naissance, et sexe
+        self.curseur.execute('''
+            CREATE TABLE IF NOT EXISTS patient (
+                idPatient INTEGER PRIMARY KEY AUTOINCREMENT,
+                nom TEXT,
+                dateNaissance DATE,
+                sexe CHAR(1) CHECK (sexe IN ('M', 'F'))
+            )
+        ''')
 
-        self.curseur.execute('''CREATE TABLE IF NOT EXISTS session (
-                            idSession INTEGER PRIMARY KEY AUTOINCREMENT,
-                            idPatient INTEGER,
-                            dateObservation DATE,
-                            FOREIGN KEY(idPatient) REFERENCES etude(idPatient)
-                            )''')
+        # Création de la table étude liée au patient
+        self.curseur.execute('''
+            CREATE TABLE IF NOT EXISTS etude (
+                idEtude INTEGER PRIMARY KEY AUTOINCREMENT,
+                idPatient INTEGER,
+                idSerie TEXT,
+                idSOP TEXT,
+                dateTraitement DATE,
+                FOREIGN KEY(idPatient) REFERENCES patient(idPatient)
+            )
+        ''')
 
-        self.curseur.execute('''CREATE TABLE IF NOT EXISTS metastase(
-                            id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            idSession INTEGER,
-                            volume REAL,
-                            diametre REAL NULL,
-                            slideDebut INTEGER,
-                            slideFin INTEGER,
-                            FOREIGN KEY(idSession) REFERENCES session(idSession)
-                            )''')
+        # Création de la table métastase liée à l'étude
+        self.curseur.execute('''
+            CREATE TABLE IF NOT EXISTS metastase(
+                idMetastase INTEGER PRIMARY KEY AUTOINCREMENT,
+                idEtude INTEGER,
+                volume REAL,
+                diametre REAL NULL,
+                slideDebut INTEGER,
+                slideFin INTEGER,
+                FOREIGN KEY(idEtude) REFERENCES etude(idEtude)
+            )
+        ''')
 
         self.connexion.commit()
 
-
-    ## MÉTASTASE
-    def ajouter_metastase(self, id_session, volume, diametre, slide_debut, slide_fin):
-        self.curseur.execute("INSERT INTO metastase (idSession, volume, diametre, slideDebut, slideFin) VALUES (?, ?, ?, ?, ?)",
-                             (id_session, volume, diametre, slide_debut, slide_fin))
+    ## PATIENT
+    def ajouter_patient(self, nom, date_naissance, sexe):
+        self.curseur.execute("INSERT INTO patient (nom, dateNaissance, sexe) VALUES (?, ?, ?)",
+                             (nom, date_naissance, sexe))
         self.connexion.commit()
 
-    def afficher_metastases(self):
-        self.curseur.execute("SELECT * FROM metastase")
-        metastases = self.curseur.fetchall()
-        for metastase in metastases:
-            print("ID:", metastase[0])
-            print("ID de la session:", metastase[1])
-            print("Volume:", metastase[2])
-            print("Diamètre:", metastase[3])
-            print("Slide début:", metastase[4])
-            print("Slide fin:", metastase[5])
-            print("------------------------")
-        return metastases
+    def get_patients(self):
+        self.curseur.execute("SELECT * FROM patient")
+        patients = self.curseur.fetchall()
+        return [{"ID du patient": pat[0], "Nom": pat[1], "Date de naissance": pat[2], "Sexe": pat[3]} for pat in patients]
 
-    def supprimer_metastase(self, id_metastase):
-        self.curseur.execute("DELETE FROM metastase WHERE id=?", (id_metastase,))
+    def supprimer_patient(self, id_patient):
+        self.curseur.execute("DELETE FROM patient WHERE idPatient=?", (id_patient,))
+        self.curseur.execute("DELETE FROM etude WHERE idPatient=?", (id_patient,))
         self.connexion.commit()
 
     ## ÉTUDE
@@ -66,41 +68,37 @@ class MesuresDB:
                              (id_patient, id_serie, id_sop, date_traitement))
         self.connexion.commit()
 
-    def afficher_etudes(self):
+    def get_etudes(self):
         self.curseur.execute("SELECT * FROM etude")
         etudes = self.curseur.fetchall()
-        for etude in etudes:
-            print("ID de l'étude:", etude[0])
-            print("ID du patient:", etude[1])
-            print("ID de la série:", etude[2])
-            print("ID du SOP:", etude[3])
-            print("Date de traitement:", etude[4])
-            print("------------------------")
-        return etudes
+        return [{"ID de l'étude": etu[0], "ID du patient": etu[1], "ID de la série": etu[2], "ID du SOP": etu[3], "Date de traitement": etu[4]} for etu in etudes]
+    
+    def get_etudes_from_patient(self, id_patient):
+        self.curseur.execute("SELECT * FROM etude WHERE idPatient = ?", (id_patient,))
+        etudes = self.curseur.fetchall()
+        return [{"ID de l'étude": etu[0], "ID de la série": etu[2], "ID du SOP": etu[3], "Date de traitement": etu[4]} for etu in etudes]
 
     def supprimer_etude(self, id_etude):
         self.curseur.execute("DELETE FROM etude WHERE idEtude=?", (id_etude,))
+        self.curseur.execute("DELETE FROM metastase WHERE idEtude=?", (id_etude,))
         self.connexion.commit()
 
-    ## SESSION
-    def ajouter_session(self, id_patient, date_observation):
-        self.curseur.execute("INSERT INTO session (idPatient, dateObservation) VALUES (?, ?)", (id_patient, date_observation))
+    ## MÉTASTASE
+    def ajouter_metastase(self, id_etude, volume, diametre, slide_debut, slide_fin):
+        self.curseur.execute("INSERT INTO metastase (idEtude, volume, diametre, slideDebut, slideFin) VALUES (?, ?, ?, ?, ?)",
+                             (id_etude, volume, diametre, slide_debut, slide_fin))
         self.connexion.commit()
 
-    def afficher_sessions(self):
-        self.curseur.execute("SELECT * FROM session")
-        sessions = self.curseur.fetchall()
-        for session in sessions:
-            print("ID de la session:", session[0])
-            print("ID du patient:", session[1])
-            print("Date d'observation:", session[2])
-            print("------------------------")
-        return sessions
+    def get_metastases(self):
+        self.curseur.execute("SELECT * FROM metastase")
+        metastases = self.curseur.fetchall()
+        return [{"idMetastase": met[0], "idEtude": met[1], "Volume": met[2], "Diamètre": met[3], "Slide Début": met[4], "Slide Fin": met[5]} for met in metastases]
 
-    def supprimer_session(self, id_session):
-        self.curseur.execute("DELETE FROM session WHERE idSession=?", (id_session,))
-        self.curseur.execute("DELETE FROM metastase WHERE idSession=?", (id_session,))
+    def get_metastases_from_etude(self, id_etude):
+        self.curseur.execute("SELECT * FROM metastase WHERE idEtude = ?", (id_etude,))
+        metastases = self.curseur.fetchall()
+        return [{"idMetastase": met[0], "Volume": met[2], "Diamètre": met[3], "Slide Début": met[4], "Slide Fin": met[5]} for met in metastases]
+
+    def supprimer_metastase(self, id_metastase):
+        self.curseur.execute("DELETE FROM metastase WHERE idMetastase=?", (id_metastase,))
         self.connexion.commit()
-
-    ## DÉCONNEXION
-    # Si vous n'avez pas besoin d'une méthode de déconnexion explicite, vous pouvez la supprimer de votre classe.
