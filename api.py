@@ -252,6 +252,41 @@ def close_db(error):
     if db is not None:
         db.connexion.close()
 
+"""
+Get les études de la base de donnée de suivi des patients
+Params : idPatient (optionnel) -> retourne les études pour un patient spécifique
+"""
+@app.route('/followup-etudes', methods=['GET'])
+def get_etudes():
+    id_patient = request.args.get('idPatient')
+    if id_patient is not None:
+        etudes = get_db().get_etudes_from_patient(id_patient)
+    else:
+        etudes = get_db().get_etudes()
+    return jsonify(etudes)
+
+"""
+Get les patients de la base de donnée de suivi des patients
+"""
+@app.route('/followup-patients', methods=['GET'])
+def get_patients():
+    """Get les patients de la base de données de suivi des patients."""
+    patients = get_db().get_patients()
+    return jsonify(patients)
+
+"""
+Get les métastases de la base de donnée de suivi des patients
+Params : idEtude (optionnel) -> retourne les metastases pour une étude spécifique
+"""
+@app.route('/followup-metastases', methods=['GET'])
+def get_metastases():
+    id_etude = request.args.get('idEtude')
+    if id_etude is not None:
+        metastases = get_db().get_metastases_from_etude(id_etude)
+    else:
+        metastases = get_db().get_metastases()
+    return jsonify(metastases)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
