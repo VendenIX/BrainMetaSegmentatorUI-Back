@@ -55,7 +55,7 @@ class MesuresDB:
     def get_patients(self):
         self.curseur.execute("SELECT * FROM patient")
         patients = self.curseur.fetchall()
-        return [{"ID du patient": pat[0], "Nom": pat[1], "Date de naissance": pat[2], "Sexe": pat[3]} for pat in patients]
+        return [{"id": pat[0], "name": pat[1], "date": pat[2], "sexe": pat[3]} for pat in patients]
 
     def supprimer_patient(self, id_patient):
         self.curseur.execute("DELETE FROM patient WHERE idPatient=?", (id_patient,))
@@ -71,12 +71,12 @@ class MesuresDB:
     def get_etudes(self):
         self.curseur.execute("SELECT * FROM etude")
         etudes = self.curseur.fetchall()
-        return [{"ID de l'étude": etu[0], "ID du patient": etu[1], "ID de la série": etu[2], "ID du SOP": etu[3], "Date de traitement": etu[4]} for etu in etudes]
+        return [{"id_study": etu[0], "id": etu[1], "id_serie": etu[2], "id_SOP": etu[3], "date": etu[4]} for etu in etudes]
     
     def get_etudes_from_patient(self, id_patient):
         self.curseur.execute("SELECT * FROM etude WHERE idPatient = ?", (id_patient,))
         etudes = self.curseur.fetchall()
-        return [{"ID de l'étude": etu[0], "ID de la série": etu[2], "ID du SOP": etu[3], "Date de traitement": etu[4]} for etu in etudes]
+        return [{"id_study": etu[0], "id_serie": etu[2], "id_SOP": etu[3], "date": etu[4]} for etu in etudes]
 
     def supprimer_etude(self, id_etude):
         self.curseur.execute("DELETE FROM etude WHERE idEtude=?", (id_etude,))
@@ -92,12 +92,12 @@ class MesuresDB:
     def get_metastases(self):
         self.curseur.execute("SELECT * FROM metastase")
         metastases = self.curseur.fetchall()
-        return [{"idMetastase": met[0], "idEtude": met[1], "Volume": met[2], "Diamètre": met[3], "Slide Début": met[4], "Slide Fin": met[5]} for met in metastases]
+        return [{"idMetastase": met[0], "idEtude": met[1], "Volume": met[2], "Diametre": met[3], "Slide_Debut": met[4], "Slide_Fin": met[5]} for met in metastases]
 
     def get_metastases_from_etude(self, id_etude):
         self.curseur.execute("SELECT * FROM metastase WHERE idEtude = ?", (id_etude,))
         metastases = self.curseur.fetchall()
-        return [{"idMetastase": met[0], "Volume": met[2], "Diamètre": met[3], "Slide Début": met[4], "Slide Fin": met[5]} for met in metastases]
+        return [{"idMetastase": met[0], "volume": met[2], "diametre": met[3], "slice_Debut": met[4], "slice_Fin": met[5]} for met in metastases]
 
     def supprimer_metastase(self, id_metastase):
         self.curseur.execute("DELETE FROM metastase WHERE idMetastase=?", (id_metastase,))
