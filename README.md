@@ -16,6 +16,11 @@ Ce projet à pour but de permettre à l'interface OHIF Viewer de lancer un algor
 | Mémoire RAM            | 8 GB de RAM minimum                                          |
 
 
+## Pour installer les poids pré-entraînés (nécessaire pour lancer le modèle de deep):
+
+https://drive.google.com/file/d/1kR5QuRAuooYcTNLMnMj80Z9IgSs8jtLO/view
+
+Placer ce fichier de 300 mo dans **unetr/pretrainted_models/**
 
 
 ## Installer les librairies :
