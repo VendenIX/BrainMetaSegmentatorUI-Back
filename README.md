@@ -2,6 +2,12 @@
 
 Ce projet à pour but de permettre à l'interface OHIF Viewer de lancer un algorithme de deep learning visant à détecter les méta-stases dans le cerveau, basé sur l'architecture unetr. Cette partie du projet est donc une API permettant de communiquer entre le dicom web server Orthanc afin de récupérer/gérer les données médicales au format dicoms, et le modèle de deep learning. A savoir que le modèle est très consommateur en mémoire RAM, et qu'il vous faut des données dicoms afin de pouvoir tester le projet. **Si vous avez des données au format dicoms, nous avons simulé un appel au modèle avec un mock que vous pouvez activer à la ligne 171/172 dans le fichier api.py, il vous suffit alors de commenter/decommenter pour activer ou non le mock ou le vrai modèle.**
 
+## Attention
+
+Ce projet est séparé en deux parties :
+- La partie back-end (ce dépôt)
+- La partie front-end est accessible [ici](https://github.com/VendenIX/BrainMetaSegmentatorUI-Front).
+
 ## Prérequis de Configuration pour lancer le modèle sur le dépôt
 
 | Ressource              | Requis                                                  |
