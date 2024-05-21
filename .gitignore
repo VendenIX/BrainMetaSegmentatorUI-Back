@@ -6,3 +6,4 @@
 ./Orthanc/orthanc_db/*
 /Orthanc/orthanc_db/*
 /BDD/mesures.db
+unetr/pretrained_models/*
