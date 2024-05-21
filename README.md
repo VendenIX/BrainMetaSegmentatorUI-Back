@@ -65,7 +65,7 @@ Clean - up:
 rm -rf ./Orthanc/orthanc-db/*
 ```
 
-Sinon vous pouvez supprimer le tout proprement à l'aide de l'interface d'administration présente sur le port localhost:8042
+Sinon vous pouvez supprimer le tout proprement à l'aide de l'interface d'administration présente sur le port localhost:8042, ou alors via ohif sur le front.
 
 ## Si un mot de passe vous est demandé, c'est ici:
 Login : mapdr Password : changestrongpassword
