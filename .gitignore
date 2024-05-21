@@ -3,7 +3,6 @@
 /App/unetr/pretrained_models/*
 .env
 *.dcm
-/MetIA
 ./Orthanc/orthanc_db/*
 /Orthanc/orthanc_db/*
 /BDD/mesures.db

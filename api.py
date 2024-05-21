@@ -12,11 +12,16 @@ from pydicom.dataset import Dataset
 
 from BDD.MesuresSQLite import MesuresDB
 from mock import simulate_rtstruct_generation2
+from segmentation import generate_rtstruct_segmentation_unetr
 
 app = Flask(__name__)
 CORS(app)
 ORTHANC_URL = "http://localhost:8042"
+model_path = '/Users/romain/Downloads/Modeles_Pre_Entraines/checkpoint_epoch1599_val_loss0255.cpkt'
 
+"""
+Récupère la liste des études DICOM stockées dans le serveur Orthanc
+"""
 @app.route('/getAllStudies', methods=['GET'])
 def get_all_studies():
     try:
@@ -30,6 +35,10 @@ def get_all_studies():
         print(e)
         return jsonify({"error": str(e)}), 500
 
+"""
+Récupère les détails d'une étude DICOM spécifique à partir de son ID Orthanc
+params : study_id -> l'ID Orthanc de l'étude
+"""
 @app.route('/getStudy/<string:study_id>', methods=['GET'])
 def get_study(study_id):
     try:
@@ -42,7 +51,10 @@ def get_study(study_id):
     except requests.exceptions.RequestException as e:
         print(e)
         return jsonify({"error": str(e)}), 500
-    
+
+"""
+Récupère les instances DICOM pour une étude spécifique à partir de son ID Orthanc
+"""
 @app.route('/getStudyDicoms/<study_id>', methods=['GET'])
 def get_study_dicoms(study_id):
     try:
@@ -58,6 +70,9 @@ def get_study_dicoms(study_id):
         print(e)
         return jsonify({"error": "Server error"}), 500
 
+"""
+Permet d'upload un fichier DICOM vers le serveur Orthanc
+"""
 @app.route('/uploadDicom', methods=['POST'])
 def upload_dicom():
     print("Requête reçue pour /uploadDicom")
@@ -94,6 +109,9 @@ def upload_dicom():
         print(f"Erreur lors du traitement du fichier DICOM : {e}")
         return jsonify({"error": "Erreur serveur"}), 500
     
+"""
+Permet de supprimer une étude DICOM du serveur Orthanc
+"""
 @app.route('/delete-study/<study_instance_uid>', methods=['DELETE'])
 def delete_study(study_instance_uid):
     orthanc_study_id = find_orthanc_study_id_by_study_instance_uid(study_instance_uid)
@@ -116,7 +134,9 @@ def delete_study(study_instance_uid):
         # Gestion des erreurs de connexion ou autres erreurs de réseau
         return jsonify({"error": "Erreur lors de la connexion à Orthanc", "exception": str(e)}), 500
 
-
+"""
+Permet de lancer la segmentation d'une étude DICOM spécifique
+"""
 @app.route('/segmentation/<study_instance_uid>', methods=['POST'])
 def segmentation(study_instance_uid):
     # Convertir StudyInstanceUID en ID Orthanc
@@ -141,16 +161,15 @@ def segmentation(study_instance_uid):
             dicom_response = requests.get(f"{ORTHANC_URL}/instances/{instance_id}/file", stream=True)
 
             if dicom_response.status_code == 200:
-                # Vous pouvez ici charger les données DICOM directement dans pydicom si nécessaire
+
                 dicom_file = pydicom.dcmread(BytesIO(dicom_response.content))
                 dicom_data.append(dicom_file)
             else:
                 print(f"Failed to download DICOM file for instance ID {instance_id}")
 
         print("DICOM files retrieved and processed successfully.")
-        #print(dicom_data[0])
-        rtstruct = simulate_rtstruct_generation2(dicom_data)  # mock
-        print("mon rtstruct c'est cela")
+        #rtstruct = simulate_rtstruct_generation2(dicom_data)  # MOCK (FAKE RTSTRUCT)
+        rtstruct = generate_rtstruct_segmentation_unetr(dicom_data, model_path)  # MODELE (ATTENTION A LA RAM)
         print(rtstruct)
         upload_rtstruct(rtstruct)
 
@@ -158,12 +177,13 @@ def segmentation(study_instance_uid):
     except requests.exceptions.RequestException as e:
         return jsonify({"error": f"Server error: {str(e)}"}), 500
 
-
+"""
+Permet d'acquérir l'ID Orthanc d'une étude DICOM à partir de son StudyInstanceUID
+"""
 def find_orthanc_study_id_by_study_instance_uid(study_instance_uid):
     studies_response = requests.get(f"{ORTHANC_URL}/studies")
     
     if studies_response.status_code == 200:
-        print("okokokokokokokok")
         studies = studies_response.json()
         
         for study in studies:
@@ -181,26 +201,11 @@ def find_orthanc_study_id_by_study_instance_uid(study_instance_uid):
         print("Erreur lors de la récupération de la liste des études:", studies_response.status_code)
     
     return None
-    
-"""
-def upload_rtstruct(rtstruct_path):
-    try:
-        print(f"Uploading RTStruct from {rtstruct_path}")
-        
-        with open(rtstruct_path, 'rb') as f:
-            files = {'file': (os.path.basename(rtstruct_path), f, 'application/dicom')}
-            response = requests.post(f"{ORTHANC_URL}/instances", files=files)
-        
-        if response.status_code in [200, 202]:
-            orthanc_response = response.json() if response.content else "No JSON content in response"
-            return jsonify({"success": "RTStruct uploaded successfully", "OrthancResponse": orthanc_response}), response.status_code
-        else:
-            return jsonify({"error": "Failed to upload RTStruct to Orthanc", "OrthancResponse": response.text}), response.status_code
-    except Exception as e:
-        print(e)
-        return jsonify({"error": "Server error"}), 500
-"""
 
+"""
+Permet d'envoyer un RTStruct vers le serveur Orthanc
+params : rtstruct -> le RTStruct à envoyer
+"""
 def upload_rtstruct(rtstruct):
     buffer = rtstruct.save_to_memory()  # Récupère le buffer en mémoire contenant le RTStruct
     print("Uploading RTStruct...")
@@ -218,27 +223,9 @@ def upload_rtstruct(rtstruct):
         print(e)
         return jsonify({"error": "Server error"}), 500
     
-
-def load_dicom_datasets(dicom_folder_path: str) -> List[Dataset]:
-    """
-    Charge tous les fichiers DICOM d'un dossier donné en datasets pydicom.
-    """
-    dicom_datasets = []
-    for filename in os.listdir(dicom_folder_path):
-        if filename.endswith('.dcm'):
-            file_path = os.path.join(dicom_folder_path, filename)
-            try:
-                ds = pydicom.dcmread(file_path)
-                dicom_datasets.append(ds)
-            except Exception as e:
-                print(f"Erreur lors de la lecture du fichier DICOM {filename}: {e}")
-                continue  # ou lever une exception selon les besoins de votre application
-
-    if not dicom_datasets:
-        raise Exception("Aucun fichier DICOM valide trouvé dans le dossier spécifié.")
-
-    return dicom_datasets
-    
+"""
+Permet de récupérer la base de donnée de suivi des patients
+"""
 def get_db():
     db = getattr(g, '_database', None)
     if db is None:
@@ -246,6 +233,9 @@ def get_db():
     print('DB:', db.connexion)
     return db
 
+"""
+Ferme la connexion à la base de donnée de suivi des patients
+"""
 @app.teardown_appcontext
 def close_db(error):
     db = getattr(g, '_database', None)

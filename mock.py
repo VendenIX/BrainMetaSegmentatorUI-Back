@@ -16,19 +16,6 @@ from rt_utils import RTStructBuilder
 
 PATH_MODEL = './MetIA/resultsult/'
 
-
-def simulate_rtstruct_generation():
-    print()
-    # Attendre 30 secondes pour simuler le traitement des images DICOM
-    print("Simulating RTStruct generation...")
-    t.sleep(5)
-
-
-    # Simulation d'un traitement des images DICOM et génération d'un RTStruct
-    # Mettez le chemin absolue de votre RTStruct ici pour simuler l'envoi
-    rtstruct_path = '/home/romain/Documents/P_R_O_J_E_C_T_S/projetIRM/BrainMetaSegmentatorUI-Back/1-1.dcm'
-    return rtstruct_path
-
 # pour détecter les contours d'une image DICOM
 def detect_contours(image):
     """
@@ -51,6 +38,9 @@ def detect_contours(image):
     # matrice boolenne
     return sobel_mag > threshold
 
+"""
+Simulation de la génération d'un RTStruct à partir de fichiers DICOM passés en mémoire
+"""
 def simulate_rtstruct_generation2(dicom_datasets: List[Dataset]):
 
     dicom_files = dicom_datasets
