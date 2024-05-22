@@ -55,7 +55,7 @@ docker-compose -f Orthanc/docker-compose.yml up -d
 Pour lancer l'api : 
 
 ```
-python3 api.py
+flask --app api run
 ```
 
 ## Si vous voulez supprimez les données médicales présentes sur votre serveur Orthanc local très rapidement
