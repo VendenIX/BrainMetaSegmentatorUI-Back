@@ -81,3 +81,5 @@ Et si accessoirement vous voulez supprimer le réseau pacs :
 ```
 docker network rm pacs # si vous voulez supprimer le réseau
 ```
+
+<img src="images_readme/logo_unicaen.png" width="200" height="125" alt="Logo de l'Université de Caen Normandie">
