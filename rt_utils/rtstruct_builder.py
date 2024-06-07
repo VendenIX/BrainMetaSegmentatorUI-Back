@@ -35,6 +35,17 @@ class RTStructBuilder:
 
         ds = ds_helper.create_rtstruct_dataset(dicom_datasets)
         return RTStruct(dicom_datasets, ds)
+    
+    @staticmethod
+    def create_from_memory(dicom_datasets: List[Dataset], existing_rt_struct: Dataset,  warn_only: bool = False) -> RTStruct :
+        """
+         Method to generate a new rt struct from a DICOM series and a RTStruct in memory already loaded by pydicom
+        """
+        dicom_datasets.sort(key=lambda x: x.InstanceNumber if hasattr(x, 'InstanceNumber') else 0)
+
+        RTStructBuilder.validate_rtstruct(existing_rt_struct)
+        RTStructBuilder.validate_rtstruct_series_references(existing_rt_struct, dicom_datasets, warn_only)
+        return RTStruct(dicom_datasets, existing_rt_struct)
 
     @staticmethod
     def create_from(dicom_series_path: str, rt_struct_path: str, warn_only: bool = False) -> RTStruct:

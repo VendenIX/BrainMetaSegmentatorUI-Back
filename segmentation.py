@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 import pydicom
 from io import BytesIO
 import os 
@@ -12,6 +12,7 @@ from monai.inferers import sliding_window_inference
 from unetr.model_module import SegmentationTask
 import monai.transforms as transforms
 from rt_utils import RTStructBuilder
+import scipy as sp
 
 """
 Transforme une liste de datasets DICOM en une image Nifti1Image
@@ -37,6 +38,7 @@ def getLabelOfIRM_from_nifti(nifti_image: nib.Nifti1Image, pathModelFile: str):
     dico_image = applyUNETR(transformed_image, model)
 
     label, imageT = disapplyTransforms(transform, dico_image)
+    label = sp.ndimage.label(label)[0]
     return nifti_image.get_fdata() / 255, label, imageT
 
 """
@@ -47,11 +49,10 @@ Application les transformations sur l'image
 def applyTransforms(transform, image):
     # Assurez-vous que l'image est un tensor PyTorch
     image = torch.tensor(image, dtype=torch.float32)
-    
+
     image = (image / torch.max(image)) * 255
-    if image.ndim == 3:
-        image = image.unsqueeze(0)
-    data = {"image": image, "label": torch.zeros_like(image), "patient_id": '201905984', "has_meta": True}
+    image = image.unsqueeze(0)
+    data = {"image": image, "label": torch.zeros_like(image)}
     transformed = transform(data)
     return transformed
 
@@ -181,11 +182,63 @@ def create_rtstruct(dicom_datasets: List[pydicom.dataset.Dataset], label):
         rtstruct.add_roi(mask=mask, color=[255, 0, 0], name="GTV_MetIA_" + str(i))
     return rtstruct
 
-def generate_rtstruct_segmentation_unetr(dicom_datasets: List[pydicom.dataset.Dataset], pathModelFile: str):
+"""
+Permet d'écrire sur un RTStruct via des dicoms à partir du label obtenu via le modèle
+:param dicom_datasets: les images dicoms concernées par le RTStruct
+:param existing_rtstruct : le rtstruct sur lequel on écrit les nouvelles rois
+:param label: le label obtenu via le modèle
+"""
+def update_rtstruct(dicom_datasets: List[pydicom.dataset.Dataset], existing_rtstruct: pydicom.dataset.Dataset, label):
+    rtstruct = RTStructBuilder.create_from_memory(dicom_datasets, existing_rtstruct)
+    for i in range (1, int(np.max(label))+1):
+        # Prepare the mask for the current label
+        mask = np.rot90(np.where(label == i, True, False)[0, :, :, :], 3)
+        # Generate a unique name for the ROI
+        roi_name = generate_unique_name(rtstruct, f"GTV_MetIA_{i}")
+        # Add the new ROI to the RTStruct
+        rtstruct.add_roi(mask=mask, color=[255, 0, 0], name=roi_name)
+    return rtstruct
+
+def generate_unique_name(rtstruct, base_name):
+    """
+    Generate a unique name for an ROI by appending a suffix if the name already exists in the RTStruct.
+    
+    Args:
+        rtstruct (RTStruct): The RTStruct object where the ROI will be added.
+        base_name (str): The base name for the ROI.
+    
+    Returns:
+        str: A unique name for the ROI.
+    """
+    existing_names = {roi.name for roi in rtstruct.get_rois()}  # Get all existing ROI names
+    suffix = 1
+    unique_name = base_name
+    while unique_name in existing_names:
+        unique_name = f"{base_name}_{suffix}"
+        suffix += 1
+    return unique_name
+
+def generate_rtstruct_segmentation_unetr(dicom_datasets: List[pydicom.dataset.Dataset], pathModelFile: str, existing_rtstruct: Optional[pydicom.dataset.Dataset] = None):
+    """
+    Appel le modèle pour générer un RTStruct 
+    
+    Args :
+        dicom_datasets: les images dicoms
+        pathModelFile : path du modele
+        existing_rtstruct : le rtstruct sur lequel on se base (optionnel, on peut ne pas en mettre)
+
+    Returns: 
+        Dataset, Boolean: Le RTStruct correspondant à la segmentation, Est ce que c'est un RTStruct update ou create (faut il remplacer un précédant RTStruct par celui-ci)
+    """
     niftis = dicom_to_nifti_in_memory(dicom_datasets)
     image, label, imageT = getLabelOfIRM_from_nifti(niftis, pathModelFile)
-    rt_struct = create_rtstruct(dicom_datasets, label)
-    return rt_struct
+    if existing_rtstruct is not None:
+        rt_struct = update_rtstruct(dicom_datasets, existing_rtstruct, label)
+        isFromCurrentRTStruct = True
+    else:
+        rt_struct = create_rtstruct(dicom_datasets, label)
+        isFromCurrentRTStruct = False
+    return rt_struct, isFromCurrentRTStruct
 
 if __name__ == "__main__":
     ############################################################################################################

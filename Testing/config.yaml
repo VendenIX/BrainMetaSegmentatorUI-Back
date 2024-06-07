@@ -1,0 +1,421 @@
+# pytorch_lightning==1.8.3
+fit:
+  seed_everything: true
+  trainer:
+    logger:
+      class_path: pytorch_lightning.loggers.WandbLogger
+      init_args:
+        name: Run 1
+        project: Meta Project
+        save_dir: "" # keep to "" value: automatically filled
+        log_model: all
+    enable_checkpointing: true
+    callbacks: null
+    default_root_dir: null
+    gradient_clip_val: null
+    gradient_clip_algorithm: null
+    num_nodes: 1
+    num_processes: null
+    devices: null
+    gpus: 0,
+    auto_select_gpus: false
+    tpu_cores: null
+    ipus: null
+    enable_progress_bar: true
+    overfit_batches: 0.0
+    track_grad_norm: -1
+    check_val_every_n_epoch: 2 #10
+    fast_dev_run: false
+    accumulate_grad_batches: null
+    max_epochs: 2 #3000 
+    min_epochs: 2 #100
+    max_steps: -1
+    min_steps: null
+    max_time: null
+    limit_train_batches: null
+    limit_val_batches: null
+    limit_test_batches: null
+    limit_predict_batches: null
+    val_check_interval: null
+    log_every_n_steps: 500
+    accelerator: null
+    strategy: null
+    sync_batchnorm: false
+    precision: 32
+    enable_model_summary: true
+    num_sanity_val_steps: 2
+    resume_from_checkpoint: null
+    profiler: null
+    benchmark: null
+    deterministic: null
+    reload_dataloaders_every_n_epochs: 0
+    auto_lr_find: false
+    replace_sampler_ddp: true
+    detect_anomaly: false
+    auto_scale_batch_size: false
+    plugins: null
+    amp_backend: native
+    amp_level: null
+    move_metrics_to_cpu: false
+    multiple_trainloader_mode: max_size_cycle
+    inference_mode: false
+  optimizer:
+    class_path: torch.optim.AdamW
+    init_args:
+      lr: 0.001 #learning rate 1e-4
+      weight_decay: 0
+  lr_scheduler:
+    class_path: torch.optim.lr_scheduler.CosineAnnealingLR
+    init_args:
+      T_max: 3000
+      eta_min: 0
+      last_epoch: -1
+  model:
+    prediction_dir: "" # keep to "" value: automatically filled
+    test_validation_dir: "" # keep to "" value: automatically filled
+    pretrained_file_path: unetr/pretrained_models/UNETR_model_best_acc.pth
+    in_channels: 1
+    out_channels: 14
+    roi_size:
+    - 96
+    - 96
+    - 96
+    new_out_channels: 2
+    number_of_blocks_to_tune: 1
+    feature_size: 16
+    hidden_size: 768
+    mlp_dim: 3072
+    num_heads: 12
+    pos_embed: perceptron
+    norm_name: instance
+    conv_block: true
+    res_block: true
+    dropout_rate: 0.0
+    infer_overlap: 0.5
+    max_epochs: 3000 #1
+    labels_names:
+      '0': other
+      '1': meta
+    labels_colors:
+      '0':
+      - 0
+      - 0
+      - 0
+      '1':
+      - 255
+      - 0
+      - 0
+    smooth_dr: 1.0e-06
+    smooth_nr: 0.0
+    sw_batch_size: 4
+    use_bce_loss_when_binary_problem: true
+    save_max_n_batches: null
+    prediction_saving_type:
+    - NOTHING
+    test_saving_type:
+    - NOTHING
+    metrics:
+    - DICE
+    - HAUSDORFF_DISTANCE_95
+    log_max_n_batches: null
+    prediction_logging_type:
+    - SEGMENTER
+    - LOG_AS_TABLE
+    val_test_logging_type:
+    - SEGMENTER
+    - LOG_AS_TABLE
+  data:
+    data_dir: niftiTest
+    json_datalist_filename: dataset_0.json
+    reader_type: NIFTI
+    use_cached_dataset: false
+    train_batch_size: 16
+    val_batch_size: 16
+    workers: 8
+    precision: 32
+    generator_seed: null
+    voxel_space:
+    - 1.5
+    - 1.5
+    - 2.0
+    a_min: -200.0
+    a_max: 300.0
+    b_min: 0.0
+    b_max: 1.0
+    clip: true
+    crop_bed_max_number_of_rows_to_remove: 0
+    crop_bed_max_number_of_cols_to_remove: 0
+    crop_bed_min_spatial_size:
+    - 300
+    - -1
+    - -1
+    enable_fgbg2indices_feature: false
+    pos: 1.0
+    neg: 1.0
+    num_samples: 1
+    roi_size:
+    - 96
+    - 96
+    - 96
+    random_flip_prob: 0.2
+    random_90_deg_rotation_prob: 0.2
+    random_intensity_scale_prob: 0.1
+    random_intensity_shift_prob: 0.1
+    val_resize:
+    - -1
+    - -1
+    - 250
+  backbone_finetuning:
+    unfreeze_backbone_at_epoch: 20
+    lambda_func: pytorch_lightning.callbacks.finetuning.multiplicative
+    backbone_initial_ratio_lr: 0.1
+    backbone_initial_lr: null
+    should_align: true
+    initial_denom_lr: 10.0
+    train_bn: true
+    verbose: false
+    rounding: 12
+  early_stopping:
+    monitor: val_loss
+    min_delta: 0.0
+    patience: 100
+    verbose: false
+    mode: min
+    strict: true
+    check_finite: true
+    stopping_threshold: null
+    divergence_threshold: null
+    check_on_train_epoch_end: null
+    log_rank_zero_only: false
+  model_checkpoint:
+    dirpath: "" # keep to "" value: automatically filled
+    filename: checkpoint-{epoch:04d}-{val_loss:.3f}
+    monitor: val_loss
+    verbose: false
+    save_last: null
+    save_top_k: 1
+    save_weights_only: false
+    mode: min
+    auto_insert_metric_name: true
+    every_n_train_steps: null
+    train_time_interval: null
+    every_n_epochs: null
+    save_on_train_epoch_end: null
+  checkpoint_dir_name: checkpoints
+  log_dir_name: logs
+  prediction_dir_name: predictions
+  test_validation_dir_name: validations_tests
+  ckpt_path: null
+test:
+  trainer:
+    logger:
+      class_path: pytorch_lightning.loggers.WandbLogger
+      init_args:
+        name: TestRun
+        project: Meta Project
+        save_dir: ""  # keep to "" value: automatically filled
+        log_model: all
+    enable_checkpointing: false  # Désactiver la sauvegarde de checkpoints pour le test
+    callbacks: null
+    default_root_dir: null
+    num_nodes: 1
+    gpus: 0,
+    auto_select_gpus: false
+    enable_progress_bar: true
+    precision: 32
+    resume_from_checkpoint: "path_to_your_checkpoint.ckpt"  # Chemin vers le checkpoint sauvegardé
+    inference_mode: true
+  model:
+    prediction_dir: "predictions"
+    test_validation_dir: "validations_tests"
+    pretrained_file_path: unetr/pretrained_models/UNETR_model_best_acc.pth
+    in_channels: 1
+    out_channels: 14
+    roi_size:
+    - 96
+    - 96
+    - 96
+    new_out_channels: 2
+    number_of_blocks_to_tune: 1
+    feature_size: 16
+    hidden_size: 768
+    mlp_dim: 3072
+    num_heads: 12
+    pos_embed: perceptron
+    norm_name: instance
+    conv_block: true
+    res_block: true
+    dropout_rate: 0.0
+    infer_overlap: 0.5
+    max_epochs: 1
+    labels_names:
+      '0': other
+      '1': meta
+    labels_colors:
+      '0':
+      - 0
+      - 0
+      - 0
+      '1':
+      - 255
+      - 0
+      - 0
+    smooth_dr: 1.0e-06
+    smooth_nr: 0.0
+    sw_batch_size: 4
+    use_bce_loss_when_binary_problem: true
+    prediction_saving_type:
+    - NOTHING
+    test_saving_type:
+    - NOTHING
+    metrics:
+    - DICE
+    - HAUSDORFF_DISTANCE_95
+    log_max_n_batches: null
+    prediction_logging_type:
+    - SEGMENTER
+    - LOG_AS_TABLE
+    val_test_logging_type:
+    - SEGMENTER
+    - LOG_AS_TABLE
+  data:
+    data_dir: niftiTest
+    json_datalist_filename: dataset_test.json
+    reader_type: NIFTI
+    use_cached_dataset: false
+    val_batch_size: 16
+    workers: 8
+    precision: 32
+    voxel_space:
+    - 1.5
+    - 1.5
+    - 2.0
+    a_min: -200.0
+    a_max: 300.0
+    b_min: 0.0
+    b_max: 1.0
+    clip: true
+    roi_size:
+    - 96
+    - 96
+    - 96
+    random_flip_prob: 0.2
+    random_90_deg_rotation_prob: 0.2
+    random_intensity_scale_prob: 0.1
+    random_intensity_shift_prob: 0.1
+    val_resize:
+    - -1
+    - -1
+    - 250
+  backbone_finetuning: null
+  early_stopping: null
+  model_checkpoint: null
+  checkpoint_dir_name: null
+  log_dir_name: logs
+  prediction_dir_name: predictions
+  test_validation_dir_name: validations_tests
+  ckpt_path: null
+predict:
+  trainer:
+    logger:
+      class_path: pytorch_lightning.loggers.WandbLogger
+      init_args:
+        name: PredictRun
+        project: Meta Project
+        save_dir: "" 
+        log_model: all
+    enable_checkpointing: false
+    callbacks: null
+    default_root_dir: null
+    num_nodes: 1
+    gpus: 0
+    auto_select_gpus: false
+    enable_progress_bar: true
+    precision: 32
+    resume_from_checkpoint: "path_to_your_checkpoint.ckpt"
+    inference_mode: true
+  model:
+    prediction_dir: "predictions"
+    test_validation_dir: "validations_tests"
+    pretrained_file_path: unetr/pretrained_models/UNETR_model_best_acc.pth
+    in_channels: 1
+    out_channels: 14
+    roi_size:
+    - 96
+    - 96
+    - 96
+    new_out_channels: 2
+    number_of_blocks_to_tune: 1
+    feature_size: 16
+    hidden_size: 768
+    mlp_dim: 3072
+    num_heads: 12
+    pos_embed: perceptron
+    norm_name: instance
+    conv_block: true
+    res_block: true
+    dropout_rate: 0.0
+    infer_overlap: 0.5
+    max_epochs: 1
+    labels_names:
+      '0': other
+      '1': meta
+    labels_colors:
+      '0':
+      - 0
+      - 0
+      - 0
+      '1':
+      - 255
+      - 0
+      - 0
+    smooth_dr: 1.0e-06
+    smooth_nr: 0.0
+    sw_batch_size: 4
+    use_bce_loss_when_binary_problem: true
+    prediction_saving_type:
+    - NOTHING
+    test_saving_type:
+    - NOTHING
+    metrics:
+    - DICE
+    - HAUSDORFF_DISTANCE_95
+    log_max_n_batches: null
+    prediction_logging_type:
+    - SEGMENTER
+    - LOG_AS_TABLE
+    val_test_logging_type:
+    - SEGMENTER
+    - LOG_AS_TABLE
+  data:
+    data_dir: niftiTest
+    json_datalist_filename: dataset_test.json
+    reader_type: NIFTI
+    use_cached_dataset: false
+    val_batch_size: 16
+    workers: 8
+    precision: 32
+    voxel_space:
+    - 1.5
+    - 1.5
+    - 2.0
+    a_min: -200.0
+    a_max: 300.0
+    b_min: 0.0
+    b_max: 1.0
+    clip: true
+    roi_size:
+    - 96
+    - 96
+    - 96
+    random_flip_prob: 0.2
+    random_90_deg_rotation_prob: 0.2
+    random_intensity_scale_prob: 0.1
+    random_intensity_shift_prob: 0.1
+    val_resize:
+    - -1
+    - -1
+    - 250
+  log_dir_name: logs
+  prediction_dir_name: predictions
+  test_validation_dir_name: validations_tests

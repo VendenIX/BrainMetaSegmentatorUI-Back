@@ -41,29 +41,53 @@ def detect_contours(image):
 """
 Simulation de la génération d'un RTStruct à partir de fichiers DICOM passés en mémoire
 """
-def simulate_rtstruct_generation2(dicom_datasets: List[Dataset]):
+def simulate_rtstruct_generation2(dicom_datasets: List[Dataset], existing_rtstruct: Dataset):
 
     dicom_files = dicom_datasets
     # lire et trier les fichiers dicoms par 'InstanceNumber' #si c pas fait, les rois corespondront pas aux dicoms
     dicom_files.sort(key=lambda x: x.InstanceNumber if 'InstanceNumber' in dir(x) else 0)
-    # creation du rtstruct vierge
+
+    label = create_mask_from_dicom(dicom_datasets)
+    if existing_rtstruct is not None:
+        rtstruct, isFromCurrentRTStruct = update_rtstruct(dicom_datasets, existing_rtstruct, label) 
+        isFromCurrentRTStruct = True
+    else:
+        rtstruct, isFromCurrentRTStruct = create_rtstruct(dicom_datasets, label)
+
+    return rtstruct, isFromCurrentRTStruct
+
+def create_rtstruct(dicom_datasets: List[Dataset], label):
+    """
+    Crée un nouveau RTStruct à partir des fichiers DICOM et des masques générés.
+    """
+    print("Je crérer un nouveau RTStruct pour le mock")
     rtstruct = RTStructBuilder.create_new_from_memory(dicom_datasets)
+    mask = create_mask_from_dicom(dicom_datasets)
+    rtstruct.add_roi(mask=mask, color=[255, 0, 0], name='Brain Contours')
+    return rtstruct, False
 
+def update_rtstruct(dicom_datasets: List[Dataset], existing_rtstruct: Dataset, label):
+    """
+    Met à jour un RTStruct existant avec de nouveaux contours basés sur les fichiers DICOM fournis.
+    """
+    print("Je réécris sur le RTStruct déjà présent pour le mock")
+    rtstruct = RTStructBuilder.create_from_memory(dicom_datasets, existing_rtstruct)
+    mask = create_mask_from_dicom(dicom_datasets)
+    rtstruct.add_roi(mask=mask, color=[255, 0, 0], name='Updated Brain Contours')
+    return rtstruct, True
 
-    # init du masque 3D basé sur le nombre de fichiers et la taille des images
-    num_slices = len(dicom_files)
-    mask_shape = (dicom_files[0].Rows, dicom_files[0].Columns, num_slices)
+def create_mask_from_dicom(dicom_datasets: List[Dataset]):
+    """
+    Crée un masque 3D à partir des fichiers DICOM en utilisant la fonction de détection de contours.
+    """
+    dicom_datasets.sort(key=lambda x: x.InstanceNumber if 'InstanceNumber' in dir(x) else 0)
+    num_slices = len(dicom_datasets)
+    mask_shape = (dicom_datasets[0].Rows, dicom_datasets[0].Columns, num_slices)
     full_mask = np.zeros(mask_shape, dtype=bool)
 
-    # pour chaque fichier dicom :
-    for i, dicom_data in enumerate(dicom_files):
-        # calculer le masque correspondant et le mettre dans le masque 3D
+    for i, dicom_data in enumerate(dicom_datasets):
         image = dicom_data.pixel_array
         contour_mask = detect_contours(image)
-        full_mask[:, :, i] = contour_mask  # remplissage du masque 3D
+        full_mask[:, :, i] = contour_mask
 
-    # ajouter le masque au fichier RTStruct
-    rtstruct.add_roi(mask=full_mask, color=[255, 0, 0], name='Brain Contours')
-
-    # sauvegarde du fichier rtstruct
-    return rtstruct
+    return full_mask

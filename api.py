@@ -2,7 +2,7 @@ import os
 import shutil
 import tempfile
 from io import BytesIO
-from typing import List
+from typing import Dict, List, Optional, Tuple
 
 import pydicom
 import requests
@@ -55,20 +55,28 @@ def get_study(study_id):
 """
 Récupère les instances DICOM pour une étude spécifique à partir de son ID Orthanc
 """
-@app.route('/getStudyDicoms/<study_id>', methods=['GET'])
-def get_study_dicoms(study_id):
-    try:
-        # Récupération des instances DICOM pour l'étude spécifiée
-        response = requests.get(f"{ORTHANC_URL}/studies/{study_id}/instances")
-        if response.status_code == 200:
-            dicom_instances = response.json()
-            print("DICOM Instances for Study ID", study_id, ":", dicom_instances)
-            return jsonify(dicom_instances), 200
-        else:
-            return jsonify({"error": "Failed to retrieve DICOM instances"}), response.status_code
-    except requests.exceptions.RequestException as e:
-        print(e)
-        return jsonify({"error": "Server error"}), 500
+def get_dicom_instances_and_rtstruct(study_id: str) -> Tuple[List[pydicom.FileDataset], Optional[pydicom.FileDataset]]:
+    dicom_data = []
+    rtstruct = None
+
+    response = requests.get(f"{ORTHANC_URL}/studies/{study_id}/instances")
+    if response.status_code != 200:
+        raise requests.exceptions.RequestException(f"Failed to retrieve DICOM instances: {response.status_code}")
+
+    instances = response.json()
+    rtstruct_id = None 
+    for instance in instances:
+        instance_id = instance['ID']
+        dicom_response = requests.get(f"{ORTHANC_URL}/instances/{instance_id}/file", stream=True)
+        if dicom_response.status_code == 200:
+            dicom_file = pydicom.dcmread(BytesIO(dicom_response.content))
+            if dicom_file.Modality == 'RTSTRUCT' and rtstruct is None:
+                rtstruct = dicom_file
+                rtstruct_id = instance_id 
+            else:
+                dicom_data.append(dicom_file)
+
+    return dicom_data, rtstruct, rtstruct_id
 
 """
 Permet d'upload un fichier DICOM vers le serveur Orthanc
@@ -146,33 +154,17 @@ def segmentation(study_instance_uid):
         return jsonify({"error": "StudyInstanceUID not found"}), 404
 
     try:
-        # Récupérer les métadonnées des instances DICOM pour l'étude spécifiée
-        response = requests.get(f"{ORTHANC_URL}/studies/{orthanc_study_id}/instances")
-        if response.status_code != 200:
-            return jsonify({"error": "Failed to retrieve DICOM instances"}), response.status_code
+        dicom_data, rtstruct_data, rtstruct_id = get_dicom_instances_and_rtstruct(orthanc_study_id)
 
-        # Extraire les identifiants des instances DICOM à partir de la réponse JSON
-        instances = response.json()
-        dicom_data = []
+        rtstruct, isFromCurrentRTStruct = simulate_rtstruct_generation2(dicom_data, rtstruct_data)  # MOCK (FAKE RTSTRUCT)
+        #rtstruct, isFromCurrentRTStruct = generate_rtstruct_segmentation_unetr(dicom_data, model_path, rtstruct_data)  # MODELE (ATTENTION A LA RAM)
 
-        # Télécharger chaque fichier DICOM en utilisant son identifiant
-        for instance in instances:
-            instance_id = instance['ID']
-            dicom_response = requests.get(f"{ORTHANC_URL}/instances/{instance_id}/file", stream=True)
-
-            if dicom_response.status_code == 200:
-
-                dicom_file = pydicom.dcmread(BytesIO(dicom_response.content))
-                dicom_data.append(dicom_file)
-            else:
-                print(f"Failed to download DICOM file for instance ID {instance_id}")
-
-        print("DICOM files retrieved and processed successfully.")
-        #rtstruct = simulate_rtstruct_generation2(dicom_data)  # MOCK (FAKE RTSTRUCT)
-        rtstruct = generate_rtstruct_segmentation_unetr(dicom_data, model_path)  # MODELE (ATTENTION A LA RAM)
-        print(rtstruct)
-        upload_rtstruct(rtstruct)
-
+        if isFromCurrentRTStruct:
+            print("Voici l'id du RTStruct :", rtstruct_id)
+            update_or_upload_rtstruct(rtstruct, rtstruct_id)
+        else: 
+            update_or_upload_rtstruct(rtstruct)
+        
         return jsonify({"success": "DICOM files retrieved and processed successfully."}), 200
     except requests.exceptions.RequestException as e:
         return jsonify({"error": f"Server error: {str(e)}"}), 500
@@ -206,23 +198,26 @@ def find_orthanc_study_id_by_study_instance_uid(study_instance_uid):
 Permet d'envoyer un RTStruct vers le serveur Orthanc
 params : rtstruct -> le RTStruct à envoyer
 """
-def upload_rtstruct(rtstruct):
-    buffer = rtstruct.save_to_memory()  # Récupère le buffer en mémoire contenant le RTStruct
-    print("Uploading RTStruct...")
-    print(buffer)
-    try:
-        files = {'file': ('rtstruct.dcm', buffer, 'application/dicom')}
-        response = requests.post(f"{ORTHANC_URL}/instances", files=files)
+def update_or_upload_rtstruct(rtstruct, rtstruct_id=None):
+    if rtstruct_id:
+        # Suppression de l'ancien RTStruct
+        delete_response = requests.delete(f"{ORTHANC_URL}/instances/{rtstruct_id}")
+        if delete_response.status_code != 200:
+            print(f"Failed to delete old RTStruct: {delete_response.text}")
+            return jsonify({"error": "Failed to delete old RTStruct"}), delete_response.status_code
 
-        if response.status_code in [200, 202]:
-            orthanc_response = response.json() if response.content else "No JSON content in response"
-            return jsonify({"success": "RTStruct uploaded successfully", "OrthancResponse": orthanc_response}), response.status_code
-        else:
-            return jsonify({"error": "Failed to upload RTStruct to Orthanc", "OrthancResponse": response.text}), response.status_code
-    except Exception as e:
-        print(e)
-        return jsonify({"error": "Server error"}), 500
+    # Téléchargement du nouveau ou mis à jour RTStruct
+    buffer = rtstruct.save_to_memory()
+    files = {'file': ('rtstruct.dcm', buffer, 'application/dicom')}
+    upload_response = requests.post(f"{ORTHANC_URL}/instances", files=files)
+
+    if upload_response.status_code in [200, 202]:
+        return jsonify({"success": "RTStruct uploaded successfully"}), upload_response.status_code
+    else:
+        return jsonify({"error": "Failed to upload RTStruct"}), upload_response.status_code
+
     
+
 """
 Permet de récupérer la base de donnée de suivi des patients
 """
