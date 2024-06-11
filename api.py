@@ -3,7 +3,9 @@ import shutil
 import tempfile
 from io import BytesIO
 from typing import Dict, List, Optional, Tuple
-
+from pydicom.filereader import InvalidDicomError
+import zipfile
+import io
 import pydicom
 import requests
 from flask import Flask, g, jsonify, render_template, request
@@ -73,6 +75,7 @@ def get_dicom_instances_and_rtstruct(study_id: str) -> Tuple[List[pydicom.FileDa
             if dicom_file.Modality == 'RTSTRUCT' and rtstruct is None:
                 rtstruct = dicom_file
                 rtstruct_id = instance_id 
+                print("id du rtstruct :", rtstruct_id)
             else:
                 dicom_data.append(dicom_file)
 
@@ -117,6 +120,44 @@ def upload_dicom():
         print(f"Erreur lors du traitement du fichier DICOM : {e}")
         return jsonify({"error": "Erreur serveur"}), 500
     
+def download_and_process_dicoms(study_id, orthanc_study_id):
+    query = f"{ORTHANC_URL}/studies/{orthanc_study_id}/archive"
+    try:
+        response = requests.get(query, verify=False)
+        if response.status_code == 200:
+            print(f"Retrieved study archive: {orthanc_study_id}")
+            zip_content = response.content
+            file_like_object = io.BytesIO(zip_content)
+            zip_object = zipfile.ZipFile(file_like_object)
+
+            dicom_datasets = []
+            rtstruct = None
+            rtstruct_id = None
+
+            for zip_info in zip_object.infolist():
+                with zip_object.open(zip_info) as file:
+                    try:
+                        dicom_data = pydicom.dcmread(io.BytesIO(file.read()))
+                        # Vérifier si c'est un fichier RTSTRUCT
+                        orthanc_id = zip_info.filename
+                        if dicom_data.Modality == 'RTSTRUCT':
+                            rtstruct = dicom_data
+                            rtstruct_id = find_id_from_sop_instanceuid(study_id,dicom_data.SOPInstanceUID)
+                            print("rtstruct id  peut etre :",rtstruct_id )
+                        else:
+                            dicom_datasets.append(dicom_data)
+                    except InvalidDicomError:
+                        continue  # Gérer ou ignorer les fichiers non DICOM ou corrompus
+
+            print(f"Loaded {len(dicom_datasets)} DICOM files and 1 RTSTRUCT into memory.")
+            return dicom_datasets, rtstruct, rtstruct_id
+        else:
+            print("Failed to retrieve study:", response.status)
+            return None, None, None
+    except requests.RequestException as e:
+        print("Error during request:", str(e))
+        return None, None, None
+    
 """
 Permet de supprimer une étude DICOM du serveur Orthanc
 """
@@ -154,8 +195,8 @@ def segmentation(study_instance_uid):
         return jsonify({"error": "StudyInstanceUID not found"}), 404
 
     try:
-        dicom_data, rtstruct_data, rtstruct_id = get_dicom_instances_and_rtstruct(orthanc_study_id)
-
+        #dicom_data, rtstruct_data, rtstruct_id = get_dicom_instances_and_rtstruct(orthanc_study_id)
+        dicom_data, rtstruct_data, rtstruct_id = download_and_process_dicoms(orthanc_study_id,orthanc_study_id)
         rtstruct, isFromCurrentRTStruct = simulate_rtstruct_generation2(dicom_data, rtstruct_data)  # MOCK (FAKE RTSTRUCT)
         #rtstruct, isFromCurrentRTStruct = generate_rtstruct_segmentation_unetr(dicom_data, model_path, rtstruct_data)  # MODELE (ATTENTION A LA RAM)
 
@@ -172,6 +213,7 @@ def segmentation(study_instance_uid):
 """
 Permet d'acquérir l'ID Orthanc d'une étude DICOM à partir de son StudyInstanceUID
 """
+#Faudrait s'en passer, c'est pas opti, mais j'ai pas trouvé comment faire autrement
 def find_orthanc_study_id_by_study_instance_uid(study_instance_uid):
     studies_response = requests.get(f"{ORTHANC_URL}/studies")
     
@@ -194,6 +236,55 @@ def find_orthanc_study_id_by_study_instance_uid(study_instance_uid):
     
     return None
 
+def get_series_from_study(study_id):
+    response = requests.get(f"{ORTHANC_URL}/studies/{study_id}/series")
+    if response.status_code == 200:
+        series = response.json()
+        return [serie['ID'] for serie in series]
+    else:
+        print("Erreur lors de la récupération des séries:", response.status_code)
+        return []
+
+def get_instances_from_series(series_id):
+    response = requests.get(f"{ORTHANC_URL}/series/{series_id}/instances")
+    if response.status_code == 200:
+        instances = response.json()
+        return instances
+    else:
+        print("Erreur lors de la récupération des instances:", response.status_code)
+        return []
+
+"""
+Permet d'acquérir l'ID Orthanc d'un RTStruct à partir de son SOPInstanceUID
+"""
+# Faudrait s'en passer, c'est pas opti, mais j'ai pas trouvé comment faire autrement
+def find_id_from_sop_instanceuid(study_id, sop_instance_uid):
+    # Récupérer toutes les séries associées à l'étude
+    series_ids = get_series_from_study(study_id)
+    if not series_ids:
+        print("Aucune série trouvée pour l'étude:", study_id)
+        return None
+
+    # Itérer sur chaque série pour trouver l'instance avec le SOPInstanceUID donné
+    for series_id in series_ids:
+        instances = get_instances_from_series(series_id)
+        if not instances:
+            print("Aucune instance trouvée pour la série:", series_id)
+            continue
+
+        # Parcourir les instances pour trouver celle avec le SOPInstanceUID spécifique
+        for instance in instances:
+            instance_details_response = requests.get(f"{ORTHANC_URL}/instances/{instance['ID']}")
+            if instance_details_response.status_code == 200:
+                instance_details = instance_details_response.json()
+                if 'MainDicomTags' in instance_details and instance_details['MainDicomTags']['SOPInstanceUID'] == sop_instance_uid:
+                    return instance['ID']  # Retourner l'ID Orthanc de l'instance
+            else:
+                print(f"Erreur lors de la récupération des détails de l'instance {instance['ID']}: {instance_details_response.status_code}")
+                
+    print("SOPInstanceUID non trouvé :", sop_instance_uid)
+    return None
+
 """
 Permet d'envoyer un RTStruct vers le serveur Orthanc
 params : rtstruct -> le RTStruct à envoyer
@@ -203,6 +294,7 @@ def update_or_upload_rtstruct(rtstruct, rtstruct_id=None):
         # Suppression de l'ancien RTStruct
         delete_response = requests.delete(f"{ORTHANC_URL}/instances/{rtstruct_id}")
         if delete_response.status_code != 200:
+            print(delete_response.status_code)
             print(f"Failed to delete old RTStruct: {delete_response.text}")
             return jsonify({"error": "Failed to delete old RTStruct"}), delete_response.status_code
 
