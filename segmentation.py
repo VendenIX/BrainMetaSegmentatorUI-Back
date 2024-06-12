@@ -38,7 +38,28 @@ def getLabelOfIRM_from_nifti(nifti_image: nib.Nifti1Image, pathModelFile: str):
     dico_image = applyUNETR(transformed_image, model)
 
     label, imageT = disapplyTransforms(transform, dico_image)
-    label = sp.ndimage.label(label)[0]
+
+    labeled_array, num_features = sp.ndimage.label(label)
+    print("Le modèle à trouvé ",num_features," rois")
+    # Trouver les slices pour chaque région
+    slices = sp.ndimage.find_objects(labeled_array)
+    # Parcourir chaque feature pour évaluer et potentiellement supprimer les petites régions
+    for i in range(num_features):
+        current_slice = slices[i]
+        if current_slice is not None:
+            # Extraire la région actuelle en utilisant la slice
+            current_region = labeled_array[current_slice]
+            
+            # Calculer la taille de la région actuelle
+            size = np.sum(current_region == (i + 1))
+            print(f"Feature {i + 1}: Size = {size}")
+            
+            # Vérifier si la taille est inférieure au seuil
+            if size < 20:
+                # Définir les valeurs de cette région à zéro
+                labeled_array[current_slice][current_region == (i + 1)] = 0
+    label, num_features = sp.ndimage.label(labeled_array)
+    print("Après deletion des petites rois, il reste", num_features," rois")
     return nifti_image.get_fdata() / 255, label, imageT
 
 """
@@ -190,9 +211,9 @@ Permet d'écrire sur un RTStruct via des dicoms à partir du label obtenu via le
 """
 def update_rtstruct(dicom_datasets: List[pydicom.dataset.Dataset], existing_rtstruct: pydicom.dataset.Dataset, label):
     rtstruct = RTStructBuilder.create_from_memory(dicom_datasets, existing_rtstruct)
-    for i in range (1, int(np.max(label))+1):
+    for i in range (1, np.max(label)+1):
         # Prepare the mask for the current label
-        mask = np.rot90(np.where(label == i, True, False)[0, :, :, :], 3)
+        mask = np.where(label[0, :, :, :] == i, True, False) 
         # Generate a unique name for the ROI
         roi_name = generate_unique_name(rtstruct, f"GTV_MetIA_{i}")
         # Add the new ROI to the RTStruct
@@ -210,13 +231,28 @@ def generate_unique_name(rtstruct, base_name):
     Returns:
         str: A unique name for the ROI.
     """
-    existing_names = {roi.name for roi in rtstruct.get_rois()}  # Get all existing ROI names
+    existing_names = rtstruct.get_rois_names()
+    new_names = set()  # Pour garder les noms générés dans cette session
     suffix = 1
-    unique_name = base_name
-    while unique_name in existing_names:
-        unique_name = f"{base_name}_{suffix}"
-        suffix += 1
-    return unique_name
+ 
+    # Vérifier d'abord si un nom de base conflictuel existe
+    conflict = any(name.startswith(base_name) for name in existing_names)
+ 
+    # Si un conflit existe, ajuster tous les noms
+    if conflict:
+        for name in existing_names:
+            if name.startswith(base_name):
+                new_name = f"{base_name}_{suffix}"
+                while new_name in existing_names or new_name in new_names:
+                    suffix += 1
+                    new_name = f"{base_name}_{suffix}"
+                new_names.add(new_name)
+    else:
+        # Aucun conflit, utiliser le nom de base directement
+        new_names.add(base_name)
+ 
+    # Renvoyer le dernier nom unique généré ou le nom de base si aucun conflit n'était présent
+    return max(new_names, key=len)
 
 def generate_rtstruct_segmentation_unetr(dicom_datasets: List[pydicom.dataset.Dataset], pathModelFile: str, existing_rtstruct: Optional[pydicom.dataset.Dataset] = None):
     """
