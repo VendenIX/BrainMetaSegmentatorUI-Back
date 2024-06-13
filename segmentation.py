@@ -14,6 +14,29 @@ import monai.transforms as transforms
 from rt_utils import RTStructBuilder
 import scipy as sp
 
+COLORS = [
+    [255, 0, 0],     # Rouge
+    [0, 255, 0],     # Vert
+    [0, 0, 255],     # Bleu
+    [255, 255, 0],   # Jaune
+    [0, 255, 255],   # Cyan
+    [255, 0, 255],   # Magenta
+    [192, 192, 192], # Gris
+    [128, 0, 0],     # Bordeaux
+    [128, 128, 0],   # Olive
+    [0, 128, 0],     # Vert foncé
+    [128, 0, 128],   # Pourpre
+    [0, 128, 128],   # Sarcelle
+    [0, 0, 128],     # Bleu marine
+    [255, 165, 0],   # Orange
+    [255, 20, 147],  # Rose vif
+    [75, 0, 130],    # Indigo
+    [255, 192, 203], # Rose pâle
+    [70, 130, 180],  # Bleu acier
+    [240, 230, 140], # Kaki
+    [95, 158, 160]   # Vert cadet
+]
+
 """
 Transforme une liste de datasets DICOM en une image Nifti1Image
 :param dicom_datasets: une liste de datasets DICOM
@@ -187,9 +210,15 @@ Chargement du modèle pré-entrainé pour la segmentation
 """
 def loadModel(pathModelFile):
     #map_location = torch.device('cpu') a faire pas ici mais dans unetr/model_module.py ligne 133 ou try faire ailleurs
-    model= SegmentationTask.load_from_checkpoint(pathModelFile)
+    model = SegmentationTask.load_from_checkpoint(pathModelFile)
     model.eval()
-    return model
+    model.half()
+    def print_model_precision(model):
+        for name, param in model.named_parameters():
+            print(f"Layer {name} - dtype: {param.dtype}")
+    print("precision du modele :")
+    print_model_precision(model)
+    return None 
 
 """
 Permet de créer le RTStruct final à envoyer au serveur dicom web à partir du label obtenu via le modèle
@@ -200,7 +229,8 @@ def create_rtstruct(dicom_datasets: List[pydicom.dataset.Dataset], label):
     rtstruct = RTStructBuilder.create_new_from_memory(dicom_datasets)
     for i in range(1, np.max(label) + 1):
         mask = np.where(label[0, :, :, :] == i, True, False) 
-        rtstruct.add_roi(mask=mask, color=[255, 0, 0], name="GTV_MetIA_" + str(i))
+        color = COLORS[(i - 1) % len(COLORS)]
+        rtstruct.add_roi(mask=mask, color=color, name="GTV_MetIA_" + str(i))
     return rtstruct
 
 """
@@ -217,7 +247,8 @@ def update_rtstruct(dicom_datasets: List[pydicom.dataset.Dataset], existing_rtst
         # Generate a unique name for the ROI
         roi_name = generate_unique_name(rtstruct, f"GTV_MetIA_{i}")
         # Add the new ROI to the RTStruct
-        rtstruct.add_roi(mask=mask, color=[255, 0, 0], name=roi_name)
+        color = COLORS[(i - 1) % len(COLORS)]
+        rtstruct.add_roi(mask=mask, color=color, name=roi_name)
     return rtstruct
 
 def generate_unique_name(rtstruct, base_name):
