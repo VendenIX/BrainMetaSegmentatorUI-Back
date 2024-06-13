@@ -212,13 +212,7 @@ def loadModel(pathModelFile):
     #map_location = torch.device('cpu') a faire pas ici mais dans unetr/model_module.py ligne 133 ou try faire ailleurs
     model = SegmentationTask.load_from_checkpoint(pathModelFile)
     model.eval()
-    model.half()
-    def print_model_precision(model):
-        for name, param in model.named_parameters():
-            print(f"Layer {name} - dtype: {param.dtype}")
-    print("precision du modele :")
-    print_model_precision(model)
-    return None 
+    return model 
 
 """
 Permet de créer le RTStruct final à envoyer au serveur dicom web à partir du label obtenu via le modèle
