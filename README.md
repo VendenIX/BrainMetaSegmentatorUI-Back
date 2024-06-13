@@ -12,7 +12,7 @@ Ce projet est séparé en deux parties :
 
 | Ressource              | Requis                                                  |
 |------------------------|---------------------------------------------------------|
-| Mémoire RAM            | 140 GB de RAM minimum                                          |
+| Mémoire RAM            | run on RTX 4080 44GB VRAM overlap=0.47 , batch = 1 , mixed precision                                          |
 | GPU                    | Vivement recommandé d'utiliser des GPUs avec conda               |
 
 ## Prérequis de Configuration pour lancer le mock (simulation)
