@@ -25,7 +25,7 @@ services:
     networks:
       - pacs
 
-  # COMMENTE CAR J'UTILISE OHIF EN LOCAL !
+  # C OMMENTE CAR J'UTILISE OHIF EN LOCAL !
   #ohif_viewer:
   #  container_name: ohif
   #  image: ohif/viewer

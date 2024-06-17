@@ -16,12 +16,20 @@ from pydicom.dataset import Dataset
 
 from BDD.MesuresSQLite import MesuresDB
 from mock import simulate_rtstruct_generation2
-from segmentation import generate_rtstruct_segmentation_unetr
+from segmentation import generate_rtstruct_segmentation_unetr, extract_roi_info
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 ORTHANC_URL = "http://localhost:8042"
 model_path = '/Users/romain/Downloads/Modeles_Pre_Entraines/checkpoint_epoch1599_val_loss0255.cpkt'
+
+@app.after_request
+def add_cors_headers(response):
+    response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+    response.headers.add('Access-Control-Allow-Credentials', 'true')
+    return response
 
 """
 Récupère la liste des études DICOM stockées dans le serveur Orthanc
@@ -55,33 +63,6 @@ def get_study(study_id):
     except requests.exceptions.RequestException as e:
         print(e)
         return jsonify({"error": str(e)}), 500
-
-"""
-Récupère les instances DICOM pour une étude spécifique à partir de son ID Orthanc
-"""
-def get_dicom_instances_and_rtstruct(study_id: str) -> Tuple[List[pydicom.FileDataset], Optional[pydicom.FileDataset]]:
-    dicom_data = []
-    rtstruct = None
-
-    response = requests.get(f"{ORTHANC_URL}/studies/{study_id}/instances")
-    if response.status_code != 200:
-        raise requests.exceptions.RequestException(f"Failed to retrieve DICOM instances: {response.status_code}")
-
-    instances = response.json()
-    rtstruct_id = None 
-    for instance in instances:
-        instance_id = instance['ID']
-        dicom_response = requests.get(f"{ORTHANC_URL}/instances/{instance_id}/file", stream=True)
-        if dicom_response.status_code == 200:
-            dicom_file = pydicom.dcmread(BytesIO(dicom_response.content))
-            if dicom_file.Modality == 'RTSTRUCT' and rtstruct is None:
-                rtstruct = dicom_file
-                rtstruct_id = instance_id 
-                print("id du rtstruct :", rtstruct_id)
-            else:
-                dicom_data.append(dicom_file)
-
-    return dicom_data, rtstruct, rtstruct_id
 
 """
 Permet d'upload un fichier DICOM vers le serveur Orthanc
@@ -196,16 +177,15 @@ def segmentation(study_instance_uid):
         return jsonify({"error": "StudyInstanceUID not found"}), 404
 
     try:
-        #dicom_data, rtstruct_data, rtstruct_id = get_dicom_instances_and_rtstruct(orthanc_study_id)
         dicom_data, rtstruct_data, rtstruct_id = download_and_process_dicoms(orthanc_study_id)
-        rtstruct, isFromCurrentRTStruct = simulate_rtstruct_generation2(dicom_data, rtstruct_data)  # MOCK (FAKE RTSTRUCT)
-        #rtstruct, isFromCurrentRTStruct = generate_rtstruct_segmentation_unetr(dicom_data, model_path, rtstruct_data)  # MODELE (ATTENTION A LA RAM)
+        #rtstruct, isFromCurrentRTStruct = simulate_rtstruct_generation2(dicom_data, rtstruct_data)  # MOCK (FAKE RTSTRUCT)
+        rtstruct, isFromCurrentRTStruct = generate_rtstruct_segmentation_unetr(dicom_data, model_path, rtstruct_data)  # MODELE (ATTENTION A LA RAM)
 
         if isFromCurrentRTStruct:
             print("Voici l'id du RTStruct :", rtstruct_id)
-            update_or_upload_rtstruct(rtstruct, rtstruct_id)
+            update_or_upload_rtstruct(dicom_data, rtstruct, rtstruct_id)
         else: 
-            update_or_upload_rtstruct(rtstruct)
+            update_or_upload_rtstruct(dicom_data, rtstruct)
         
         return jsonify({"success": "DICOM files retrieved and processed successfully."}), 200
     except requests.exceptions.RequestException as e:
@@ -238,7 +218,8 @@ def find_orthanc_id_by_sop_instance_uid(study_instance_uid):
 Permet d'envoyer un RTStruct vers le serveur Orthanc
 params : rtstruct -> le RTStruct à envoyer
 """
-def update_or_upload_rtstruct(rtstruct, rtstruct_id=None):
+def update_or_upload_rtstruct(dicoms, rtstruct, rtstruct_id=None):
+    print("perdo")
     if rtstruct_id:
         # Suppression de l'ancien RTStruct
         delete_response = requests.delete(f"{ORTHANC_URL}/instances/{rtstruct_id}")
@@ -250,6 +231,13 @@ def update_or_upload_rtstruct(rtstruct, rtstruct_id=None):
     # Téléchargement du nouveau ou mis à jour RTStruct
     buffer = rtstruct.save_to_memory()
     files = {'file': ('rtstruct.dcm', buffer, 'application/dicom')}
+    print("au moins j'arrive ici")
+    rtstruct_pydicom = pydicom.dcmread(BytesIO(buffer.getvalue()))
+    print("j'arrive et qu'est ce que je fais ? ")
+    print("type de rtstrut_pydicom : ", type(rtstruct_pydicom))
+    print("type de dicoms :", type(dicoms), " ", type(dicoms[0]))
+    rois_informations = extract_roi_info(rtstruct_pydicom, dicoms)
+    print("omg j'ai récup les rois informations :", rois_informations)
     upload_response = requests.post(f"{ORTHANC_URL}/instances", files=files)
 
     if upload_response.status_code in [200, 202]:
