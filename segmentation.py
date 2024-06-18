@@ -362,11 +362,6 @@ def generate_rtstruct_segmentation_unetr(dicom_datasets: List[pydicom.dataset.Da
 def extract_roi_info(rtstruct, dicom_series):
 
     dicom_series.sort(key=lambda x: int(x.InstanceNumber))
-    
-    # Extraire les informations de PixelSpacing et SliceThickness
-    pixel_spacing = dicom_series[0].PixelSpacing
-    slice_thickness = dicom_series[0].SliceThickness
-
     # Créer une map des positions de slices à leurs indices
     slice_positions = {round(dcm.ImagePositionPatient[2], 2): i+1 for i, dcm in enumerate(dicom_series)}
 

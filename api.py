@@ -102,38 +102,75 @@ Permet d'upload un fichier DICOM vers le serveur Orthanc
 @app.route('/uploadDicom', methods=['POST'])
 def upload_dicom():
     print("Requête reçue pour /uploadDicom")
-    file = request.files['file']
-    print(f"Fichier reçu : {file.filename}")
+    files = request.files.getlist('files[]')
+    print(f"{len(files)} fichiers reçus")
+
     try:
-        # Vérifier l'extension du fichier
-        # C'est une approche basique, préférable d'analyser le contenu du fichier
-        if not file.filename.endswith('.dcm'):
-            return jsonify({"error": "Le fichier n'est pas un fichier DICOM (.dcm)"}), 400
+        dicoms = []
+        rtstruct = None
 
-        # Pour une validation plus robuste, tenter de lire le fichier comme un fichier DICOM
-        print(f"Tentative de lecture du fichier DICOM : {file.filename}")
-        ds = pydicom.dcmread(file)
-        if ds is None or len(ds) == 0:
-            print("Le fichier DICOM est vide ou non lisible.")
-            return jsonify({"error": "Le fichier DICOM est vide ou non lisible."}), 400
-        file.seek(
-            0)  # # Remettre le pointeur au début du fichier, c'est ultra important, sinon le pycom read empêche l'upload, sinon le fichier est à la fin et donc "vide" du point de vue de la lecture.
+        for file in files:
+            print(f"Fichier reçu : {file.filename}")
 
-        print(f"Lecture du fichier DICOM réussie : {file.filename}")
-        # Effectuer l'upload vers Orthanc ou autre logique nécessaire
-        print(f"Préparation de l'envoi du fichier à Orthanc : {file.filename}")
-        files = {'file': (file.filename, file, 'application/dicom')}
-        response = requests.post(f"{ORTHANC_URL}/instances", files=files)
-        print(f"Réponse d'Orthanc : Statut {response.status_code}, Contenu {response.content}")
+            if not file.filename.endswith('.dcm'):
+                return jsonify({"error": f"Le fichier {file.filename} n'est pas un fichier DICOM (.dcm)"}), 400
 
-        if response.status_code in [200, 202]:
-            print("DICOM file uploaded successfully")
-            return jsonify({"success": "DICOM file uploaded successfully"}), response.status_code
-        else:
-            print("Failed to upload DICOM file to Orthanc")
-            return jsonify({"error": "Failed to upload DICOM file to Orthanc"}), response.status_code
+            # Lire le fichier DICOM en mémoire
+            file_bytes = BytesIO(file.read())
+            dicom_data = pydicom.dcmread(file_bytes)
+
+            if dicom_data.Modality == 'RTSTRUCT':
+                rtstruct = dicom_data
+            else:
+                dicoms.append(dicom_data)
+
+            # Réinitialiser le pointeur du fichier pour l'upload
+            file.seek(0)
+
+            # Effectuer l'upload vers Orthanc
+            upload_files = {'file': (file.filename, file, 'application/dicom')}
+            response = requests.post(f"{ORTHANC_URL}/instances", files=upload_files)
+            print(f"Réponse d'Orthanc : Statut {response.status_code}, Contenu {response.content}")
+
+        # Si on envoie un RTStruct sans images dicoms avec, on va aller chercher sur le serveur ses images dicoms
+        if rtstruct and not dicoms:
+            print("est ce que je rentre ici au moins ?")
+            study_instance_uid = rtstruct.StudyInstanceUID
+            orthanc_study_id = find_orthanc_id_by_sop_instance_uid(study_instance_uid)
+            dicoms, _, _ = download_and_process_dicoms(orthanc_study_id)
+        print("len :")
+        print(len(dicoms))
+        # Si on a les dicoms et le rtstruct, on peut ajouter les données des meta à la base de donnée
+        if rtstruct and dicoms:
+            meta_infos, rtstruct_infos = extract_roi_info(rtstruct, dicoms)
+            # Convertir les informations du RTStruct
+            patient_id = int(rtstruct_infos["PatientID"])  # Convertir en entier
+            patient_name = str(rtstruct_infos["PatientName"])
+            patient_birth_date = convertir_date(rtstruct_infos["PatientBirthDate"])
+            patient_sex = rtstruct_infos["PatientSex"]
+            study_date = convertir_date(rtstruct_infos["StudyDate"])
+            study_instance_uid = rtstruct_infos["StudyInstanceUID"]
+
+            # Impression des informations des ROIs
+            for roi_name, info in meta_infos.items():
+                print(f"{roi_name} : Diamètre max: {info['diameter_max']:.2f} mm, Volume: {info['volume_cm3']:.2f} cm³, Slice de début: {info['start_slice']} ,Slice de fin: {info['end_slice']}")
+
+            db = get_db()
+
+            # Ajout du patient
+            db.ajouter_patient(patient_id, patient_name, patient_birth_date, patient_sex)
+
+            # Ajout de l'étude
+            db.ajouter_etude(study_instance_uid, patient_id, date_traitement=study_date)
+
+            # Ajout des métastases
+            for roi_name, info in meta_infos.items():
+                db.ajouter_metastase(study_instance_uid, str(roi_name), info["volume_cm3"], info["diameter_max"], info["start_slice"], info["end_slice"])
+
+        return jsonify({"success": "DICOM files uploaded and processed successfully"}), 200
+
     except Exception as e:
-        print(f"Erreur lors du traitement du fichier DICOM : {e}")
+        print(f"Erreur lors du traitement des fichiers DICOM : {e}")
         return jsonify({"error": "Erreur serveur"}), 500
 
 
