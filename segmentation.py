@@ -13,7 +13,6 @@ from unetr.model_module import SegmentationTask
 import monai.transforms as transforms
 from rt_utils import RTStructBuilder
 import scipy as sp
-from torch.cuda.amp import autocast
 
 COLORS = [
     [255, 0, 0],     # Rouge
@@ -61,8 +60,7 @@ def getLabelOfIRM_from_nifti(nifti_image: nib.Nifti1Image, pathModelFile: str):
 
     model = loadModel(pathModelFile)
     # dico_image = {"image": transformed_image, "label": torch.zeros_like(transformed_image)}
-    with autocast():
-        dico_image = applyUNETR(transformed_image, model)
+    dico_image = applyUNETR(transformed_image, model)
 
     label, imageT = disapplyTransforms(transform, dico_image)
 
@@ -209,11 +207,12 @@ Applique le modèle de segmentation UNETR sur les images dicoms converties en ni
 
 def applyUNETR(dicoImage, model):
     dicoImage["image"] = dicoImage["image"].to('cuda')
-    label = sliding_window_inference(inputs=dicoImage["image"][None],
-                                     roi_size=(96, 96, 96),
-                                     sw_batch_size=1,
-                                     predictor=model,
-                                     overlap=0.47)
+    with torch.no_grad():
+        label = sliding_window_inference(inputs=dicoImage["image"][None],
+                                             roi_size=(96, 96, 96),
+                                             sw_batch_size=4,
+                                             predictor=model,
+                                             overlap=0.6)
 
     label = torch.argmax(label, dim=1, keepdim=True)
 
@@ -251,7 +250,6 @@ Permet d'écrire sur un RTStruct via les dicoms, un label
 :param label: le label obtenu via le modèle
 """
 def process_rtstruct_and_calculate_details(dicom_datasets, label, existing_rtstruct=None, voxel_dimensions=(0.5, 0.5, 1.0)):
-    print("shape 1")
     print(label.shape)
     if existing_rtstruct:
         rtstruct = RTStructBuilder.create_from_memory(dicom_datasets, existing_rtstruct)
@@ -262,16 +260,10 @@ def process_rtstruct_and_calculate_details(dicom_datasets, label, existing_rtstr
 
     results = []
     labeled_array, num_features = sp.ndimage.label(label)
-    print("shape 2")
     objects = sp.ndimage.find_objects(labeled_array)
 
     for i in range(1, num_features + 1):
-        mask = np.where(labeled_array[objects[i-1]] == i, True, False)
-        region_volume = np.sum(mask) * np.prod(voxel_dimensions)  # Volume in mm³
-        bbox_lengths = [extent.stop - extent.start for extent in objects[i-1]]
-        diameters = [length * voxel for length, voxel in zip(bbox_lengths, voxel_dimensions)]
-        start_slice, end_slice = objects[i-1][2].start, objects[i-1][2].stop  # Z-dimension slices
-
+        mask = np.where(label[0,:,:,:] == i, True, False)
         # Add ROI to RTStruct
         color = COLORS[(i - 1) % len(COLORS)]
         roi_name = f"GTV_MetIA_{i}"
@@ -279,16 +271,7 @@ def process_rtstruct_and_calculate_details(dicom_datasets, label, existing_rtstr
             roi_name = generate_unique_name(rtstruct, f"GTV_MetIA_{i}")
         rtstruct.add_roi(mask=mask, color=color, name=roi_name)
 
-        # Save details
-        results.append({
-            'Region ID': i,
-            'Volume (mm³)': region_volume,
-            'Diameters (mm)': diameters,
-            'Start Slice': start_slice,
-            'End Slice': end_slice
-        })
-
-    return rtstruct, results, isFromCurrentRTStruct
+    return rtstruct, isFromCurrentRTStruct
 
 
 def generate_unique_name(rtstruct, base_name):
@@ -350,10 +333,8 @@ def generate_rtstruct_segmentation_unetr(dicom_datasets: List[pydicom.dataset.Da
     """
     niftis = dicom_to_nifti_in_memory(dicom_datasets)
     image, label, imageT = getLabelOfIRM_from_nifti(niftis, pathModelFile)
-    rt_struct, metastases_details, isFromCurrentRTStruct = process_rtstruct_and_calculate_details(dicom_datasets, label, existing_rtstruct)
+    rt_struct, isFromCurrentRTStruct = process_rtstruct_and_calculate_details(dicom_datasets, label, existing_rtstruct)
     print("Tout s'est bien passé on dirait")
-    for detail in metastases_details:
-        print(detail)
     return rt_struct, isFromCurrentRTStruct
 
 

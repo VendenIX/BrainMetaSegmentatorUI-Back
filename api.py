@@ -21,7 +21,8 @@ from segmentation import generate_rtstruct_segmentation_unetr
 app = Flask(__name__)
 CORS(app)
 ORTHANC_URL = "http://localhost:8042"
-model_path = "C:\MetIA\BrainMetaSegmentatorUI-Back\model\checkpoint-epoch=1599-val_loss=0.225.ckpt"
+#model_path = "C:\MetIA\models\checkpoint-epoch=1599-val_loss=0.225.ckpt"
+model_path = "C:\MetIA\models\checkpoint-epoch=2409-val_loss=0.306.ckpt"
 #model_path = "C:\MetIA\BrainMetaSegmentatorUI-Back\model\checkpoint-epoch=2409-val_loss=0.306.ckpt"
 
 """
