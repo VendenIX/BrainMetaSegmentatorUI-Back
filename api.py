@@ -13,7 +13,7 @@ from flask import Flask, g, jsonify, render_template, request
 from flask_cors import CORS
 import time
 from pydicom.dataset import Dataset
-
+import concurrent.futures
 from BDD.MesuresSQLite import MesuresDB
 from mock import simulate_rtstruct_generation2
 from segmentation import generate_rtstruct_segmentation_unetr, extract_roi_info
@@ -65,72 +65,55 @@ def get_study(study_id):
         print(e)
         return jsonify({"error": str(e)}), 500
 
-
-"""
-Récupère les instances DICOM pour une étude spécifique à partir de son ID Orthanc
-"""
-
-
-def get_dicom_instances_and_rtstruct(study_id: str) -> Tuple[List[pydicom.FileDataset], Optional[pydicom.FileDataset]]:
-    dicom_data = []
-    rtstruct = None
-
-    response = requests.get(f"{ORTHANC_URL}/studies/{study_id}/instances")
-    if response.status_code != 200:
-        raise requests.exceptions.RequestException(f"Failed to retrieve DICOM instances: {response.status_code}")
-
-    instances = response.json()
-    rtstruct_id = None
-    for instance in instances:
-        instance_id = instance['ID']
-        dicom_response = requests.get(f"{ORTHANC_URL}/instances/{instance_id}/file", stream=True)
-        if dicom_response.status_code == 200:
-            dicom_file = pydicom.dcmread(BytesIO(dicom_response.content))
-            if dicom_file.Modality == 'RTSTRUCT' and rtstruct is None:
-                rtstruct = dicom_file
-                rtstruct_id = instance_id
-                print("id du rtstruct :", rtstruct_id)
-            else:
-                dicom_data.append(dicom_file)
-
-    return dicom_data, rtstruct, rtstruct_id
-
-
 """
 Permet d'upload un fichier DICOM vers le serveur Orthanc
 """
+def upload_file_to_orthanc(file):
+    try:
+        print(f"Fichier reçu : {file.filename}")
+
+        if not file.filename.endswith('.dcm'):
+            return {"error": f"Le fichier {file.filename} n'est pas un fichier DICOM (.dcm)"}, 400
+
+        # Lire le fichier DICOM en mémoire
+        file_bytes = BytesIO(file.read())
+        dicom_data = pydicom.dcmread(file_bytes)
+
+        # Réinitialiser le pointeur du fichier pour l'upload
+        file.seek(0)
+
+        # Effectuer l'upload vers Orthanc
+        upload_files = {'file': (file.filename, file, 'application/dicom')}
+        response = requests.post(f"{ORTHANC_URL}/instances", files=upload_files)
+        print(f"Réponse d'Orthanc : Statut {response.status_code}, Contenu {response.content}")
+
+        return dicom_data, response
+    except Exception as e:
+        print(f"Erreur lors de l'upload du fichier DICOM : {e}")
+        return None, None
+
 @app.route('/uploadDicom', methods=['POST'])
 def upload_dicom():
     print("Requête reçue pour /uploadDicom")
     files = request.files.getlist('files[]')
     print(f"{len(files)} fichiers reçus")
 
+    dicoms = []
+    rtstruct = None
+
+    start_time = time.time()
+
     try:
-        dicoms = []
-        rtstruct = None
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            future_to_file = {executor.submit(upload_file_to_orthanc, file): file for file in files}
 
-        for file in files:
-            print(f"Fichier reçu : {file.filename}")
-
-            if not file.filename.endswith('.dcm'):
-                return jsonify({"error": f"Le fichier {file.filename} n'est pas un fichier DICOM (.dcm)"}), 400
-
-            # Lire le fichier DICOM en mémoire
-            file_bytes = BytesIO(file.read())
-            dicom_data = pydicom.dcmread(file_bytes)
-
-            if dicom_data.Modality == 'RTSTRUCT':
-                rtstruct = dicom_data
-            else:
-                dicoms.append(dicom_data)
-
-            # Réinitialiser le pointeur du fichier pour l'upload
-            file.seek(0)
-
-            # Effectuer l'upload vers Orthanc
-            upload_files = {'file': (file.filename, file, 'application/dicom')}
-            response = requests.post(f"{ORTHANC_URL}/instances", files=upload_files)
-            print(f"Réponse d'Orthanc : Statut {response.status_code}, Contenu {response.content}")
+            for future in concurrent.futures.as_completed(future_to_file):
+                dicom_data, response = future.result()
+                if dicom_data and response:
+                    if dicom_data.Modality == 'RTSTRUCT':
+                        rtstruct = dicom_data
+                    else:
+                        dicoms.append(dicom_data)
 
         # Si on envoie un RTStruct sans images dicoms avec, on va aller chercher sur le serveur ses images dicoms
         if rtstruct and not dicoms:
@@ -166,6 +149,9 @@ def upload_dicom():
             # Ajout des métastases
             for roi_name, info in meta_infos.items():
                 db.ajouter_metastase(study_instance_uid, str(roi_name), info["volume_cm3"], info["diameter_max"], info["start_slice"], info["end_slice"])
+
+        end_time = time.time()
+        print(f"Temps total d'upload et de traitement: {end_time - start_time:.2f} secondes")
 
         return jsonify({"success": "DICOM files uploaded and processed successfully"}), 200
 
@@ -261,7 +247,6 @@ def segmentation(study_instance_uid):
         return jsonify({"error": "StudyInstanceUID not found"}), 404
 
     try:
-        # dicom_data, rtstruct_data, rtstruct_id = get_dicom_instances_and_rtstruct(orthanc_study_id)
         dicom_data, rtstruct_data, rtstruct_id = download_and_process_dicoms(orthanc_study_id)
         #rtstruct, isFromCurrentRTStruct = simulate_rtstruct_generation2(dicom_data, rtstruct_data)  # MOCK (FAKE RTSTRUCT)
         rtstruct, isFromCurrentRTStruct = generate_rtstruct_segmentation_unetr(dicom_data, model_path, rtstruct_data)  # MODELE (ATTENTION A LA RAM)
