@@ -11,3 +11,6 @@ unetr/pretrained_models/*
 .idea/*
 nginx-1.26.0/logs/*
 nginx-1.26.0
+runs
+RunT
+nifti_dataset_small

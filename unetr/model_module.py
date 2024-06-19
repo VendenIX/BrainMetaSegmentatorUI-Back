@@ -5,7 +5,6 @@ from functools import partial
 import os
 import sys
 from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
-
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(SCRIPT_DIR))
 
@@ -21,41 +20,15 @@ import pytorch_lightning as pl
 from pytorch_lightning.callbacks import TQDMProgressBar
 from pytorch_lightning.cli import instantiate_class
 import torch
+from torch.utils.tensorboard import SummaryWriter
 
 from meta.data.dataset import MetaSubset
 from unetr.dice_bce_loss import DiceBCELoss
 from unetr.networks.unetr import UNETR
-from unetr.utilsUnetr.saver_logger_utils import ImageSaver, WandbLoggerUtils
-from unetr.utilsUnetr.types import (
-    ActionType,
-    LabelColors,
-    LabelNames,
-    Metrics,
-    PredictionSavingType,
-    WandbResultLogging,
-)
-
+from unetr.utilsUnetr.types import ActionType, LabelColors, LabelNames, Metrics, PredictionSavingType
 
 class SegmentationTask(pl.LightningModule):
-    """Class that wraps the medical segmentation task as a PyTorch Lightning module.
-
-    Attributes:
-        model: Network/pretrained model used to be train and solve the task.
-        backbone: Define a backbone from the used model for a possible finetuning.
-        model_inferer: Sliding window for model inference.
-        loss_fn: Loss function (if binary, `DiceBCELoss` is used, else the `DiceCELoss`)
-        post_label: Post processer of the label.
-        post_pred: Post processer of the model output.
-        metrics: Dictionnary that contains all the used metrics to rate the model from different methods.
-        max_epochs: Max number of iteration to fine-tune the model.
-        image_saver: Image saver utils instance.
-        val_test_logging_type: Type of logging for the validation and test stages.
-        prediction_logging_type: Type of logging for the prediction stage.
-        labels_names: Names of the labels.
-        labels_colors: Colors of the labels.
-        save_max_n_batches: Max number of batches to save.
-        log_max_n_batches: Max number of batches to log.
-    """
+    """Class that wraps the medical segmentation task as a PyTorch Lightning module."""
 
     def __init__(
         self,
@@ -85,12 +58,12 @@ class SegmentationTask(pl.LightningModule):
         sw_batch_size: int = 1,
         use_bce_loss_when_binary_problem: bool = False,
         save_max_n_batches: Optional[int] = None,
-        test_saving_type: List[PredictionSavingType] = [PredictionSavingType.NOTHING],
-        prediction_saving_type: List[PredictionSavingType] = [PredictionSavingType.NOTHING],
+        test_saving_type: List[str] = ["NOTHING"],
+        prediction_saving_type: List[str] = ["NOTHING"],
         metrics: List[Metrics] = [Metrics.DICE, Metrics.HAUSDORFF_DISTANCE_95],
         log_max_n_batches: Optional[int] = None,
-        val_test_logging_type: List[WandbResultLogging] = None,
-        prediction_logging_type: List[WandbResultLogging] = None,
+        val_test_logging_type: List[str] = None,
+        prediction_logging_type: List[str] = None,
     ):
         """
         Arguments:
@@ -128,7 +101,6 @@ class SegmentationTask(pl.LightningModule):
             prediction_logging_type: Type of logging for the prediction stage.
         """
         super(SegmentationTask, self).__init__()
-        #map_location='cpu'  ligne 133
         self.model = UNETR.from_pretrained(
             torch.load(os.path.normpath(pretrained_file_path), map_location=torch.device('cpu')), in_channels,
             out_channels, roi_size, new_out_channels=new_out_channels,
@@ -170,36 +142,23 @@ class SegmentationTask(pl.LightningModule):
         # some other utils classes or useful variables
         self.max_epochs = max_epochs
         self.save_max_n_batches = save_max_n_batches
-        self.image_saver = ImageSaver(test_validation_dir, prediction_dir, test_saving_type, prediction_saving_type)
-        
+
         self.log_max_n_batches = log_max_n_batches
-        self.val_test_logging_type = val_test_logging_type or [WandbResultLogging.SEGMENTER]
-        self.prediction_logging_type = prediction_logging_type or [WandbResultLogging.SEGMENTER]
         self.labels_names = labels_names or {0: "other", 1: "meta"}
         self.labels_colors = labels_colors or {0: (0, 0, 0), 1: (255, 0, 0)}
-        self._logger_utils = None
+
+        # TensorBoard logger
+        self.writer = SummaryWriter()
 
         self.save_hyperparameters()
-        
-    @property
-    def logger_utils(self) -> WandbLoggerUtils:
-        """Property that returns a W&B logger utils instance.
-        
-        Returns:
-            logger_utils: W&B logger utils instance.
-        """
-        if self._logger_utils is None:
-            self._logger_utils = WandbLoggerUtils(self.trainer.logger, self.log, self.val_test_logging_type,
-                                                  self.prediction_logging_type, self.labels_names, self.labels_colors)
-        return self._logger_utils
-    
+
     def forward(self, *args: Any, **kwargs: Any) -> Any:
         return self.model.forward(*args, **kwargs)
-    
+
     def set_progress_bar_description(self, patient_id: Union[str, Sequence[str]], action_type: ActionType) -> None:
         """Sets a progress bar description to have a better vision
         of the training/validation/testing/prediction stage.
-        
+
         Arguments:
             patient_id: ID(s) of the patient(s) that are currently passing in the model.
             action_type: Type of model action.
@@ -216,13 +175,13 @@ class SegmentationTask(pl.LightningModule):
             desc = f"Prediction inference -> {patient_id}"
 
         bar.main_progress_bar.set_description_str(desc)
-    
+
     def _get_post_transforms(self, dataloader: Optional[DataLoader] = None) -> Transform:
         """Gets the post transform associated to the dataloader.
-        
+
         Arguments:
             dataloader: Dataloader to get the correct inverse transform.
-        
+
         Returns:
             transform: Inverse transform after some processing.
         """
@@ -241,17 +200,17 @@ class SegmentationTask(pl.LightningModule):
             AsDiscreted(keys="pred", argmax=True),
         ])
         return self._post_transforms[dataset_repr]
-    
-    def post_process_data(self, dataloader: DataLoader, input: torch.Tensor, logits: torch.Tensor, 
-                          target: Optional[torch.Tensor] = None) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+
+    def post_process_data(self, dataloader: DataLoader, input: torch.Tensor, logits: torch.Tensor,
+                        target: Optional[torch.Tensor] = None) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         """Process the data after inference.
-        
+
         Arguments:
             dataloader: Dataloader to get the correct inverse transform.
             input: Image to predict.
             logits: Predicted logits.
             target: Ground truth mask.
-        
+
         Returns:
             data: Post processed data (applying inverse transform).
         """
@@ -264,13 +223,13 @@ class SegmentationTask(pl.LightningModule):
         }
         val_data = [post_transforms(item) for item in decollate_batch(val_data)]
         return tuple(from_engine(["image", "label", "pred"])(val_data))
-    
+
     def _get_values_from_batch(self, batch):
         """Extracts values from the batch.
-        
+
         Arguments:
             batch: Batch of data to extract.
-        
+
         Returns:
             image: Image to predict.
             label: Associated label to image.
@@ -279,9 +238,9 @@ class SegmentationTask(pl.LightningModule):
         """
         if isinstance(batch, dict):
             return batch["image"], batch["label"], batch["patient_id"], batch["has_meta"]
-        
+
         return batch
-    
+
     def training_step(self, batch, batch_idx):
         """Operates on a single batch of data from the train set.
         In this step, predictions are generated and metrics are computed to get the average train accuracies.
@@ -299,9 +258,10 @@ class SegmentationTask(pl.LightningModule):
 
         # log the training loss
         self.log("train_loss", loss, on_epoch=True, on_step=False)
-        
+        print("self.log train_loss", loss)
+        self.writer.add_scalar("Loss/train", loss, self.current_epoch)
         return loss
-    
+
     def on_train_epoch_end(self, *arg, **kwargs) -> None:
         """Called in the train loop at the very end of the epoch.
         Only the learning rate is logged to get an eye on this during training.
@@ -319,15 +279,18 @@ class SegmentationTask(pl.LightningModule):
         # we don't handle multiple schedulers or if there is no scheduler
         if schedulers is None or isinstance(schedulers, list):
             return
-        
+
+        lr = schedulers.get_lr()[0]
         self.log("learning_rate", schedulers.get_lr()[0])
-    
+        print("self.log learning_rate", lr)
+        self.writer.add_scalar("Learning_rate", lr, self.current_epoch)
+
     def on_validation_epoch_start(self) -> None:
         """Called in the validation loop at the very beginning of the epoch.
         Only the validation table is initialized.
         """
-        self.logger_utils.init_tables(ActionType.VALIDATION)
-    
+        pass
+
     def validation_step(self, batch, batch_idx):
         """Operates on a single batch of data from the validation set.
         In this step, predictions are generated and metrics are computed to get the average validation accuracies.
@@ -348,21 +311,15 @@ class SegmentationTask(pl.LightningModule):
         # compute metrics for the predicted samples
         for key in self.metrics.keys():
             self.metrics[key](y_pred=val_outputs, y=val_labels)
-        
+
         # log the validation loss
         self.log("val_loss", loss, on_epoch=True, on_step=False)
-
+        self.writer.add_scalar("Loss/val", loss, self.current_epoch)
         # prepare data and add them to the prediction table that will be logged at the epoch end
-        # data, target, preds = self.post_process_data(self.trainer.val_dataloaders[0], data, logits, target)
         preds = torch.argmax(logits, dim=1, keepdim=True)
-        for ii, single_patient_id in enumerate(patient_id):
 
-            if (self.log_max_n_batches and self.log_max_n_batches < batch_idx) or self.log_max_n_batches is None:
-                self.logger_utils.log_or_add_data(self.current_epoch, self.trainer.sanity_checking, 
-                    ActionType.VALIDATION, single_patient_id, has_meta[ii], data[ii], preds[ii], target[ii])
-        
         return loss
-    
+
     def on_validation_epoch_end(self, *arg, **kwargs) -> None:
         """Called in the validation loop at the very end of the epoch.
         The validation metrics and the validation table are logged and reset after logging.
@@ -373,24 +330,35 @@ class SegmentationTask(pl.LightningModule):
         """
         # log metrics and validation table
         if Metrics.DICE in self.metrics:
-            self.log("dice_val_acc (higher is better)", self.metrics[Metrics.DICE].aggregate())
-            self.log("dice_val_acc w/out bg (higher is better)", self.metrics[f"{Metrics.DICE}_without_bg"].aggregate())
-        if Metrics.HAUSDORFF_DISTANCE_95 in self.metrics:
-            self.log("hd95_val (lower is better)", self.metrics[Metrics.HAUSDORFF_DISTANCE_95].aggregate())
-            self.log("hd95_val w/out bg (lower is better)", self.metrics[f"{Metrics.HAUSDORFF_DISTANCE_95}_without_bg"].aggregate())
-        self.logger_utils.log_table(ActionType.VALIDATION)
+            dice_val = self.metrics[Metrics.DICE].aggregate()
+            dice_val_without_bg = self.metrics[f"{Metrics.DICE}_without_bg"].aggregate()
+            self.log("dice_val_acc (higher is better)", dice_val)
+            print("self.log dice_val_acc (higher is better)", dice_val)
+            self.log("dice_val_acc w/out bg (higher is better)", dice_val_without_bg)
+            print("self.log dice_val_acc (higher is better)", dice_val_without_bg)
+            self.writer.add_scalar("Dice/val", dice_val, self.current_epoch)
+            self.writer.add_scalar("Dice_without_bg/val", dice_val_without_bg, self.current_epoch)
 
-        # reset metrics and validation table
+        if Metrics.HAUSDORFF_DISTANCE_95 in self.metrics:
+            hd95_val = self.metrics[Metrics.HAUSDORFF_DISTANCE_95].aggregate()
+            hd95_val_without_bg = self.metrics[f"{Metrics.HAUSDORFF_DISTANCE_95}_without_bg"].aggregate()
+            self.log("hd95_val (lower is better)", hd95_val)
+            print("self.log hd95_val (lower is better)", hd95_val)
+            self.log("hd95_val w/out bg (lower is better)", hd95_val_without_bg)
+            print("self.log hd95_val w/out bg (lower is better)", hd95_val_without_bg)
+            self.writer.add_scalar("HD95/val", hd95_val, self.current_epoch)
+            self.writer.add_scalar("HD95_without_bg/val", hd95_val_without_bg, self.current_epoch)
+
+        # reset metrics
         for key in self.metrics.keys():
             self.metrics[key].reset()
-        self.logger_utils.init_tables(ActionType.VALIDATION)
-    
+
     def on_predict_epoch_start(self) -> None:
         """Called in the predict loop at the very beginning of the epoch.
         Only the predict table is initialized.
         """
-        self.logger_utils.init_tables(ActionType.PREDICTION)
-    
+        pass
+
     def predict_step(self, batch: Any, batch_idx: int, dataloader_idx: int = 0) -> Any:
         """Operates on a single batch of data from the predict set.
         In this step, predictions are generated and are logged and saved corresponding to init config.
@@ -407,18 +375,8 @@ class SegmentationTask(pl.LightningModule):
         # realize predictions and make post prediction transforms
         logits = self.model_inferer(data)
 
-        # prepare data and add them to the predict table that will be logged at the epoch end
-        # and save at step
-        # data, _, preds = self.post_process_data(self.trainer.val_dataloaders[0], data, logits)
         preds = torch.argmax(logits, dim=1, keepdim=True)
-        for ii, single_patient_id in enumerate(patient_id):
 
-            if (self.save_max_n_batches and self.save_max_n_batches < batch_idx) or self.save_max_n_batches is None:
-                self.image_saver.save(data[ii,...], None, preds[ii,...], ii, ActionType.PREDICTION)
-            if (self.log_max_n_batches and self.log_max_n_batches < batch_idx) or self.log_max_n_batches is None:
-                self.logger_utils.log_or_add_data(self.current_epoch, self.trainer.sanity_checking, 
-                    ActionType.PREDICTION, single_patient_id, has_meta[ii], data[ii], preds[ii])
-    
     def on_predict_epoch_end(self, *arg, **kwargs) -> None:
         """Called in the test loop at the very end of the epoch.
         The test metrics and the test table are logged and reset after logging.
@@ -427,18 +385,14 @@ class SegmentationTask(pl.LightningModule):
             *args: Ignored.
             **kwargs: Ignored.
         """
-        # log predict table
-        self.logger_utils.log_table(ActionType.PREDICTION)
-        
-        # reset predict table
-        self.logger_utils.init_tables(ActionType.PREDICTION)
-    
+        pass
+
     def on_test_epoch_start(self) -> None:
         """Called in the test loop at the very beginning of the epoch.
         Only the test table is initialized.
         """
-        self.logger_utils.init_tables(ActionType.TESTING)
-    
+        pass
+
     def test_step(self, batch: Any, batch_idx: int, dataloader_idx: int = 0) -> Any:
         """Operates on a single batch of data from the test set.
         In this step, predictions are generated and metrics are computed to get the average test accuracies.
@@ -451,33 +405,21 @@ class SegmentationTask(pl.LightningModule):
         """
         data, target, patient_id, has_meta = self._get_values_from_batch(batch)
         self.set_progress_bar_description(patient_id, ActionType.TESTING)
-        
+
         # realize predictions, compute loss and make post prediction transforms
         logits = self.model_inferer(data)
         loss = self.loss_fn(logits, target)
 
         val_outputs = [self.post_pred(i) for i in decollate_batch(logits)]
         val_labels = [self.post_label(i) for i in decollate_batch(target)]
-
-        # compute metrics for the predicted samples
+            # compute metrics for the predicted samples
         for key in self.metrics.keys():
             self.metrics[key](y_pred=val_outputs, y=val_labels)
-        
+
         # log the test loss
         self.log("test_loss", loss, on_epoch=True, logger=True, on_step=False)
-        
-        # prepare data and add them to the test table that will be logged at the epoch end
-        # and save at step
-        # data, target, preds = self.post_process_data(self.trainer.val_dataloaders[0], data, logits, target)
-        preds = torch.argmax(logits, dim=1, keepdim=True)
-        for ii, single_patient_id in enumerate(patient_id):
+        print("self.log test_loss", loss)
 
-            if (self.save_max_n_batches and self.save_max_n_batches < batch_idx) or self.save_max_n_batches is None:
-                self.image_saver.save(data[ii,...], target[ii,...], preds[ii,...], ii, ActionType.TESTING)
-            if (self.log_max_n_batches and self.log_max_n_batches < batch_idx) or self.log_max_n_batches is None:
-                self.logger_utils.log_or_add_data(self.current_epoch, self.trainer.sanity_checking, 
-                    ActionType.TESTING, single_patient_id, has_meta[ii], data[ii], preds[ii], target[ii])
-    
     def on_test_epoch_end(self, *arg, **kwargs) -> None:
         """Called in the test loop at the very end of the epoch.
         The test metrics and the test table are logged and reset after logging.
@@ -489,17 +431,17 @@ class SegmentationTask(pl.LightningModule):
         # log metrics and test table
         if Metrics.DICE in self.metrics:
             self.log("dice_test_acc (higher is best)", self.metrics[Metrics.DICE].aggregate())
-            self.log("dice_test_acc w/out bg (higher is best)", self.metrics[f"{Metrics.DICE}_without_bg"].aggregate())
+            print("self.log dice_test_acc (higher is best) ", self.metrics[Metrics.DICE].aggregate())
+            self.log("dice_test_acc w/out bg (higher is best) ", self.metrics[f"{Metrics.DICE}_without_bg"].aggregate())
+            print("self.log dice_test_acc w/out bg (higher is best) ", self.metrics[f"{Metrics.DICE}_without_bg"].aggregate() )
         if Metrics.HAUSDORFF_DISTANCE_95 in self.metrics:
             self.log("hd95_test (less is best)", self.metrics[Metrics.HAUSDORFF_DISTANCE_95].aggregate())
             self.log("hd95_test w/out bg (less is best)", self.metrics[f"{Metrics.HAUSDORFF_DISTANCE_95}_without_bg"].aggregate())
-        self.logger_utils.log_table(ActionType.TESTING)
 
-        # reset metrics and test table
+        # reset metrics
         for key in self.metrics.keys():
             self.metrics[key].reset()
-        self.logger_utils.init_tables(ActionType.TESTING)
-    
+
     def configure_optimizers(self) -> Any:
         """Choose what optimizers and learning-rate schedulers to use in your optimization.
 
@@ -511,7 +453,7 @@ class SegmentationTask(pl.LightningModule):
         optimizer = instantiate_class(self.parameters(), self.hparams.optimizer)
         scheduler = instantiate_class(optimizer, self.hparams.lr_scheduler)
         return [optimizer], [scheduler]
-    
+
     def lr_scheduler_step(self, scheduler, optimizer_idx, metric):
         """Overrides the way of calling the learning rate scheduler step.
 
@@ -522,14 +464,3 @@ class SegmentationTask(pl.LightningModule):
         """
         if scheduler is not None and isinstance(scheduler, torch.optim.lr_scheduler.CosineAnnealingLR):
             scheduler.step(epoch=self.current_epoch)
-
-
-def convert_model_to_torchscript(module: pl.LightningModule, output_dir: str, model_filename: str = "model.pt"):
-    """Converts a model to a torchscript for a future use.
-    
-    Arguments:
-        module: Model module to convert.
-        output_dir: Directory to save the converted model.
-        model_filename: Filename of the output model.
-    """
-    module.to_torchscript(os.path.join(output_dir, model_filename))
