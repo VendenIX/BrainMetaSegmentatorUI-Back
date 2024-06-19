@@ -13,6 +13,9 @@ from unetr.model_module import SegmentationTask
 import monai.transforms as transforms
 from rt_utils import RTStructBuilder
 import scipy as sp
+from torch.cuda.amp import autocast, GradScaler
+from shapely.geometry import Polygon
+from dicompylercore import dicomparser
 
 COLORS = [
     [255, 0, 0],     # Rouge
@@ -214,6 +217,7 @@ def applyUNETR(dicoImage, model):
                                              predictor=model,
                                              overlap=0.6)
 
+
     label = torch.argmax(label, dim=1, keepdim=True)
 
     size = label.shape
@@ -250,7 +254,6 @@ Permet d'écrire sur un RTStruct via les dicoms, un label
 :param label: le label obtenu via le modèle
 """
 def process_rtstruct_and_calculate_details(dicom_datasets, label, existing_rtstruct=None, voxel_dimensions=(0.5, 0.5, 1.0)):
-    print(label.shape)
     if existing_rtstruct:
         rtstruct = RTStructBuilder.create_from_memory(dicom_datasets, existing_rtstruct)
         isFromCurrentRTStruct = True
@@ -272,6 +275,7 @@ def process_rtstruct_and_calculate_details(dicom_datasets, label, existing_rtstr
         rtstruct.add_roi(mask=mask, color=color, name=roi_name)
 
     return rtstruct, isFromCurrentRTStruct
+
 
 
 def generate_unique_name(rtstruct, base_name):
@@ -333,10 +337,96 @@ def generate_rtstruct_segmentation_unetr(dicom_datasets: List[pydicom.dataset.Da
     """
     niftis = dicom_to_nifti_in_memory(dicom_datasets)
     image, label, imageT = getLabelOfIRM_from_nifti(niftis, pathModelFile)
-    rt_struct, isFromCurrentRTStruct = process_rtstruct_and_calculate_details(dicom_datasets, label, existing_rtstruct)
+
+    rt_struct, metastases_details, isFromCurrentRTStruct = process_rtstruct_and_calculate_details(dicom_datasets, label, existing_rtstruct)
     print("Tout s'est bien passé on dirait")
+    for detail in metastases_details:
+        print(detail)
     return rt_struct, isFromCurrentRTStruct
 
+def extract_roi_info(rtstruct, dicom_series):
+
+    dicom_series.sort(key=lambda x: int(x.InstanceNumber))
+    # Créer une map des positions de slices à leurs indices
+    slice_positions = {round(dcm.ImagePositionPatient[2], 2): i+1 for i, dcm in enumerate(dicom_series)}
+
+    rtstruct_infos = {
+        "PatientName": rtstruct.PatientName,
+        "PatientID": rtstruct.PatientID,
+        "PatientBirthDate": rtstruct.PatientBirthDate,
+        "PatientSex": rtstruct.PatientSex,
+        "StudyDate" : rtstruct.StudyDate,
+        "StudyInstanceUID" : rtstruct.StudyInstanceUID
+    }
+    # Charger le fichier RTStruct avec dicompyler-core
+    rtstruct = dicomparser.DicomParser(rtstruct)
+
+    # Extraire les structures
+    structures = rtstruct.GetStructures()
+
+    # Fonction pour calculer le diamètre d'un ROI
+    def calculate_diameter(contour):
+        max_distance = 0
+        for i in range(len(contour)):
+            for j in range(i + 1, len(contour)):
+                distance = np.linalg.norm(np.array(contour[i]) - np.array(contour[j]))
+                if distance > max_distance:
+                    max_distance = distance
+        return max_distance
+
+    # Fonction pour calculer le volume d'un ROI
+    def calculate_volume(coords, thickness):
+        volume = 0
+        for z in coords.keys():
+            contours = coords[z]
+            for contour in contours:
+                if len(contour['data']) >= 4:
+                    polygon = Polygon(contour['data'])
+                    volume += polygon.area * thickness
+        return volume / 1000  # Convertir en cm³
+
+    # Initialiser le dictionnaire de résultats
+    roi_info = {}
+
+    # Parcourir les structures et extraire les informations
+    for roi_number, roi_data in structures.items():
+        roi_name = roi_data['name']
+        
+        # Obtenir les coordonnées des contours
+        coords = rtstruct.GetStructureCoordinates(roi_number)
+        
+        # Calculer le volume
+        thickness = dicomparser.DicomParser.CalculatePlaneThickness(rtstruct, coords)
+        volume = calculate_volume(coords, thickness)
+        
+        # Calculer le diamètre maximal
+        contours = []
+        contour_slice_indices = []
+        for plane in coords.values():
+            for contour in plane:
+                contours.append(contour['data'])
+                z_pos = round(contour['data'][0][2], 2)
+                if z_pos in slice_positions:
+                    contour_slice_indices.append(slice_positions[z_pos])
+        
+        diameters = [calculate_diameter(contour) for contour in contours]
+        nb_dicoms = len(dicom_series)
+        
+        # Obtenir les slices de début et de fin
+        start_slice = nb_dicoms - max(contour_slice_indices) if contour_slice_indices else None
+        end_slice = nb_dicoms - min(contour_slice_indices) if contour_slice_indices else None
+
+        # Ajouter les informations au dictionnaire
+        roi_info[roi_name] = {
+            "diameter_max": max(diameters),
+            "volume_cm3": volume,
+            "start_slice": start_slice,
+            "end_slice": end_slice
+        }
+
+
+    
+    return roi_info, rtstruct_infos
 
 if __name__ == "__main__":
     ############################################################################################################

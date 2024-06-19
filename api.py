@@ -16,13 +16,15 @@ from pydicom.dataset import Dataset
 
 from BDD.MesuresSQLite import MesuresDB
 from mock import simulate_rtstruct_generation2
-from segmentation import generate_rtstruct_segmentation_unetr
+from segmentation import generate_rtstruct_segmentation_unetr, extract_roi_info
 
 app = Flask(__name__)
 CORS(app)
 ORTHANC_URL = "http://localhost:8042"
+
 #model_path = "C:\MetIA\models\checkpoint-epoch=1599-val_loss=0.225.ckpt"
 model_path = "C:\MetIA\models\checkpoint-epoch=2409-val_loss=0.306.ckpt"
+
 #model_path = "C:\MetIA\BrainMetaSegmentatorUI-Back\model\checkpoint-epoch=2409-val_loss=0.306.ckpt"
 
 """
@@ -97,43 +99,78 @@ def get_dicom_instances_and_rtstruct(study_id: str) -> Tuple[List[pydicom.FileDa
 """
 Permet d'upload un fichier DICOM vers le serveur Orthanc
 """
-
-
 @app.route('/uploadDicom', methods=['POST'])
 def upload_dicom():
     print("Requête reçue pour /uploadDicom")
-    file = request.files['file']
-    print(f"Fichier reçu : {file.filename}")
+    files = request.files.getlist('files[]')
+    print(f"{len(files)} fichiers reçus")
+
     try:
-        # Vérifier l'extension du fichier
-        # C'est une approche basique, préférable d'analyser le contenu du fichier
-        if not file.filename.endswith('.dcm'):
-            return jsonify({"error": "Le fichier n'est pas un fichier DICOM (.dcm)"}), 400
+        dicoms = []
+        rtstruct = None
 
-        # Pour une validation plus robuste, tenter de lire le fichier comme un fichier DICOM
-        print(f"Tentative de lecture du fichier DICOM : {file.filename}")
-        ds = pydicom.dcmread(file)
-        if ds is None or len(ds) == 0:
-            print("Le fichier DICOM est vide ou non lisible.")
-            return jsonify({"error": "Le fichier DICOM est vide ou non lisible."}), 400
-        file.seek(
-            0)  # # Remettre le pointeur au début du fichier, c'est ultra important, sinon le pycom read empêche l'upload, sinon le fichier est à la fin et donc "vide" du point de vue de la lecture.
+        for file in files:
+            print(f"Fichier reçu : {file.filename}")
 
-        print(f"Lecture du fichier DICOM réussie : {file.filename}")
-        # Effectuer l'upload vers Orthanc ou autre logique nécessaire
-        print(f"Préparation de l'envoi du fichier à Orthanc : {file.filename}")
-        files = {'file': (file.filename, file, 'application/dicom')}
-        response = requests.post(f"{ORTHANC_URL}/instances", files=files)
-        print(f"Réponse d'Orthanc : Statut {response.status_code}, Contenu {response.content}")
+            if not file.filename.endswith('.dcm'):
+                return jsonify({"error": f"Le fichier {file.filename} n'est pas un fichier DICOM (.dcm)"}), 400
 
-        if response.status_code in [200, 202]:
-            print("DICOM file uploaded successfully")
-            return jsonify({"success": "DICOM file uploaded successfully"}), response.status_code
-        else:
-            print("Failed to upload DICOM file to Orthanc")
-            return jsonify({"error": "Failed to upload DICOM file to Orthanc"}), response.status_code
+            # Lire le fichier DICOM en mémoire
+            file_bytes = BytesIO(file.read())
+            dicom_data = pydicom.dcmread(file_bytes)
+
+            if dicom_data.Modality == 'RTSTRUCT':
+                rtstruct = dicom_data
+            else:
+                dicoms.append(dicom_data)
+
+            # Réinitialiser le pointeur du fichier pour l'upload
+            file.seek(0)
+
+            # Effectuer l'upload vers Orthanc
+            upload_files = {'file': (file.filename, file, 'application/dicom')}
+            response = requests.post(f"{ORTHANC_URL}/instances", files=upload_files)
+            print(f"Réponse d'Orthanc : Statut {response.status_code}, Contenu {response.content}")
+
+        # Si on envoie un RTStruct sans images dicoms avec, on va aller chercher sur le serveur ses images dicoms
+        if rtstruct and not dicoms:
+            print("est ce que je rentre ici au moins ?")
+            study_instance_uid = rtstruct.StudyInstanceUID
+            orthanc_study_id = find_orthanc_id_by_sop_instance_uid(study_instance_uid)
+            dicoms, _, _ = download_and_process_dicoms(orthanc_study_id)
+        print("len :")
+        print(len(dicoms))
+        # Si on a les dicoms et le rtstruct, on peut ajouter les données des meta à la base de donnée
+        if rtstruct and dicoms:
+            meta_infos, rtstruct_infos = extract_roi_info(rtstruct, dicoms)
+            # Convertir les informations du RTStruct
+            patient_id = int(rtstruct_infos["PatientID"])  # Convertir en entier
+            patient_name = str(rtstruct_infos["PatientName"])
+            patient_birth_date = convertir_date(rtstruct_infos["PatientBirthDate"])
+            patient_sex = rtstruct_infos["PatientSex"]
+            study_date = convertir_date(rtstruct_infos["StudyDate"])
+            study_instance_uid = rtstruct_infos["StudyInstanceUID"]
+
+            # Impression des informations des ROIs
+            for roi_name, info in meta_infos.items():
+                print(f"{roi_name} : Diamètre max: {info['diameter_max']:.2f} mm, Volume: {info['volume_cm3']:.2f} cm³, Slice de début: {info['start_slice']} ,Slice de fin: {info['end_slice']}")
+
+            db = get_db()
+
+            # Ajout du patient
+            db.ajouter_patient(patient_id, patient_name, patient_birth_date, patient_sex)
+
+            # Ajout de l'étude
+            db.ajouter_etude(study_instance_uid, patient_id, date_traitement=study_date)
+
+            # Ajout des métastases
+            for roi_name, info in meta_infos.items():
+                db.ajouter_metastase(study_instance_uid, str(roi_name), info["volume_cm3"], info["diameter_max"], info["start_slice"], info["end_slice"])
+
+        return jsonify({"success": "DICOM files uploaded and processed successfully"}), 200
+
     except Exception as e:
-        print(f"Erreur lors du traitement du fichier DICOM : {e}")
+        print(f"Erreur lors du traitement des fichiers DICOM : {e}")
         return jsonify({"error": "Erreur serveur"}), 500
 
 
@@ -177,10 +214,8 @@ def download_and_process_dicoms(orthanc_study_id):
 
 
 """
-Permet de supprimer une étude DICOM du serveur Orthanc
+Permet de supprimer une étude DICOM du serveur Orthanc et de la base de données locale
 """
-
-
 @app.route('/delete-study/<study_instance_uid>', methods=['DELETE'])
 def delete_study(study_instance_uid):
     orthanc_study_id = find_orthanc_id_by_sop_instance_uid(study_instance_uid)
@@ -191,6 +226,13 @@ def delete_study(study_instance_uid):
         response = requests.delete(f"{ORTHANC_URL}/studies/{orthanc_study_id}")
         # Vérifie si la suppression a réussi
         if response.status_code == 200:
+            db = get_db()
+            patient_id = db.get_patient_id_by_study_instance_uid(study_instance_uid)
+            db.supprimer_etude(study_instance_uid)
+            if not db.patient_has_studies(patient_id):
+                print("le patient n'a plus d'études !")
+                print(" je vais supprimer le patient numéro ", patient_id)
+                db.supprimer_patient(patient_id)
             return jsonify({"success": "Instance DICOM supprimée avec succès"}), 200
         else:
             return jsonify({
@@ -202,13 +244,15 @@ def delete_study(study_instance_uid):
     except requests.exceptions.RequestException as e:
         # Gestion des erreurs de connexion ou autres erreurs de réseau
         return jsonify({"error": "Erreur lors de la connexion à Orthanc", "exception": str(e)}), 500
+    except Exception as e:
+        # Gestion des erreurs de base de données ou autres erreurs inattendues
+        return jsonify({"error": f"Erreur lors de la suppression de l'étude: {str(e)}"}), 500
+
 
 
 """
 Permet de lancer la segmentation d'une étude DICOM spécifique
 """
-
-
 @app.route('/segmentation/<study_instance_uid>', methods=['POST'])
 def segmentation(study_instance_uid):
     # Convertir StudyInstanceUID en ID Orthanc
@@ -224,9 +268,9 @@ def segmentation(study_instance_uid):
 
         if isFromCurrentRTStruct:
             print("Voici l'id du RTStruct :", rtstruct_id)
-            update_or_upload_rtstruct(rtstruct, rtstruct_id)
+            update_or_upload_rtstruct(dicom_data, rtstruct, rtstruct_id)
         else:
-            update_or_upload_rtstruct(rtstruct)
+            update_or_upload_rtstruct(dicom_data, rtstruct)
 
         return jsonify({"success": "DICOM files retrieved and processed successfully."}), 200
     except requests.exceptions.RequestException as e:
@@ -263,9 +307,7 @@ def find_orthanc_id_by_sop_instance_uid(study_instance_uid):
 Permet d'envoyer un RTStruct vers le serveur Orthanc
 params : rtstruct -> le RTStruct à envoyer
 """
-
-
-def update_or_upload_rtstruct(rtstruct, rtstruct_id=None):
+def update_or_upload_rtstruct(dicoms, rtstruct, rtstruct_id=None):
     if rtstruct_id:
         # Suppression de l'ancien RTStruct
         delete_response = requests.delete(f"{ORTHANC_URL}/instances/{rtstruct_id}")
@@ -278,18 +320,52 @@ def update_or_upload_rtstruct(rtstruct, rtstruct_id=None):
     buffer = rtstruct.save_to_memory()
     files = {'file': ('rtstruct.dcm', buffer, 'application/dicom')}
     upload_response = requests.post(f"{ORTHANC_URL}/instances", files=files)
+    rtstruct_pydicom = pydicom.dcmread(BytesIO(buffer.getvalue()))
+    meta_infos, rtstruct_infos = extract_roi_info(rtstruct_pydicom, dicoms)
+
+    # Convertir les informations du RTStruct
+    patient_id = int(rtstruct_infos["PatientID"])  # Convertir en entier
+    patient_name = str(rtstruct_infos["PatientName"])
+    patient_birth_date = convertir_date(rtstruct_infos["PatientBirthDate"])
+    patient_sex = rtstruct_infos["PatientSex"]
+    study_date = convertir_date(rtstruct_infos["StudyDate"])
+    study_instance_uid = rtstruct_infos["StudyInstanceUID"]
+
+    # Impression des informations des ROIs
+    for roi_name, info in meta_infos.items():
+        print(f"{roi_name} : Diamètre max: {info['diameter_max']:.2f} mm, Volume: {info['volume_cm3']:.2f} cm³, Slice de début: {info['start_slice']} ,Slice de fin: {info['end_slice']}")
+
+    db = get_db()
+
+     # Ajout ou mise à jour du patient
+    if not db.patient_exists(patient_id):
+        db.ajouter_patient(patient_id, patient_name, patient_birth_date, patient_sex)
+    
+    # Ajout ou mise à jour de l'étude
+    if db.etude_exists(study_instance_uid):
+        db.supprimer_etude(study_instance_uid)
+    db.ajouter_etude(study_instance_uid, patient_id, date_traitement=study_date)
+
+    # Ajout des métastases
+    db.supprimer_metastases_from_etude(study_instance_uid)
+    for roi_name, info in meta_infos.items():
+        db.ajouter_metastase(study_instance_uid, str(roi_name), info["volume_cm3"], info["diameter_max"], info["start_slice"], info["end_slice"])
 
     if upload_response.status_code in [200, 202]:
         return jsonify({"success": "RTStruct uploaded successfully"}), upload_response.status_code
     else:
         return jsonify({"error": "Failed to upload RTStruct"}), upload_response.status_code
 
+def convertir_date(date):
+    """Convertir une date au format YYYYMMDD en YYYY-MM-DD."""
+    if len(date) == 8:
+        return f"{date[:4]}-{date[4:6]}-{date[6:]}"
+    else:
+        raise ValueError("La date doit être au format YYYYMMDD")
 
 """
 Permet de récupérer la base de donnée de suivi des patients
 """
-
-
 def get_db():
     db = getattr(g, '_database', None)
     if db is None:
@@ -301,8 +377,6 @@ def get_db():
 """
 Ferme la connexion à la base de donnée de suivi des patients
 """
-
-
 @app.teardown_appcontext
 def close_db(error):
     db = getattr(g, '_database', None)
@@ -314,8 +388,6 @@ def close_db(error):
 Get les études de la base de donnée de suivi des patients
 Params : idPatient (optionnel) -> retourne les études pour un patient spécifique
 """
-
-
 @app.route('/followup-etudes', methods=['GET'])
 def get_etudes():
     id_patient = request.args.get('idPatient')
@@ -329,8 +401,6 @@ def get_etudes():
 """
 Get les patients de la base de donnée de suivi des patients
 """
-
-
 @app.route('/followup-patients', methods=['GET'])
 def get_patients():
     """Get les patients de la base de données de suivi des patients."""
@@ -342,8 +412,6 @@ def get_patients():
 Get les métastases de la base de donnée de suivi des patients
 Params : idEtude (optionnel) -> retourne les metastases pour une étude spécifique
 """
-
-
 @app.route('/followup-metastases', methods=['GET'])
 def get_metastases():
     id_etude = request.args.get('idEtude')
