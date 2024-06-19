@@ -436,7 +436,8 @@ def extract_roi_info(rtstruct, dicom_series):
             "diameter_max": max(diameters),
             "volume_cm3": volume,
             "start_slice": start_slice,
-            "end_slice": end_slice
+            "end_slice": end_slice,
+            "color": str(roi_data.get('color', (0, 0, 255)))
         }
 
 

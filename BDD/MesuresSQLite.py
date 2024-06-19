@@ -40,6 +40,7 @@ class MesuresDB:
                 diametre REAL NULL,
                 slideDebut INTEGER,
                 slideFin INTEGER,
+                color TEXT,
                 FOREIGN KEY(StudyInstanceUID) REFERENCES etude(StudyInstanceUID)
             )
         ''')
@@ -117,20 +118,20 @@ class MesuresDB:
         return self.curseur.fetchone() is not None
 
     ## MÉTASTASE
-    def ajouter_metastase(self, study_instance_uid, nom_metastase ,volume, diametre, slide_debut, slide_fin):
-        self.curseur.execute("INSERT INTO metastase (StudyInstanceUID, nom_metastase,volume, diametre, slideDebut, slideFin) VALUES (?, ?, ?, ?, ?, ?)",
-                             (study_instance_uid, nom_metastase ,volume, diametre, slide_debut, slide_fin))
+    def ajouter_metastase(self, study_instance_uid, nom_metastase ,volume, diametre, slide_debut, slide_fin, color):
+        self.curseur.execute("INSERT INTO metastase (StudyInstanceUID, nom_metastase,volume, diametre, slideDebut, slideFin, color) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                             (study_instance_uid, nom_metastase ,volume, diametre, slide_debut, slide_fin, color))
         self.connexion.commit()
 
     def get_metastases(self):
         self.curseur.execute("SELECT * FROM metastase")
         metastases = self.curseur.fetchall()
-        return [{"idMetastase": met[0], "idEtude": met[1], "nom_metastase":met[2], "Volume": met[3], "Diametre": met[4], "Slide_Debut": met[5], "Slide_Fin": met[6]} for met in metastases]
+        return [{"idMetastase": met[0], "idEtude": met[1], "nom_metastase":met[2], "Volume": met[3], "Diametre": met[4], "Slide_Debut": met[5], "Slide_Fin": met[6], "Color": met[7]} for met in metastases]
 
     def get_metastases_from_etude(self, study_instance_uid):
         self.curseur.execute("SELECT * FROM metastase WHERE StudyInstanceUID = ?", (study_instance_uid,))
         metastases = self.curseur.fetchall()
-        return [{"idMetastase": met[0], "nom_metastase": met[2], "volume": met[3], "diametre": met[4], "slice_Debut": met[5], "slice_Fin": met[6]} for met in metastases]
+        return [{"idMetastase": met[0], "nom_metastase": met[2], "volume": met[3], "diametre": met[4], "slice_Debut": met[5], "slice_Fin": met[6], "Color": met[7]} for met in metastases]
 
     def supprimer_metastases_from_etude(self, study_instance_uid):
         self.curseur.execute("DELETE FROM metastase WHERE StudyInstanceUID=?", (study_instance_uid,))
