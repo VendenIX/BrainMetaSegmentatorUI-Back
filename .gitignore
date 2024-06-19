@@ -10,3 +10,4 @@ unetr/pretrained_models/*
 .idea/
 .idea/*
 nginx-1.26.0/logs/*
+nginx-1.26.0
