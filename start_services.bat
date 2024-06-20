@@ -34,7 +34,8 @@ if exist "%FLASK_PID_FILE%" (
 )
 
 :: Ouvrir le navigateur par défaut sur localhost:3000
-start "" /B "http://localhost:3000"
+start "" /B http://localhost/orthanc/ui/app/index.html#/"
+start "" /B http://localhost:3000"
 echo MetIA est disponible a ladresse suivante sur votre navigateur : http://localhost:3000
 echo Vous pouvez egalement acceder a linterface dadministration du DICOM Web Server a ladresse suivante : http://localhost/orthanc
 echo Pour toute question, addressez vous a romain.andres@etu.unicaen.fr ou laissez une issue sur https://github.com/VendenIX/BrainMetaSegmentatorUI-Front/issues
