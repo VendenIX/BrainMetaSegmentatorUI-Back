@@ -320,7 +320,7 @@ def update_or_upload_rtstruct(dicoms, rtstruct, rtstruct_id=None):
 
     # Impression des informations des ROIs
     for roi_name, info in meta_infos.items():
-        print(f"{roi_name} : Diamètre max: {info['diameter_max']:.2f} mm, Volume: {info['volume_cm3']:.2f} cm³, Slice de début: {info['start_slice']} ,Slice de fin: {info['end_slice']}")
+        print(f"{roi_name} : Diamètre max: {info['diameter_max']:.2f} mm, Volume: {info['volume_cm3']:.2f} cm³, Slice de début: {info['start_slice']} ,Slice de fin: {info['end_slice']}, Color :{info['color']}")
 
     db = get_db()
 
@@ -336,7 +336,7 @@ def update_or_upload_rtstruct(dicoms, rtstruct, rtstruct_id=None):
     # Ajout des métastases
     db.supprimer_metastases_from_etude(study_instance_uid)
     for roi_name, info in meta_infos.items():
-        db.ajouter_metastase(study_instance_uid, str(roi_name), info["volume_cm3"], info["diameter_max"], info["start_slice"], info["end_slice"])
+        db.ajouter_metastase(study_instance_uid, str(roi_name), info["volume_cm3"], info["diameter_max"], info["start_slice"], info["end_slice"], info["color"])
 
     if upload_response.status_code in [200, 202]:
         return jsonify({"success": "RTStruct uploaded successfully"}), upload_response.status_code
