@@ -13,7 +13,6 @@ from unetr.model_module import SegmentationTask
 import monai.transforms as transforms
 from rt_utils import RTStructBuilder
 import scipy as sp
-from torch.cuda.amp import autocast, GradScaler
 from shapely.geometry import Polygon
 from dicompylercore import dicomparser
 

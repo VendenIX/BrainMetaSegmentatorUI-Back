@@ -21,9 +21,8 @@ from segmentation import generate_rtstruct_segmentation_unetr, extract_roi_info
 app = Flask(__name__)
 CORS(app)
 ORTHANC_URL = "http://localhost:8042"
-#model_path = "C:\MetIA\BrainMetaSegmentatorUI-Back\model\checkpoint-epoch=1599-val_loss=0.225.ckpt"
-model_path = '/Users/romain/Downloads/Modeles_Pre_Entraines/checkpoint_epoch1599_val_loss0255.cpkt'
-#model_path = "C:\MetIA\BrainMetaSegmentatorUI-Back\model\checkpoint-epoch=2409-val_loss=0.306.ckpt"
+#model_path = "C:\MetIA\models\checkpoint-epoch=1599-val_loss=0.225.ckpt"
+model_path = "C:\MetIA\models\checkpoint-epoch=2409-val_loss=0.306.ckpt"
 
 """
 Récupère la liste des études DICOM stockées dans le serveur Orthanc
@@ -116,12 +115,10 @@ def upload_dicom():
 
         # Si on envoie un RTStruct sans images dicoms avec, on va aller chercher sur le serveur ses images dicoms
         if rtstruct and not dicoms:
-            print("est ce que je rentre ici au moins ?")
             study_instance_uid = rtstruct.StudyInstanceUID
             orthanc_study_id = find_orthanc_id_by_sop_instance_uid(study_instance_uid)
             dicoms, _, _ = download_and_process_dicoms(orthanc_study_id)
-        print("len :")
-        print(len(dicoms))
+        print(len(dicoms), " dicoms")
         # Si on a les dicoms et le rtstruct, on peut ajouter les données des meta à la base de donnée
         if rtstruct and dicoms:
             meta_infos, rtstruct_infos = extract_roi_info(rtstruct, dicoms)
@@ -418,4 +415,6 @@ def get_metastases():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    from waitress import serve
+    #app.run(debug=True)
+    serve(app, host='127.0.0.1', port=5000)
