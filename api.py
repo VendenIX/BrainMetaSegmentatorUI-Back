@@ -136,7 +136,7 @@ def upload_dicom():
 
             # Impression des informations des ROIs
             for roi_name, info in meta_infos.items():
-                print(f"{roi_name} : Diamètre max: {info['diameter_max']:.2f} mm, Volume: {info['volume_cm3']:.2f} cm³, Slice de début: {info['start_slice']} ,Slice de fin: {info['end_slice']}")
+                print(f"{roi_name} : Diamètre max: {info['diameter_max']:.2f} mm, Volume: {info['volume_cm3']:.2f} cm³, Slice de début: {info['start_slice']} ,Slice de fin: {info['end_slice']}, couleur : {info['color']}")
 
             db = get_db()
 
@@ -148,7 +148,7 @@ def upload_dicom():
 
             # Ajout des métastases
             for roi_name, info in meta_infos.items():
-                db.ajouter_metastase(study_instance_uid, str(roi_name), info["volume_cm3"], info["diameter_max"], info["start_slice"], info["end_slice"])
+                db.ajouter_metastase(study_instance_uid, str(roi_name), info["volume_cm3"], info["diameter_max"], info["start_slice"], info["end_slice"], info["color"])
 
         end_time = time.time()
         print(f"Temps total d'upload et de traitement: {end_time - start_time:.2f} secondes")
@@ -408,4 +408,5 @@ def get_metastases():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    from waitress import serve
+    serve(app, host='127.0.0.1', port=5000)

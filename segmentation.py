@@ -338,10 +338,7 @@ def generate_rtstruct_segmentation_unetr(dicom_datasets: List[pydicom.dataset.Da
     niftis = dicom_to_nifti_in_memory(dicom_datasets)
     image, label, imageT = getLabelOfIRM_from_nifti(niftis, pathModelFile)
 
-    rt_struct, metastases_details, isFromCurrentRTStruct = process_rtstruct_and_calculate_details(dicom_datasets, label, existing_rtstruct)
-    print("Tout s'est bien passé on dirait")
-    for detail in metastases_details:
-        print(detail)
+    rt_struct, isFromCurrentRTStruct = process_rtstruct_and_calculate_details(dicom_datasets, label, existing_rtstruct)
     return rt_struct, isFromCurrentRTStruct
 
 def extract_roi_info(rtstruct, dicom_series):
@@ -421,7 +418,8 @@ def extract_roi_info(rtstruct, dicom_series):
             "diameter_max": max(diameters),
             "volume_cm3": volume,
             "start_slice": start_slice,
-            "end_slice": end_slice
+            "end_slice": end_slice,
+            "color": str(roi_data.get('color', (0, 0, 255)))
         }
 
 
