@@ -21,10 +21,8 @@ from segmentation import generate_rtstruct_segmentation_unetr, extract_roi_info
 app = Flask(__name__)
 CORS(app)
 ORTHANC_URL = "http://localhost:8042"
-
-#model_path = "C:\MetIA\models\checkpoint-epoch=1599-val_loss=0.225.ckpt"
-model_path = "C:\MetIA\models\checkpoint-epoch=2409-val_loss=0.306.ckpt"
-
+#model_path = "C:\MetIA\BrainMetaSegmentatorUI-Back\model\checkpoint-epoch=1599-val_loss=0.225.ckpt"
+model_path = '/Users/romain/Downloads/Modeles_Pre_Entraines/checkpoint_epoch1599_val_loss0255.cpkt'
 #model_path = "C:\MetIA\BrainMetaSegmentatorUI-Back\model\checkpoint-epoch=2409-val_loss=0.306.ckpt"
 
 """
@@ -68,6 +66,7 @@ def get_study(study_id):
 """
 Permet d'upload un fichier DICOM vers le serveur Orthanc
 """
+
 def upload_file_to_orthanc(file):
     try:
         print(f"Fichier reçu : {file.filename}")
@@ -235,10 +234,11 @@ def delete_study(study_instance_uid):
         return jsonify({"error": f"Erreur lors de la suppression de l'étude: {str(e)}"}), 500
 
 
-
 """
 Permet de lancer la segmentation d'une étude DICOM spécifique
 """
+
+
 @app.route('/segmentation/<study_instance_uid>', methods=['POST'])
 def segmentation(study_instance_uid):
     # Convertir StudyInstanceUID en ID Orthanc
@@ -292,6 +292,8 @@ def find_orthanc_id_by_sop_instance_uid(study_instance_uid):
 Permet d'envoyer un RTStruct vers le serveur Orthanc
 params : rtstruct -> le RTStruct à envoyer
 """
+
+
 def update_or_upload_rtstruct(dicoms, rtstruct, rtstruct_id=None):
     if rtstruct_id:
         # Suppression de l'ancien RTStruct
@@ -347,7 +349,7 @@ def convertir_date(date):
         return f"{date[:4]}-{date[4:6]}-{date[6:]}"
     else:
         raise ValueError("La date doit être au format YYYYMMDD")
-
+    
 """
 Permet de récupérer la base de donnée de suivi des patients
 """
@@ -362,6 +364,8 @@ def get_db():
 """
 Ferme la connexion à la base de donnée de suivi des patients
 """
+
+
 @app.teardown_appcontext
 def close_db(error):
     db = getattr(g, '_database', None)
@@ -373,6 +377,8 @@ def close_db(error):
 Get les études de la base de donnée de suivi des patients
 Params : idPatient (optionnel) -> retourne les études pour un patient spécifique
 """
+
+
 @app.route('/followup-etudes', methods=['GET'])
 def get_etudes():
     id_patient = request.args.get('idPatient')
@@ -386,6 +392,8 @@ def get_etudes():
 """
 Get les patients de la base de donnée de suivi des patients
 """
+
+
 @app.route('/followup-patients', methods=['GET'])
 def get_patients():
     """Get les patients de la base de données de suivi des patients."""
@@ -397,6 +405,8 @@ def get_patients():
 Get les métastases de la base de donnée de suivi des patients
 Params : idEtude (optionnel) -> retourne les metastases pour une étude spécifique
 """
+
+
 @app.route('/followup-metastases', methods=['GET'])
 def get_metastases():
     id_etude = request.args.get('idEtude')
@@ -408,5 +418,4 @@ def get_metastases():
 
 
 if __name__ == '__main__':
-    from waitress import serve
-    serve(app, host='127.0.0.1', port=5000)
+    app.run(debug=True)
