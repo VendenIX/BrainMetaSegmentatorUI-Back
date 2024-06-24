@@ -13,7 +13,7 @@ from unetr.model_module import SegmentationTask
 import monai.transforms as transforms
 from rt_utils import RTStructBuilder
 import scipy as sp
-from torch.cuda.amp import autocast, GradScaler
+from torch.cuda.amp import autocast
 from shapely.geometry import Polygon
 from dicompylercore import dicomparser
 
@@ -209,7 +209,6 @@ Applique le modèle de segmentation UNETR sur les images dicoms converties en ni
 
 
 def applyUNETR(dicoImage, model):
-    scaler = GradScaler()
     with torch.no_grad():
         with autocast():
             label = sliding_window_inference(inputs=dicoImage["image"][None],

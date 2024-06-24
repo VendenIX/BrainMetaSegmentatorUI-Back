@@ -17,6 +17,7 @@ import concurrent.futures
 from BDD.MesuresSQLite import MesuresDB
 from mock import simulate_rtstruct_generation2
 from segmentation import generate_rtstruct_segmentation_unetr, extract_roi_info
+from rt_utils import RTStruct, RTStructBuilder
 
 app = Flask(__name__)
 CORS(app)
@@ -24,6 +25,45 @@ ORTHANC_URL = "http://localhost:8042"
 #model_path = "C:\MetIA\BrainMetaSegmentatorUI-Back\model\checkpoint-epoch=1599-val_loss=0.225.ckpt"
 model_path = '/Users/romain/Downloads/Modeles_Pre_Entraines/checkpoint_epoch1599_val_loss0255.cpkt'
 #model_path = "C:\MetIA\BrainMetaSegmentatorUI-Back\model\checkpoint-epoch=2409-val_loss=0.306.ckpt"
+
+
+"""
+Route qui permet de renommer une région d'intérêt 
+:params study_instance_uid -> l'ID de l'étude
+:params roi_number -> le numéro de la région d'intérêt
+:params new_name -> le nouveau nom de la région d'intérêt
+"""
+@app.route('/rename-roi', methods=['POST'])
+def rename_roi():
+    data = request.json
+    study_instance_uid = data.get('study_instance_uid')
+    roi_number = data.get('roi_number')
+    new_name = data.get('new_name')
+    if not study_instance_uid or not new_name:
+        return jsonify({"error": "Missing required parameters"}), 400
+
+    try:
+        id = find_orthanc_id_by_sop_instance_uid(study_instance_uid)
+        # Retrieve the RTStruct from Orthanc
+        dicoms, rtstruct_data, rtstruct_id = download_and_process_dicoms(id)
+        renamed = False
+        for roi in rtstruct_data.StructureSetROISequence:
+            if int(roi.ROINumber) == roi_number:
+                roi.ROIName = new_name
+                renamed = True
+                break
+        rtstruct = RTStructBuilder.create_from_memory(dicoms, rtstruct_data)
+        if not renamed:
+            return jsonify({"error": "ROI not found"}), 404
+
+        update_or_upload_rtstruct(dicoms, rtstruct, rtstruct_id)
+
+        return jsonify({"success": "ROI renamed successfully"}), 200
+
+    except requests.exceptions.RequestException as e:
+        print(f"Error retrieving or uploading RTStruct: {e}")
+        return jsonify({"error": str(e)}), 500
+
 
 """
 Récupère la liste des études DICOM stockées dans le serveur Orthanc
