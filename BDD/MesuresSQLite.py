@@ -178,7 +178,7 @@ class MesuresDB:
         self.curseur.execute("DELETE FROM metastase WHERE SeriesInstanceUID=?", (series_instance_uid,))
         self.connexion.commit()
 
-    def renommer_metastase_from_series(self, series_instance_uid, roi_number, new_name):
+    def renommer_metastase_from_serie(self, series_instance_uid, roi_number, new_name):
         self.curseur.execute("UPDATE metastase SET nom_metastase = ? WHERE SeriesInstanceUID = ? AND roiNumber = ?", (new_name, series_instance_uid, roi_number))
         self.connexion.commit()
 

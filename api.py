@@ -36,6 +36,7 @@ Route qui permet de renommer une région d'intérêt
 @app.route('/rename-roi', methods=['POST'])
 def rename_roi():
     data = request.json
+    serie_instance_uid = data.get('serie_instance_uid')
     study_instance_uid = data.get('study_instance_uid')
     roi_number = data.get('roi_number')
     new_name = data.get('new_name')
@@ -43,16 +44,16 @@ def rename_roi():
         return jsonify({"error": "Missing required parameters"}), 400
 
     try:
-        id = find_orthanc_id_by_sop_instance_uid(study_instance_uid)
-        # Retrieve the RTStruct from Orthanc
-        _ , rtstruct_data, rtstruct_id = download_and_process_dicoms(id)
+        id = find_orthanc_id_by_series_instance_uid(serie_instance_uid)
+        rtstruct_data, rtstruct_id = download_rtstruct(id)
         if 0 <= (roi_number - 1) < len(rtstruct_data.StructureSetROISequence):
             rtstruct_data.StructureSetROISequence[roi_number - 1].ROIName = new_name
         else:
             return jsonify({"error": f"ROI number {roi_number} not found in RTStruct"}), 404
         rtstruct = RTStruct(None, rtstruct_data)
-
-        rename_roi_update(study_instance_uid ,rtstruct, rtstruct_id, roi_number, new_name)
+        serie_instance_uid = rtstruct_data.SeriesInstanceUID
+        print("sinon j'ai trouvé cela : ", serie_instance_uid)
+        rename_roi_update(serie_instance_uid ,rtstruct, rtstruct_id, roi_number, new_name)
 
         return jsonify({"success": "ROI renamed successfully"}), 200
 
@@ -64,8 +65,6 @@ def rename_roi():
 """
 Récupère la liste des études DICOM stockées dans le serveur Orthanc
 """
-
-
 @app.route('/getAllStudies', methods=['GET'])
 def get_all_studies():
     try:
@@ -84,8 +83,6 @@ def get_all_studies():
 Récupère les détails d'une étude DICOM spécifique à partir de son ID Orthanc
 params : study_id -> l'ID Orthanc de l'étude
 """
-
-
 @app.route('/getStudy/<string:study_id>', methods=['GET'])
 def get_study(study_id):
     try:
@@ -102,7 +99,6 @@ def get_study(study_id):
 """
 Permet d'upload un fichier DICOM vers le serveur Orthanc
 """
-
 def upload_file_to_orthanc(file):
     try:
         print(f"Fichier reçu : {file.filename}")
@@ -234,6 +230,44 @@ def download_and_process_dicoms(orthanc_study_id):
     except requests.RequestException as e:
         print("Error during request:", str(e))
         return None, None, None
+    
+""""
+Permet de télécharger uniquement le RTStruct depuis son orthanc serie id
+"""
+def download_rtstruct(orthanc_series_id):
+    query = f"{ORTHANC_URL}/series/{orthanc_series_id}/archive"
+    try:
+        response = requests.get(query, verify=False)
+        print("-à-)-)-)-)-)-)-)-)-)-)-)-)-")
+        print(query)
+        if response.status_code == 200:
+            print(f"Retrieved series archive: {orthanc_series_id}")
+            zip_content = response.content
+            file_like_object = io.BytesIO(zip_content)
+            zip_object = zipfile.ZipFile(file_like_object)
+
+            rtstruct = None
+
+            with zip_object.open(zip_object.infolist()[0]) as file:
+                try:
+                    dicom_data = pydicom.dcmread(io.BytesIO(file.read()))
+                    # Vérifier si c'est un fichier RTSTRUCT
+                    if dicom_data.Modality == 'RTSTRUCT':
+                        rtstruct = dicom_data
+                        rtstruct_id = find_orthanc_id_by_sop_instance_uid(dicom_data.SOPInstanceUID)
+                    else:
+                        print("The file is not an RTSTRUCT.")
+                except InvalidDicomError:
+                    print("The file is not a valid DICOM file.")
+                    return None
+
+            return rtstruct, rtstruct_id
+        else:
+            print("Failed to retrieve series:", response.status)
+            return None
+    except requests.RequestException as e:
+        print("Error during request:", str(e))
+        return None
 
 
 """
@@ -325,6 +359,25 @@ def find_orthanc_id_by_sop_instance_uid(study_instance_uid):
         print("Failed to retrieve study ID:", response.status_code, response.reason)
         return None
 
+"""
+Permet d'acéquerir l'ID Orthanc relative à un RTStruct d'une série
+"""
+def find_orthanc_id_by_series_instance_uid(series_instance_uid):
+    url = f"{ORTHANC_URL}/tools/lookup"
+    headers = {'content-type': 'text/plain'}
+
+    # Envoyer le SeriesInstanceUID pour la recherche
+    response = requests.post(url, data=series_instance_uid, headers=headers)
+    if response.status_code == 200:
+        result = response.json()
+        print("Successfuly retrieved Orthanc ID")
+        print(result[0]['ID'])
+        return result[0]['ID']
+    else:
+        print("Failed to retrieve Orthanc ID")
+        return None
+
+    
 
 """
 Permet d'envoyer un RTStruct vers le serveur Orthanc
@@ -381,7 +434,7 @@ def update_or_upload_rtstruct(dicoms, rtstruct, rtstruct_id=None):
     else:
         return jsonify({"error": "Failed to upload RTStruct"}), upload_response.status_code
     
-def rename_roi_update(study_instance_uid,rtstruct, rtstruct_id, roi_number, new_name):
+def rename_roi_update(serie_instance_uid,rtstruct, rtstruct_id, roi_number, new_name):
     print("je supprime le rtstruct ..")
     if rtstruct_id:
         # Suppression de l'ancien RTStruct
@@ -397,7 +450,7 @@ def rename_roi_update(study_instance_uid,rtstruct, rtstruct_id, roi_number, new_
     upload_response = requests.post(f"{ORTHANC_URL}/instances", files=files)
     print("je mets à jour la BDD ...")
     db = get_db()
-    db.renommer_metastase_from_etude(study_instance_uid, roi_number, new_name)
+    db.renommer_metastase_from_serie(serie_instance_uid, roi_number, new_name)
     if upload_response.status_code in [200, 202]:
         return jsonify({"success": "RTStruct uploaded successfully"}), upload_response.status_code
     else:
