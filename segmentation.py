@@ -405,7 +405,9 @@ def extract_roi_info(rtstruct, dicom_series):
     # Parcourir les structures et extraire les informations
     for roi_number, roi_data in structures.items():
         roi_name = roi_data['name']
-        
+        roi_number = roi_data['id']
+        print("ici faut verifier que on a bien le bon roi numbler : ", roi_number)
+        print(roi_data)
         # Obtenir les coordonnées des contours
         coords = rtstruct.GetStructureCoordinates(roi_number)
         
@@ -432,6 +434,7 @@ def extract_roi_info(rtstruct, dicom_series):
 
         # Ajouter les informations au dictionnaire
         roi_info[roi_name] = {
+            "roiNumber" : roi_number,
             "diameter_max": max(diameters),
             "volume_cm3": volume,
             "start_slice": start_slice,
