@@ -424,10 +424,21 @@ def update_or_upload_rtstruct(dicoms, rtstruct, rtstruct_id=None):
         db.supprimer_etude(study_instance_uid)
     db.ajouter_etude(study_instance_uid, patient_id, date_traitement=study_date)
 
+    print("========================")
+    print("Petit récap :")
+    print("SeriesInstanceUID : ", rtstruct_pydicom.SeriesInstanceUID)
+    print("StudyInstanceUID : ", study_instance_uid)
+    print("========================")
+    print()
+    if not db.serie_exists(rtstruct_pydicom.SeriesInstanceUID):
+        db.ajouter_serie(str(rtstruct_pydicom.SeriesInstanceUID), str(study_instance_uid))
+
     # Ajout des métastases
-    db.supprimer_metastases_from_etude(study_instance_uid)
+    db.supprimer_metastases_from_serie(rtstruct_pydicom.SeriesInstanceUID)
+    print("ajout des rois en cours ...")
     for roi_name, info in meta_infos.items():
-        db.ajouter_metastase(int(info["roiNumber"]), study_instance_uid, str(roi_name), info["volume_cm3"], info["diameter_max"], info["start_slice"], info["end_slice"], info["color"])
+        print("ajout de la roi : ", roi_name, "dans la serie : ", rtstruct_pydicom.SeriesInstanceUID)
+        db.ajouter_metastase(int(info["roiNumber"]), rtstruct_pydicom.SeriesInstanceUID, str(roi_name), info["volume_cm3"], info["diameter_max"], info["start_slice"], info["end_slice"], info["color"])
 
     if upload_response.status_code in [200, 202]:
         return jsonify({"success": "RTStruct uploaded successfully"}), upload_response.status_code

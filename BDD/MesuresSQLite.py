@@ -174,7 +174,7 @@ class MesuresDB:
         metastases = self.curseur.fetchall()
         return [{"id": met[0], "roiNumber": met[1], "nom_metastase": met[3], "volume": met[4], "diametre": met[5], "slice_debut": met[6], "slice_fin": met[7], "color": met[8]} for met in metastases]
 
-    def supprimer_metastases_from_series(self, series_instance_uid):
+    def supprimer_metastases_from_serie(self, series_instance_uid):
         self.curseur.execute("DELETE FROM metastase WHERE SeriesInstanceUID=?", (series_instance_uid,))
         self.connexion.commit()
 
