@@ -17,18 +17,55 @@ import concurrent.futures
 from BDD.MesuresSQLite import MesuresDB
 from mock import simulate_rtstruct_generation2
 from segmentation import generate_rtstruct_segmentation_unetr, extract_roi_info
+from rt_utils import RTStructBuilder
 
 app = Flask(__name__)
 CORS(app)
 ORTHANC_URL = "http://localhost:8042"
-#model_path = "C:\MetIA\models\checkpoint-epoch=1599-val_loss=0.225.ckpt"
-model_path = "C:\MetIA\models\checkpoint-epoch=2409-val_loss=0.306.ckpt"
+#model_path = "C:\MetIA\models\checkpoint-epoch=1599-val_loss=0.225.ckpt"         #premier modele entraine par raphaelle
+#model_path = "C:\MetIA\models\checkpoint-epoch=2409-val_loss=0.306.ckpt"         #deuxieme modele entraine par moi sans logs inference=true
+model_path = "C:\MetIA\models\checkpoint-epoch=1079-val_loss=0.296.ckpt"          #troisieme modele entraine par moi avec logs tensorboard inference=false
+
+
+
+"""
+Route qui permet de renommer une région d'intérêt 
+:params study_instance_uid -> l'ID de l'étude
+:params roi_number -> le numéro de la région d'intérêt
+:params new_name -> le nouveau nom de la région d'intérêt
+"""
+@app.route('/rename-roi', methods=['POST'])
+def rename_roi():
+    data = request.json
+    serie_instance_uid = data.get('serie_instance_uid')
+    study_instance_uid = data.get('study_instance_uid')
+    roi_number = data.get('roi_number')
+    new_name = data.get('new_name')
+    if not study_instance_uid or not new_name:
+        return jsonify({"error": "Missing required parameters"}), 400
+
+    try:
+        id = find_orthanc_id_by_series_instance_uid(serie_instance_uid)
+        rtstruct_data, rtstruct_id = download_rtstruct(id)
+        if 0 <= (roi_number - 1) < len(rtstruct_data.StructureSetROISequence):
+            rtstruct_data.StructureSetROISequence[roi_number - 1].ROIName = new_name
+        else:
+            return jsonify({"error": f"ROI number {roi_number} not found in RTStruct"}), 404
+        rtstruct = RTStruct(None, rtstruct_data)
+        serie_instance_uid = rtstruct_data.SeriesInstanceUID
+        print("sinon j'ai trouvé cela : ", serie_instance_uid)
+        rename_roi_update(serie_instance_uid ,rtstruct, rtstruct_id, roi_number, new_name)
+
+        return jsonify({"success": "ROI renamed successfully"}), 200
+
+    except requests.exceptions.RequestException as e:
+        print(f"Error retrieving or uploading RTStruct: {e}")
+        return jsonify({"error": str(e)}), 500
+
 
 """
 Récupère la liste des études DICOM stockées dans le serveur Orthanc
 """
-
-
 @app.route('/getAllStudies', methods=['GET'])
 def get_all_studies():
     try:
@@ -47,8 +84,6 @@ def get_all_studies():
 Récupère les détails d'une étude DICOM spécifique à partir de son ID Orthanc
 params : study_id -> l'ID Orthanc de l'étude
 """
-
-
 @app.route('/getStudy/<string:study_id>', methods=['GET'])
 def get_study(study_id):
     try:
@@ -65,7 +100,6 @@ def get_study(study_id):
 """
 Permet d'upload un fichier DICOM vers le serveur Orthanc
 """
-
 def upload_file_to_orthanc(file):
     try:
         print(f"Fichier reçu : {file.filename}")
@@ -115,10 +149,12 @@ def upload_dicom():
 
         # Si on envoie un RTStruct sans images dicoms avec, on va aller chercher sur le serveur ses images dicoms
         if rtstruct and not dicoms:
+            print("est ce que je rentre ici au moins ?")
             study_instance_uid = rtstruct.StudyInstanceUID
             orthanc_study_id = find_orthanc_id_by_sop_instance_uid(study_instance_uid)
             dicoms, _, _ = download_and_process_dicoms(orthanc_study_id)
-        print(len(dicoms), " dicoms")
+        print("len :")
+        print(len(dicoms))
         # Si on a les dicoms et le rtstruct, on peut ajouter les données des meta à la base de donnée
         if rtstruct and dicoms:
             meta_infos, rtstruct_infos = extract_roi_info(rtstruct, dicoms)
@@ -135,16 +171,18 @@ def upload_dicom():
                 print(f"{roi_name} : Diamètre max: {info['diameter_max']:.2f} mm, Volume: {info['volume_cm3']:.2f} cm³, Slice de début: {info['start_slice']} ,Slice de fin: {info['end_slice']}, couleur : {info['color']}")
 
             db = get_db()
-
-            # Ajout du patient
-            db.ajouter_patient(patient_id, patient_name, patient_birth_date, patient_sex)
-
-            # Ajout de l'étude
-            db.ajouter_etude(study_instance_uid, patient_id, date_traitement=study_date)
-
+            # Si notre patient n'était pas déjà enregistré, on l'enregistre dans la BDD
+            if not  db.patient_exists(patient_id):
+                db.ajouter_patient(patient_id, patient_name, patient_birth_date, patient_sex)
+            # Si notre patient n'avait pas déjà l'étude enregistreé dans la BDD, on l'enregistre
+            if not db.etude_exists(study_instance_uid):
+                db.ajouter_etude(study_instance_uid, patient_id, date_traitement=study_date)
+            series_instance_uid = rtstruct.SeriesInstanceUID
+            db.ajouter_serie(str(series_instance_uid), str(study_instance_uid))
+            # Comme on est certain d'avoir le patient et son étude, on peut donc ajouter les metastases
             # Ajout des métastases
             for roi_name, info in meta_infos.items():
-                db.ajouter_metastase(study_instance_uid, str(roi_name), info["volume_cm3"], info["diameter_max"], info["start_slice"], info["end_slice"], info["color"])
+                db.ajouter_metastase(int(info["roiNumber"]),series_instance_uid, str(roi_name), info["volume_cm3"], info["diameter_max"], info["start_slice"], info["end_slice"], info["color"])
 
         end_time = time.time()
         print(f"Temps total d'upload et de traitement: {end_time - start_time:.2f} secondes")
@@ -193,6 +231,44 @@ def download_and_process_dicoms(orthanc_study_id):
     except requests.RequestException as e:
         print("Error during request:", str(e))
         return None, None, None
+
+""""
+Permet de télécharger uniquement le RTStruct depuis son orthanc serie id
+"""
+def download_rtstruct(orthanc_series_id):
+    query = f"{ORTHANC_URL}/series/{orthanc_series_id}/archive"
+    try:
+        response = requests.get(query, verify=False)
+        print("-à-)-)-)-)-)-)-)-)-)-)-)-)-")
+        print(query)
+        if response.status_code == 200:
+            print(f"Retrieved series archive: {orthanc_series_id}")
+            zip_content = response.content
+            file_like_object = io.BytesIO(zip_content)
+            zip_object = zipfile.ZipFile(file_like_object)
+
+            rtstruct = None
+
+            with zip_object.open(zip_object.infolist()[0]) as file:
+                try:
+                    dicom_data = pydicom.dcmread(io.BytesIO(file.read()))
+                    # Vérifier si c'est un fichier RTSTRUCT
+                    if dicom_data.Modality == 'RTSTRUCT':
+                        rtstruct = dicom_data
+                        rtstruct_id = find_orthanc_id_by_sop_instance_uid(dicom_data.SOPInstanceUID)
+                    else:
+                        print("The file is not an RTSTRUCT.")
+                except InvalidDicomError:
+                    print("The file is not a valid DICOM file.")
+                    return None
+
+            return rtstruct, rtstruct_id
+        else:
+            print("Failed to retrieve series:", response.status)
+            return None
+    except requests.RequestException as e:
+        print("Error during request:", str(e))
+        return None
 
 
 """
@@ -284,6 +360,25 @@ def find_orthanc_id_by_sop_instance_uid(study_instance_uid):
         print("Failed to retrieve study ID:", response.status_code, response.reason)
         return None
 
+"""
+Permet d'acéquerir l'ID Orthanc relative à un RTStruct d'une série
+"""
+def find_orthanc_id_by_series_instance_uid(series_instance_uid):
+    url = f"{ORTHANC_URL}/tools/lookup"
+    headers = {'content-type': 'text/plain'}
+
+    # Envoyer le SeriesInstanceUID pour la recherche
+    response = requests.post(url, data=series_instance_uid, headers=headers)
+    if response.status_code == 200:
+        result = response.json()
+        print("Successfuly retrieved Orthanc ID")
+        print(result[0]['ID'])
+        return result[0]['ID']
+    else:
+        print("Failed to retrieve Orthanc ID")
+        return None
+
+
 
 """
 Permet d'envoyer un RTStruct vers le serveur Orthanc
@@ -324,21 +419,48 @@ def update_or_upload_rtstruct(dicoms, rtstruct, rtstruct_id=None):
      # Ajout ou mise à jour du patient
     if not db.patient_exists(patient_id):
         db.ajouter_patient(patient_id, patient_name, patient_birth_date, patient_sex)
-    
+
     # Ajout ou mise à jour de l'étude
     if db.etude_exists(study_instance_uid):
         db.supprimer_etude(study_instance_uid)
     db.ajouter_etude(study_instance_uid, patient_id, date_traitement=study_date)
 
+    if not db.serie_exists(rtstruct_pydicom.SeriesInstanceUID):
+        db.ajouter_serie(str(rtstruct_pydicom.SeriesInstanceUID), str(study_instance_uid))
+
     # Ajout des métastases
-    db.supprimer_metastases_from_etude(study_instance_uid)
+    db.supprimer_metastases_from_serie(rtstruct_pydicom.SeriesInstanceUID)
     for roi_name, info in meta_infos.items():
-        db.ajouter_metastase(study_instance_uid, str(roi_name), info["volume_cm3"], info["diameter_max"], info["start_slice"], info["end_slice"], info["color"])
+        db.ajouter_metastase(int(info["roiNumber"]), rtstruct_pydicom.SeriesInstanceUID, str(roi_name), info["volume_cm3"], info["diameter_max"], info["start_slice"], info["end_slice"], info["color"])
 
     if upload_response.status_code in [200, 202]:
         return jsonify({"success": "RTStruct uploaded successfully"}), upload_response.status_code
     else:
         return jsonify({"error": "Failed to upload RTStruct"}), upload_response.status_code
+
+def rename_roi_update(serie_instance_uid,rtstruct, rtstruct_id, roi_number, new_name):
+    if rtstruct_id:
+        # Suppression de l'ancien RTStruct
+        delete_response = requests.delete(f"{ORTHANC_URL}/instances/{rtstruct_id}")
+        if delete_response.status_code != 200:
+            print(delete_response.status_code)
+            print(f"Failed to delete old RTStruct: {delete_response.text}")
+        else:
+            print("rtstruct supprimé")
+    print("j'upload le nouveau rtstruct ...")
+    buffer = rtstruct.save_to_memory()
+    files = {'file': ('rtstruct.dcm', buffer, 'application/dicom')}
+    upload_response = requests.post(f"{ORTHANC_URL}/instances", files=files)
+    print("je mets à jour la BDD ...")
+    db = get_db()
+    db.renommer_metastase_from_serie(serie_instance_uid, roi_number, new_name)
+    if upload_response.status_code in [200, 202]:
+        return jsonify({"success": "RTStruct uploaded successfully"}), upload_response.status_code
+    else:
+        return jsonify({"error": "Failed to upload RTStruct"}), upload_response.status_code
+
+
+
 
 def convertir_date(date):
     """Convertir une date au format YYYYMMDD en YYYY-MM-DD."""
@@ -346,7 +468,7 @@ def convertir_date(date):
         return f"{date[:4]}-{date[4:6]}-{date[6:]}"
     else:
         raise ValueError("La date doit être au format YYYYMMDD")
-    
+
 """
 Permet de récupérer la base de donnée de suivi des patients
 """
@@ -361,8 +483,6 @@ def get_db():
 """
 Ferme la connexion à la base de donnée de suivi des patients
 """
-
-
 @app.teardown_appcontext
 def close_db(error):
     db = getattr(g, '_database', None)
@@ -371,11 +491,19 @@ def close_db(error):
 
 
 """
+Get les patients de la base de donnée de suivi des patients
+"""
+@app.route('/followup-patients', methods=['GET'])
+def get_patients():
+    """Get les patients de la base de données de suivi des patients."""
+    patients = get_db().get_patients()
+    return jsonify(patients)
+
+
+"""
 Get les études de la base de donnée de suivi des patients
 Params : idPatient (optionnel) -> retourne les études pour un patient spécifique
 """
-
-
 @app.route('/followup-etudes', methods=['GET'])
 def get_etudes():
     id_patient = request.args.get('idPatient')
@@ -385,34 +513,37 @@ def get_etudes():
         etudes = get_db().get_etudes()
     return jsonify(etudes)
 
-
 """
-Get les patients de la base de donnée de suivi des patients
+Get les séries de la base de donnée de suivi des patients
+:params idEtude (optionnel) -> retourne les séries pour une étude spécifique
 """
-
-
-@app.route('/followup-patients', methods=['GET'])
-def get_patients():
-    """Get les patients de la base de données de suivi des patients."""
-    patients = get_db().get_patients()
-    return jsonify(patients)
+@app.route('/followup-series', methods=['GET'])
+def get_series():
+    print("A: je rentre là")
+    id_etude = request.args.get('idEtude')
+    if id_etude is not None:
+        print("B: je suis aiguile")
+        series = get_db().get_series_from_etude(id_etude)
+        print("j'ai des series ? ")
+        print(series)
+    else:
+        series = get_db().get_series()
+    return jsonify(series)
 
 
 """
 Get les métastases de la base de donnée de suivi des patients
 Params : idEtude (optionnel) -> retourne les metastases pour une étude spécifique
 """
-
-
 @app.route('/followup-metastases', methods=['GET'])
 def get_metastases():
-    id_etude = request.args.get('idEtude')
-    if id_etude is not None:
-        metastases = get_db().get_metastases_from_etude(id_etude)
+    print("je rentre ici pour recup les metastases au moins")
+    id_series = request.args.get('idSeries')
+    if id_series is not None:
+        metastases = get_db().get_metastases_from_serie(id_series)
     else:
         metastases = get_db().get_metastases()
     return jsonify(metastases)
-
 
 if __name__ == '__main__':
     from waitress import serve

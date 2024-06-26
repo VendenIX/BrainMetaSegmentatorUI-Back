@@ -170,7 +170,7 @@ class SegmentationTask(pl.LightningModule):
         # some other utils classes or useful variables
         self.max_epochs = max_epochs
         self.save_max_n_batches = save_max_n_batches
-        self.image_saver = ImageSaver(test_validation_dir, prediction_dir, test_saving_type, prediction_saving_type)
+        #self.image_saver = ImageSaver(test_validation_dir, prediction_dir, test_saving_type, prediction_saving_type)
         
         self.log_max_n_batches = log_max_n_batches
         self.val_test_logging_type = val_test_logging_type or [WandbResultLogging.SEGMENTER]

@@ -334,25 +334,27 @@ def generate_rtstruct_segmentation_unetr(dicom_datasets: List[pydicom.dataset.Da
     Returns:
         Dataset, Boolean: Le RTStruct correspondant à la segmentation, Est ce que c'est un RTStruct update ou create (faut il remplacer un précédant RTStruct par celui-ci)
     """
+    print("debug model")
+    print_dicom_metadata(dicom_datasets)
     niftis = dicom_to_nifti_in_memory(dicom_datasets)
     image, label, imageT = getLabelOfIRM_from_nifti(niftis, pathModelFile)
 
     rt_struct, isFromCurrentRTStruct = process_rtstruct_and_calculate_details(dicom_datasets, label, existing_rtstruct)
     return rt_struct, isFromCurrentRTStruct
 
-def extract_roi_info(rtstruct, dicom_series):
 
+def extract_roi_info(rtstruct, dicom_series):
     dicom_series.sort(key=lambda x: int(x.InstanceNumber))
     # Créer une map des positions de slices à leurs indices
-    slice_positions = {round(dcm.ImagePositionPatient[2], 2): i+1 for i, dcm in enumerate(dicom_series)}
+    slice_positions = {round(dcm.ImagePositionPatient[2], 2): i + 1 for i, dcm in enumerate(dicom_series)}
 
     rtstruct_infos = {
         "PatientName": rtstruct.PatientName,
         "PatientID": rtstruct.PatientID,
         "PatientBirthDate": rtstruct.PatientBirthDate,
         "PatientSex": rtstruct.PatientSex,
-        "StudyDate" : rtstruct.StudyDate,
-        "StudyInstanceUID" : rtstruct.StudyInstanceUID
+        "StudyDate": rtstruct.StudyDate,
+        "StudyInstanceUID": rtstruct.StudyInstanceUID
     }
     # Charger le fichier RTStruct avec dicompyler-core
     rtstruct = dicomparser.DicomParser(rtstruct)
@@ -387,14 +389,16 @@ def extract_roi_info(rtstruct, dicom_series):
     # Parcourir les structures et extraire les informations
     for roi_number, roi_data in structures.items():
         roi_name = roi_data['name']
-        
+        roi_number = roi_data['id']
+        print("ici faut verifier que on a bien le bon roi numbler : ", roi_number)
+        print(roi_data)
         # Obtenir les coordonnées des contours
         coords = rtstruct.GetStructureCoordinates(roi_number)
-        
+
         # Calculer le volume
         thickness = dicomparser.DicomParser.CalculatePlaneThickness(rtstruct, coords)
         volume = calculate_volume(coords, thickness)
-        
+
         # Calculer le diamètre maximal
         contours = []
         contour_slice_indices = []
@@ -404,16 +408,17 @@ def extract_roi_info(rtstruct, dicom_series):
                 z_pos = round(contour['data'][0][2], 2)
                 if z_pos in slice_positions:
                     contour_slice_indices.append(slice_positions[z_pos])
-        
+
         diameters = [calculate_diameter(contour) for contour in contours]
         nb_dicoms = len(dicom_series)
-        
+
         # Obtenir les slices de début et de fin
         start_slice = nb_dicoms - max(contour_slice_indices) if contour_slice_indices else None
         end_slice = nb_dicoms - min(contour_slice_indices) if contour_slice_indices else None
 
         # Ajouter les informations au dictionnaire
         roi_info[roi_name] = {
+            "roiNumber": roi_number,
             "diameter_max": max(diameters),
             "volume_cm3": volume,
             "start_slice": start_slice,
@@ -421,9 +426,23 @@ def extract_roi_info(rtstruct, dicom_series):
             "color": str(roi_data.get('color', (0, 0, 255)))
         }
 
-
-    
     return roi_info, rtstruct_infos
+
+
+def print_dicom_metadata(dicom_datasets):
+    for i, ds in enumerate(dicom_datasets):
+        print(f"Image {i+1}:")
+        if 'PixelSpacing' in ds:
+            print(f"  Pixel Spacing (mm): {ds.PixelSpacing}")
+        if 'SliceThickness' in ds:
+            print(f"  Slice Thickness (mm): {ds.SliceThickness}")
+        if 'ImagePositionPatient' in ds:
+            print(f"  Image Position (Patient): {ds.ImagePositionPatient}")
+        if 'ImageOrientationPatient' in ds:
+            print(f"  Image Orientation (Patient): {ds.ImageOrientationPatient}")
+        if 'Rows' in ds and 'Columns' in ds:
+            print(f"  Image Size (pixels): {ds.Rows} x {ds.Columns}")
+        print("\n")
 
 if __name__ == "__main__":
     ############################################################################################################
