@@ -52,10 +52,59 @@ def rename_roi():
             return jsonify({"error": f"ROI number {roi_number} not found in RTStruct"}), 404
         rtstruct = RTStruct(None, rtstruct_data)
         serie_instance_uid = rtstruct_data.SeriesInstanceUID
-        print("sinon j'ai trouvé cela : ", serie_instance_uid)
         rename_roi_update(serie_instance_uid ,rtstruct, rtstruct_id, roi_number, new_name)
 
         return jsonify({"success": "ROI renamed successfully"}), 200
+
+    except requests.exceptions.RequestException as e:
+        print(f"Error retrieving or uploading RTStruct: {e}")
+        return jsonify({"error": str(e)}), 500
+    
+"""
+Route qui permet de supprimer une région d'intérêt
+:params serie_instance_uid -> l'ID de la série
+:params study_instance_uid -> l'ID de l'étude
+:params roi_number -> le numéro de la région d'intérêt à supprimer
+"""
+@app.route('/delete-roi', methods=['POST'])
+def delete_roi():
+    data = request.json
+    serie_instance_uid = data.get('serie_instance_uid')
+    study_instance_uid = data.get('study_instance_uid')
+    roi_number = data.get('roi_number')
+    
+    if not study_instance_uid or roi_number is None:
+        return jsonify({"error": "Missing required parameters"}), 400
+
+    try:
+        # Récupérer l'ID Orthanc de la série
+        id = find_orthanc_id_by_series_instance_uid(serie_instance_uid)
+        # Télécharger les données RTStruct
+        rtstruct_data, rtstruct_id = download_rtstruct(id)
+        
+        # Trouver les séquences correspondantes au ROI number et les supprimer
+        roi_sequences_to_remove = []
+        for i, roi_seq in enumerate(rtstruct_data.StructureSetROISequence):
+            if roi_seq.ROINumber == roi_number:
+                roi_sequences_to_remove.append(i)
+
+        if not roi_sequences_to_remove:
+            return jsonify({"error": f"ROI number {roi_number} not found in RTStruct"}), 404
+
+        # Suppression des séquences trouvées
+        for index in sorted(roi_sequences_to_remove, reverse=True):
+            del rtstruct_data.StructureSetROISequence[index]
+            del rtstruct_data.ROIContourSequence[index]
+            del rtstruct_data.RTROIObservationsSequence[index]
+
+        # Créer un nouvel RTStruct avec les modifications
+        rtstruct = RTStruct(None, rtstruct_data)
+        serie_instance_uid = rtstruct_data.SeriesInstanceUID
+        
+        # Mettre à jour le RTStruct sur le serveur Orthanc
+        delete_roi_update(serie_instance_uid, rtstruct, rtstruct_id, roi_number)
+
+        return jsonify({"success": "ROI deleted successfully"}), 200
 
     except requests.exceptions.RequestException as e:
         print(f"Error retrieving or uploading RTStruct: {e}")
@@ -423,19 +472,11 @@ def update_or_upload_rtstruct(dicoms, rtstruct, rtstruct_id=None):
     if db.etude_exists(study_instance_uid):
         db.supprimer_etude(study_instance_uid)
     db.ajouter_etude(study_instance_uid, patient_id, date_traitement=study_date)
-
-    print("========================")
-    print("Petit récap :")
-    print("SeriesInstanceUID : ", rtstruct_pydicom.SeriesInstanceUID)
-    print("StudyInstanceUID : ", study_instance_uid)
-    print("========================")
-    print()
     if not db.serie_exists(rtstruct_pydicom.SeriesInstanceUID):
         db.ajouter_serie(str(rtstruct_pydicom.SeriesInstanceUID), str(study_instance_uid))
 
     # Ajout des métastases
     db.supprimer_metastases_from_serie(rtstruct_pydicom.SeriesInstanceUID)
-    print("ajout des rois en cours ...")
     for roi_name, info in meta_infos.items():
         print("ajout de la roi : ", roi_name, "dans la serie : ", rtstruct_pydicom.SeriesInstanceUID)
         db.ajouter_metastase(int(info["roiNumber"]), rtstruct_pydicom.SeriesInstanceUID, str(roi_name), info["volume_cm3"], info["diameter_max"], info["start_slice"], info["end_slice"], info["color"])
@@ -467,6 +508,27 @@ def rename_roi_update(serie_instance_uid,rtstruct, rtstruct_id, roi_number, new_
     else:
         return jsonify({"error": "Failed to upload RTStruct"}), upload_response.status_code
 
+def delete_roi_update(serie_instance_uid, rtstruct, rtstruct_id, roi_number):
+    print("je supprime le rtstruct ..")
+    if rtstruct_id:
+        # Suppression de l'ancien RTStruct
+        delete_response = requests.delete(f"{ORTHANC_URL}/instances/{rtstruct_id}")
+        if delete_response.status_code != 200:
+            print(delete_response.status_code)
+            print(f"Failed to delete old RTStruct: {delete_response.text}")
+        else: 
+            print("rtstruct supprimé")
+    print("j'upload le nouveau rtstruct ...")
+    buffer = rtstruct.save_to_memory()
+    files = {'file': ('rtstruct.dcm', buffer, 'application/dicom')}
+    upload_response = requests.post(f"{ORTHANC_URL}/instances", files=files)
+    print("je mets à jour la BDD ...")
+    db = get_db()
+    db.supprimer_metastase_from_serie(serie_instance_uid, roi_number)
+    if upload_response.status_code in [200, 202]:
+        return jsonify({"success": "RTStruct uploaded successfully"}), upload_response.status_code
+    else:
+        return jsonify({"error": "Failed to upload RTStruct"}), upload_response.status_code
 
 
 
