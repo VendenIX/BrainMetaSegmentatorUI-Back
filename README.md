@@ -1,6 +1,6 @@
 # Bienvenue dans la partie back-end du projet SegmentationUI
 
-Ce projet à pour but de permettre à l'interface OHIF Viewer de lancer un algorithme de deep learning visant à détecter les méta-stases dans le cerveau, basé sur l'architecture unetr. Cette partie du projet est donc une API permettant de communiquer entre le dicom web server Orthanc afin de récupérer/gérer les données médicales au format dicoms, et le modèle de deep learning. A savoir que le modèle est très consommateur en mémoire RAM, et qu'il vous faut des données dicoms afin de pouvoir tester le projet. **Si vous avez des données au format dicoms, nous avons simulé un appel au modèle avec un mock que vous pouvez activer à la ligne 171/172 dans le fichier api.py, il vous suffit alors de commenter/decommenter pour activer ou non le mock ou le vrai modèle.**
+Ce projet à pour but de permettre à l'interface OHIF Viewer de lancer un algorithme de deep learning visant à détecter les méta-stases dans le cerveau, basé sur l'architecture unetr. Cette partie du projet est donc une API permettant de communiquer entre le DICOM Web Server Orthanc afin de récupérer/gérer les données médicales au format dicoms, et le modèle de deep learning UNETR fine-tuné pour la segmentation des métastases cérébrales.
 
 ## Attention
 
@@ -12,14 +12,8 @@ Ce projet est séparé en deux parties :
 
 | Ressource              | Requis                                                  |
 |------------------------|---------------------------------------------------------|
-| Mémoire RAM            | run on RTX 4080 44GB VRAM overlap=0.47 , batch = 1 , mixed precision                                          |
-| GPU                    | Vivement recommandé d'utiliser des GPUs avec conda               |
-
-## Prérequis de Configuration pour lancer le mock (simulation)
-
-| Ressource              | Requis                                                  |
-|------------------------|---------------------------------------------------------|
-| Mémoire RAM            | 8 GB de RAM minimum                                          |
+| Mémoire RAM            | 8GB VRAM                                      |
+| GPU                    | RTX 3050 Cuda            |
 
 
 ## Pour installer les poids pré-entraînés (nécessaire pour lancer le modèle de deep):
@@ -34,11 +28,14 @@ Placer ce fichier de 300 mo dans **unetr/pretrainted_models/**
 pip install -r requirements.txt
 ```
 Si vous galérez à installer, installez petit à petit les librairies.
+mention spéciale pour l'installation de pytorch : 
+```
+pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu111
+```
 
 
-Comme le projet est encore en cours de développement, nous n'avons pas encore fait la pile docker finale, donc il y aura 2 manipulations à effectuer afin de pouvoir lancer la partie back-end :
-
-## Lancer le serveur Orthanc et le proxy nginx :
+# Lancer le back-end en mode developpement : 
+## Lancer le serveur DICOM Web Orthanc et le proxy nginx :
 
 Se créer un réseau nommé 'pacs' avec docker si ce n'est pas fait : 
 
@@ -55,8 +52,27 @@ docker-compose -f Orthanc/docker-compose.yml up -d
 Pour lancer l'api : 
 
 ```
-flask --app api run
+python3 api.py
 ```
+
+# Pour lancer le back-end en mode production : 
+## Pour Windows : 
+Veillez à placer les dépôts du front et du back dans le même répertoire
+```
+git checkout deploiementWindows
+```
+
+Spécifiez dans le .env le path des poids du modèle UNETR.
+exemple : 
+```
+MODEL_PATH='./models/checkpoint_epoch1599_val_loss0255.cpkt'
+```
+
+```
+Executer le fichier start_services.bat
+# vous pouvez en faire un raccourci sur votre bureau ou un exécutable
+```
+
 
 ## Si vous voulez supprimez les données médicales présentes sur votre serveur Orthanc local très rapidement
 Clean - up:
@@ -82,4 +98,8 @@ Et si accessoirement vous voulez supprimer le réseau pacs :
 docker network rm pacs # si vous voulez supprimer le réseau
 ```
 
-<img src="images_readme/logo_unicaen.png" width="200" height="125" alt="Logo de l'Université de Caen Normandie">
+<img src="images_readme/logo_unicaen.png" width="200" height="125" alt="University of Caen Normandy Logo">
+<img src="images_readme/baclesse_logo.png" width="140" height="125" alt="Centre François Baclesse">
+<img src="images_readme/LogoOHIFViewer.png" width="300" height="125" alt="Open Health Imaging Fundation">
+<img src="images_readme/mgh_logo.png" width="110" height="125" alt="Massachusetts General Hospital">
+<img src="images_readme/harvard_medical_school_logo.png" width="300" height="125" alt="Harvard Medical School">

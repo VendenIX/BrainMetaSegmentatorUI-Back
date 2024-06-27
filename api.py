@@ -16,6 +16,7 @@ from pydicom.dataset import Dataset
 import concurrent.futures
 from BDD.MesuresSQLite import MesuresDB
 from mock import simulate_rtstruct_generation2
+from dotenv import load_dotenv
 from segmentation import generate_rtstruct_segmentation_unetr, extract_roi_info
 from rt_utils import RTStruct, RTStructBuilder
 
@@ -23,9 +24,8 @@ app = Flask(__name__)
 CORS(app)
 ORTHANC_URL = "http://localhost:8042"
 #model_path = "C:\MetIA\BrainMetaSegmentatorUI-Back\model\checkpoint-epoch=1599-val_loss=0.225.ckpt"
-model_path = '/Users/romain/Downloads/Modeles_Pre_Entraines/checkpoint_epoch1599_val_loss0255.cpkt'
-#model_path = "C:\MetIA\BrainMetaSegmentatorUI-Back\model\checkpoint-epoch=2409-val_loss=0.306.ckpt"
-
+load_dotenv()
+model_path = os.getenv('MODEL_PATH')
 
 """
 Route qui permet de renommer une région d'intérêt 
