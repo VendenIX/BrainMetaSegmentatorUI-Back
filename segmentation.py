@@ -83,7 +83,7 @@ def getLabelOfIRM_from_nifti(nifti_image: nib.Nifti1Image, pathModelFile: str):
             print(f"Feature {i + 1}: Size = {size}")
 
             # Vérifier si la taille est inférieure au seuil
-            if size < 100:
+            if size < 140:
                 # Définir les valeurs de cette région à zéro
                 labeled_array[current_slice][current_region == (i + 1)] = 0
     label, num_features = sp.ndimage.label(labeled_array)
@@ -214,7 +214,7 @@ def applyUNETR(dicoImage, model):
                                              roi_size=(96, 96, 96),
                                              sw_batch_size=4,
                                              predictor=model,
-                                             overlap=0.6)
+                                             overlap=0.8)
 
 
     label = torch.argmax(label, dim=1, keepdim=True)
