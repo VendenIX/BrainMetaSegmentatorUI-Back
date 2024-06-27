@@ -28,7 +28,7 @@ if exist "%NGINX_PID_FILE%" (
 if exist "%FLASK_PID_FILE%" (
     echo API already working
 ) else (
-    echo Starting API on anaconda env : CORRAU-RESIMET
+    echo Starting API on anaconda env : CORRAU-RESIMET ...
     cd "..\..\BrainMetaSegmentatorUI-Back\"
     start "" /B "cmd.exe" /C "C:\ProgramData\Anaconda3\Scripts\activate.bat CORRAU_RESIMET && python api.py && echo %%PID%% > %FLASK_PID_FILE%"
 )
