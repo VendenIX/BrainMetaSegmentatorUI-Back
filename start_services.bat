@@ -10,12 +10,7 @@ set BASE_DIR=%~dp0
 echo %BASE_DIR%
 :: Vérifier si le serveur web est en cours d'exécution
 
-
-set "pid="
-for /f "tokens=*" %%i in (%BASE_DIR%%WEB_PID_FILE%) do set "pid=%%i"
-:: Vérifier si le PID existe
-tasklist /FI "PID eq %pid%" 2>NUL | find /I "%pid%" >NUL
-if "%ERRORLEVEL%"=="0" (
+if exist "%WEB_PID_FILE%" (
     echo OHIF already working
 ) else (
     echo Starting OHIF Viewer 3.7.0 ...
