@@ -12,7 +12,6 @@ unetr/pretrained_models/*
 nginx-1.26.0/logs/*
 nginx-1.26.0
 RunT
-nginx/
 nifti_dataset_small/
 runs/
 Testing/metaDataDCMAnalyzer.ipynb

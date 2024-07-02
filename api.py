@@ -51,7 +51,6 @@ def rename_roi():
             return jsonify({"error": f"ROI number {roi_number} not found in RTStruct"}), 404
         rtstruct = RTStruct(None, rtstruct_data)
         serie_instance_uid = rtstruct_data.SeriesInstanceUID
-        print("sinon j'ai trouvé cela : ", serie_instance_uid)
         rename_roi_update(serie_instance_uid ,rtstruct, rtstruct_id, roi_number, new_name)
 
         return jsonify({"success": "ROI renamed successfully"}), 200
@@ -69,6 +68,7 @@ Route qui permet de supprimer une région d'intérêt
 """
 @app.route('/delete-roi', methods=['POST'])
 def delete_roi():
+    temps_debut = time.time()
     data = request.json
     serie_instance_uid = data.get('serie_instance_uid')
     study_instance_uid = data.get('study_instance_uid')
@@ -82,7 +82,6 @@ def delete_roi():
         id = find_orthanc_id_by_series_instance_uid(serie_instance_uid)
         # Télécharger les données RTStruct
         rtstruct_data, rtstruct_id = download_rtstruct(id)
-
         # Trouver les séquences correspondantes au ROI number et les supprimer
         roi_sequences_to_remove = []
         for i, roi_seq in enumerate(rtstruct_data.StructureSetROISequence):
@@ -101,10 +100,8 @@ def delete_roi():
         # Créer un nouvel RTStruct avec les modifications
         rtstruct = RTStruct(None, rtstruct_data)
         serie_instance_uid = rtstruct_data.SeriesInstanceUID
-
         # Mettre à jour le RTStruct sur le serveur Orthanc
         delete_roi_update(serie_instance_uid, rtstruct, rtstruct_id, roi_number)
-
         return jsonify({"success": "ROI deleted successfully"}), 200
 
     except requests.exceptions.RequestException as e:
@@ -198,12 +195,9 @@ def upload_dicom():
 
         # Si on envoie un RTStruct sans images dicoms avec, on va aller chercher sur le serveur ses images dicoms
         if rtstruct and not dicoms:
-            print("est ce que je rentre ici au moins ?")
             study_instance_uid = rtstruct.StudyInstanceUID
             orthanc_study_id = find_orthanc_id_by_sop_instance_uid(study_instance_uid)
             dicoms, _, _ = download_and_process_dicoms(orthanc_study_id)
-        print("len :")
-        print(len(dicoms))
         # Si on a les dicoms et le rtstruct, on peut ajouter les données des meta à la base de donnée
         if rtstruct and dicoms:
             meta_infos, rtstruct_infos = extract_roi_info(rtstruct, dicoms)
@@ -288,8 +282,6 @@ def download_rtstruct(orthanc_series_id):
     query = f"{ORTHANC_URL}/series/{orthanc_series_id}/archive"
     try:
         response = requests.get(query, verify=False)
-        print("-à-)-)-)-)-)-)-)-)-)-)-)-)-")
-        print(query)
         if response.status_code == 200:
             print(f"Retrieved series archive: {orthanc_series_id}")
             zip_content = response.content
@@ -509,7 +501,7 @@ def rename_roi_update(serie_instance_uid,rtstruct, rtstruct_id, roi_number, new_
         return jsonify({"error": "Failed to upload RTStruct"}), upload_response.status_code
 
 def delete_roi_update(serie_instance_uid, rtstruct, rtstruct_id, roi_number):
-    print("je supprime le rtstruct ..")
+    print("suppression du rtstruct ...")
     if rtstruct_id:
         # Suppression de l'ancien RTStruct
         delete_response = requests.delete(f"{ORTHANC_URL}/instances/{rtstruct_id}")
@@ -517,12 +509,12 @@ def delete_roi_update(serie_instance_uid, rtstruct, rtstruct_id, roi_number):
             print(delete_response.status_code)
             print(f"Failed to delete old RTStruct: {delete_response.text}")
         else:
-            print("rtstruct supprimé")
-    print("j'upload le nouveau rtstruct ...")
+            print("le rtstruct a été supprimé")
+    print("upload du nouveau rtstruct ...")
     buffer = rtstruct.save_to_memory()
     files = {'file': ('rtstruct.dcm', buffer, 'application/dicom')}
     upload_response = requests.post(f"{ORTHANC_URL}/instances", files=files)
-    print("je mets à jour la BDD ...")
+    print("mise à jour de la BDD ...")
     db = get_db()
     db.supprimer_metastase_from_serie(serie_instance_uid, roi_number)
     if upload_response.status_code in [200, 202]:
@@ -590,13 +582,9 @@ Get les séries de la base de donnée de suivi des patients
 """
 @app.route('/followup-series', methods=['GET'])
 def get_series():
-    print("A: je rentre là")
     id_etude = request.args.get('idEtude')
     if id_etude is not None:
-        print("B: je suis aiguile")
         series = get_db().get_series_from_etude(id_etude)
-        print("j'ai des series ? ")
-        print(series)
     else:
         series = get_db().get_series()
     return jsonify(series)
@@ -608,7 +596,6 @@ Params : idEtude (optionnel) -> retourne les metastases pour une étude spécifi
 """
 @app.route('/followup-metastases', methods=['GET'])
 def get_metastases():
-    print("je rentre ici pour recup les metastases au moins")
     id_series = request.args.get('idSeries')
     if id_series is not None:
         metastases = get_db().get_metastases_from_serie(id_series)
@@ -619,4 +606,5 @@ def get_metastases():
 if __name__ == '__main__':
     from waitress import serve
     #app.run(debug=True)
+    print("Lancement de l'API ...")
     serve(app, host='127.0.0.1', port=5000)

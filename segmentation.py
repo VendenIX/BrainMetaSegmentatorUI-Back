@@ -334,7 +334,6 @@ def generate_rtstruct_segmentation_unetr(dicom_datasets: List[pydicom.dataset.Da
     Returns:
         Dataset, Boolean: Le RTStruct correspondant à la segmentation, Est ce que c'est un RTStruct update ou create (faut il remplacer un précédant RTStruct par celui-ci)
     """
-    print("debug model")
     print_dicom_metadata(dicom_datasets)
     niftis = dicom_to_nifti_in_memory(dicom_datasets)
     image, label, imageT = getLabelOfIRM_from_nifti(niftis, pathModelFile)
@@ -390,7 +389,6 @@ def extract_roi_info(rtstruct, dicom_series):
     for roi_number, roi_data in structures.items():
         roi_name = roi_data['name']
         roi_number = roi_data['id']
-        print("ici faut verifier que on a bien le bon roi numbler : ", roi_number)
         print(roi_data)
         # Obtenir les coordonnées des contours
         coords = rtstruct.GetStructureCoordinates(roi_number)
