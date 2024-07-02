@@ -9,7 +9,13 @@ set NGINX_PID_FILE=nginx\logs\nginx.pid
 set BASE_DIR=%~dp0
 echo %BASE_DIR%
 :: Vérifier si le serveur web est en cours d'exécution
-if exist "%WEB_PID_FILE%" (
+
+
+set "pid="
+for /f "tokens=*" %%i in (%BASE_DIR%%WEB_PID_FILE%) do set "pid=%%i"
+:: Vérifier si le PID existe
+tasklist /FI "PID eq %pid%" 2>NUL | find /I "%pid%" >NUL
+if "%ERRORLEVEL%"=="0" (
     echo OHIF already working
 ) else (
     echo Starting OHIF Viewer 3.7.0 ...
@@ -39,9 +45,6 @@ if exist "%FLASK_PID_FILE%" (
     cd %BASE_DIR%
     start "" /B "cmd.exe" /C "C:\ProgramData\Anaconda3\Scripts\activate.bat CORRAU_RESIMET && python api.py && echo %%PID%% > %FLASK_PID_FILE%"
 )
-:: Démarrer le script batch pour surveiller la fermeture du terminal
-cd %BASE_DIR%
-start "" /B "cmd.exe" /C "monitor_exit.bat"
 
 :: Ouvrir le navigateur par défaut sur localhost:3000
 start "" /B http://localhost/orthanc/ui/app/index.html#/"
