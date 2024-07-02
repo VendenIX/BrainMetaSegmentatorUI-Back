@@ -115,3 +115,4 @@ yarl==1.8.1
 dicompyler-core
 shapely
 python-dotenv
+waitress==3.0.0
