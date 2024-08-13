@@ -15,6 +15,31 @@ This project is divided into two parts:
 | RAM                    | 8GB VRAM                                                 |
 | GPU                    | RTX 3050 Cuda                                            |
 
+## Architecture 
+
+![Architecture de OHIF](images_readme/architecture.drawio.png)
+
+### Front-end
+
+The front-end of the project is responsible for the user interface and interaction. The primary code for the MetIA functionality is located in the `extensions/MetIA/` directory. The structure is as follows:
+
+- `modes/` - Contains the different modes of the application.
+- `extensions/MetIA/` - Houses the main code for the MetIA functionalities.
+- `routes/` - Manages the routes for the front-end components.
+
+### Back-end
+
+The back-end handles the processing, database management, and integration with external tools. The main back-end components include:
+
+- `api.py` - Contains the main code along with all the routes for the back-end services.
+- `segmentation.py` - This code is responsible for launching the model.
+- `unetr/` - This directory contains the code for the UNETR model.
+- `BDD/mesures.sql/` - Stores the database and SQL scripts for the tracking.
+- `Orthanc/` - All code related to Orthanc, a DICOM Web server, is located in this directory.
+
+## A Sequence Diagram of a Segmentation Request
+
+![Diagramme de séquence](images_readme/sequence_diagram.png)
 
 ## To Install the Pre-trained Weights (required to run the deep model):
 

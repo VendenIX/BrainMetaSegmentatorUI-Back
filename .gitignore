@@ -7,3 +7,5 @@
 /Orthanc/orthanc_db/*
 /BDD/mesures.db
 unetr/pretrained_models/*
+models/
+.DS_Store
