@@ -124,9 +124,3 @@ And optionally, if you want to remove the pacs network:
 ```bash
 docker network rm pacs # if you want to remove the network
 ```
-
-<img src="images_readme/logo_unicaen.png" width="200" height="125" alt="University of Caen Normandy Logo">
-<img src="images_readme/baclesse_logo.png" width="140" height="125" alt="Centre François Baclesse">
-<img src="images_readme/LogoOHIFViewer.png" width="300" height="125" alt="Open Health Imaging Foundation">
-<img src="images_readme/mgh_logo.png" width="110" height="125" alt="Massachusetts General Hospital">
-<img src="images_readme/harvard_medical_school_logo.png" width="300" height="125" alt="Harvard Medical School">
