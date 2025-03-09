@@ -126,7 +126,7 @@ docker network rm pacs # if you want to remove the network
 ```
 
 
-## References
+## Citation
 
 ```bibtex
 @article{DESSOUDE2025121002,
